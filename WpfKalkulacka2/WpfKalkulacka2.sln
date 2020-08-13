@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfKalkulacka2", "WpfKalkulacka2.csproj", "{B961AC48-68A8-4620-A3F2-C9F8CFAC7DDB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B961AC48-68A8-4620-A3F2-C9F8CFAC7DDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B961AC48-68A8-4620-A3F2-C9F8CFAC7DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B961AC48-68A8-4620-A3F2-C9F8CFAC7DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B961AC48-68A8-4620-A3F2-C9F8CFAC7DDB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74A1223E-2ED7-49FF-957D-5F172F75E46D}
+	EndGlobalSection
+EndGlobal

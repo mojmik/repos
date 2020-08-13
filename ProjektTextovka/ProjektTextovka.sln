@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjektTextovka", "ProjektTextovka.csproj", "{9B62120E-E5DD-4344-8B65-DD59F0DACB06}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B62120E-E5DD-4344-8B65-DD59F0DACB06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B62120E-E5DD-4344-8B65-DD59F0DACB06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B62120E-E5DD-4344-8B65-DD59F0DACB06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B62120E-E5DD-4344-8B65-DD59F0DACB06}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {66B09287-00AE-4197-8AE8-509FA7A89AD9}
+	EndGlobalSection
+EndGlobal

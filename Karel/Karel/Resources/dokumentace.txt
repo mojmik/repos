@@ -1,0 +1,14 @@
+# KAREL 1.0 - by Misaz
+# created 14:34 25/8/2013 
+# zurek.michal@email.cz
+# devbook.cz
+# Machr na OOP
+KROK 	   		: Karel udìlá krok, tam kam je natoèen
+VLEVO-VBOK 		: Karel se otoèí vlevo
+POLOZ			: Karel položí znaèku
+VEZMI			: Karel vezme znaèku
+OTOC-DOPRAVA	: Karel se otoèí doprava
+OTOC-DOLEVA		: Karel se otoèí doleva
+OTOC-DOLU		: Karel se otoèí dolù
+OTOC-NAHORU		: Karel se otoèí nahoru
+Zápis pøíkazù	: Pøíkazy se oddìlují mezerou, støedníkem nebo zakonèením øádku (enter). Na veliksoti písmen nezáleží. Neplatné pøíkazy se neprovedou.

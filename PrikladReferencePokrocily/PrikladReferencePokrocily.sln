@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrikladReferencePokrocily", "PrikladReferencePokrocily.csproj", "{EE24E165-BB90-4007-8D45-C6C4402178DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE24E165-BB90-4007-8D45-C6C4402178DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE24E165-BB90-4007-8D45-C6C4402178DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE24E165-BB90-4007-8D45-C6C4402178DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE24E165-BB90-4007-8D45-C6C4402178DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C0ADB45-F472-4037-8724-F362FC53AC19}
+	EndGlobalSection
+EndGlobal

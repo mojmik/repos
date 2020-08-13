@@ -1,0 +1,32 @@
+﻿<Window x:Class="WpfTipovaniCisel.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfTipovaniCisel"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" MinWidth="400" MinHeight="200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="200*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20*"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Rozsah:" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="0-" Height="20" VerticalAlignment="Top" />
+        <ComboBox Name="rozsahComboBox" Grid.Row="1" Grid.Column="0" Width="100" Height="20" Margin="20,0,0,0" HorizontalAlignment="left" VerticalAlignment="top" SelectionChanged="rozsahComboBox_SelectionChanged" SelectedIndex="0">
+            <ComboBoxItem Content="10"></ComboBoxItem>
+            <ComboBoxItem Content="100"></ComboBoxItem>
+            <ComboBoxItem Content="500"></ComboBoxItem>
+        </ComboBox>
+        <Button Name="startButton" Grid.Column="1" Grid.Row="1" Content="Začít" HorizontalAlignment="left" Width="100" VerticalAlignment="Top" Click="startButton_Click" />
+        <TextBlock Name="infoTextBox" Grid.Row="2" Grid.Column="0" Text="Vyber si rozsah a zacneme" VerticalAlignment="Center" />
+        <TextBox Name="tipTextBox" Grid.Column="0" Grid.Row="3" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top" />
+        <Button Name="tipButton" Grid.Column="1" Grid.Row="3" Content="Tip" HorizontalAlignment="left" VerticalAlignment="top" Width="100" Click="tipButton_Click" />
+    </Grid>
+</Window>
