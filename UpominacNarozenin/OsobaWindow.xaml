@@ -23,7 +23,7 @@
         <TextBox Grid.Column="1" Grid.Row="1" Name="jmenoTextBox" Margin="0,0,0,5"/>
         <Label Content="_Datum narození" Grid.Column="0" Grid.Row="2" Target="{Binding ElementName=narozeninyDatePicker}"/>
         <DatePicker Grid.Column="1" Grid.Row="2" Name="narozeninyDatePicker" Margin="0,0,0,5"/>
-        <Button Name="okButton" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="100" Content="OK" IsDefault="True"/>
+        <Button Name="okButton" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="100" Content="OK" IsDefault="True" Click="okButton_Click"/>
     </Grid>
         
 </Window>

@@ -6,4 +6,14 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="images\iconfinder_icon-person-add_211872.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="images\iconfinder_icon-person-add_211872.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

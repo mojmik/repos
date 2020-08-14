@@ -15,8 +15,22 @@ namespace UpominacNarozenin {
     /// Interakční logika pro OsobaWindow.xaml
     /// </summary>
     public partial class OsobaWindow : Window {
-        public OsobaWindow() {
+        private SpravceOsob spravceOsob;
+
+        public OsobaWindow(SpravceOsob spravceOsob) {
             InitializeComponent();
+            this.spravceOsob = spravceOsob;
+            
+        }
+
+        private void okButton_Click(object sender, RoutedEventArgs e) {
+            try {
+                spravceOsob.Pridej(jmenoTextBox.Text, narozeninyDatePicker.SelectedDate);
+                Close();
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Chyba", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
         }
     }
 }

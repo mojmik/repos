@@ -18,10 +18,25 @@ namespace UpominacNarozenin {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
+        private SpravceOsob spravceOsob = new SpravceOsob();
+
         public MainWindow() {
-            string scriptFile = "WinScript1.wsf";
-            System.Diagnostics.Process.Start("WScript.exe", " " + scriptFile);
+            //string scriptFile = "WinScript1.wsf";
+            //System.Diagnostics.Process.Start("WScript.exe", " " + scriptFile);            
             InitializeComponent();
+            //nastavime kontext na bindovani; to je vlastne instance, ktera se bude pro vsechna bindovani v okne pouzivat
+            DataContext = spravceOsob;
+        }
+
+        private void pridatButton_Click(object sender, RoutedEventArgs e) {
+            OsobaWindow osobaWindow = new OsobaWindow(spravceOsob);
+            osobaWindow.ShowDialog();
+        }
+
+        private void odebratButton_Click(object sender, RoutedEventArgs e) {
+            if (osobyListBox.SelectedItem != null) {
+                spravceOsob.Odeber((Osoba)osobyListBox.SelectedItem);
+            }
         }
     }
 }
