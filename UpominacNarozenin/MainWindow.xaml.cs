@@ -24,6 +24,13 @@ namespace UpominacNarozenin {
             //string scriptFile = "WinScript1.wsf";
             //System.Diagnostics.Process.Start("WScript.exe", " " + scriptFile);            
             InitializeComponent();
+            try {
+                spravceOsob.Nacti();
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
             //nastavime kontext na bindovani; to je vlastne instance, ktera se bude pro vsechna bindovani v okne pouzivat
             DataContext = spravceOsob;
         }
@@ -35,7 +42,13 @@ namespace UpominacNarozenin {
 
         private void odebratButton_Click(object sender, RoutedEventArgs e) {
             if (osobyListBox.SelectedItem != null) {
-                spravceOsob.Odeber((Osoba)osobyListBox.SelectedItem);
+                try {
+                    spravceOsob.Odeber((Osoba)osobyListBox.SelectedItem);
+                    spravceOsob.Uloz();
+                }
+                catch (Exception ex) {
+                    MessageBox.Show(ex.Message, "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

@@ -26,6 +26,7 @@ namespace UpominacNarozenin {
         private void okButton_Click(object sender, RoutedEventArgs e) {
             try {
                 spravceOsob.Pridej(jmenoTextBox.Text, narozeninyDatePicker.SelectedDate);
+                spravceOsob.Uloz();
                 Close();
             }
             catch (Exception ex) {

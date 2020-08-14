@@ -6,6 +6,9 @@ namespace UpominacNarozenin {
     public class Osoba {
         public string Jmeno { get; set; }
         public DateTime Narozeniny { get; set; }
+        public Osoba() {
+
+        }
         public Osoba(string jmeno, DateTime narozeniny) {
             Jmeno = jmeno;
             Narozeniny = narozeniny;
