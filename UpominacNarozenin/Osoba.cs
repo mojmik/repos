@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace UpominacNarozenin {
+namespace WpfUpominacNarozenin {
     public class Osoba {
         public string Jmeno { get; set; }
         public DateTime Narozeniny { get; set; }
