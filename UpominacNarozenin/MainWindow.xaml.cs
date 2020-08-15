@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UpominacNarozenin {
+namespace WpfUpominacNarozenin {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using System.Text;
 
-namespace UpominacNarozenin {
+namespace WpfUpominacNarozenin {
     public class SpravceOsob : INotifyPropertyChanged { 
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<Osoba> Osoby { get; set; }
