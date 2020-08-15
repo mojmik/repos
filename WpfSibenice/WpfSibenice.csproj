@@ -55,6 +55,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Slovo.cs" />
+    <Compile Include="SpravceHry.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,6 +88,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="images\Thumbs.db" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -93,6 +96,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\1.png" />
+    <Resource Include="images\10.png" />
+    <Resource Include="images\11.png" />
+    <Resource Include="images\2.png" />
+    <Resource Include="images\3.png" />
+    <Resource Include="images\4.png" />
+    <Resource Include="images\5.png" />
+    <Resource Include="images\6.png" />
+    <Resource Include="images\7.png" />
+    <Resource Include="images\8.png" />
+    <Resource Include="images\9.png" />
+    <Resource Include="images\iconfinder_Hangman.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

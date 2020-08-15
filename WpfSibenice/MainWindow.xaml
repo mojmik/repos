@@ -5,8 +5,41 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfSibenice"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="850" Width="400">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="200*" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Tip" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" FontSize="20" Foreground="#FF62A012"    />
+        <TextBlock Text="{Binding Vysledky}" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" FontSize="20" Foreground="#FF62A012"    /> 
+        <TextBox Name="tipTextBox" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="center" Width="50" BorderBrush="Aqua" />
+        <Button Name="tipButton" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="center" Width="100" Content="Tipnout" Click="tipButton_Click" />
+        <TextBlock TextAlignment="Center" Text="{Binding HadaneSlovo}" Name="hadaneSlovoTextBox" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="50,0,50,0" FontWeight="Bold" FontSize="30" />
+        <Grid Margin="20,0,20,0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="top" HorizontalAlignment="Center" >
+            <Image Name="par11" Source="images/11.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />
+            <Image Name="par10" Source="images/10.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />
+            <Image Name="par9" Source="images/9.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />
+            <Image Name="par8" Source="images/8.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />
+            <Image Name="par7" Source="images/7.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />
+            <Image Name="par6" Source="images/6.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />
+            <Image Name="par5" Source="images/5.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />
+            <Image Name="par4" Source="images/4.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />
+            <Image Name="par3" Source="images/3.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />
+            <Image Name="par2" Source="images/2.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Image Name="par1" Source="images/1.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" />
+        </Grid>
+        <Button Name="topButton" Content="Nejlepsi hraci" Width="100" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="5" />
+        <Button Name="restartButton" Content="Restart" Width="100" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="5" Click="restartButton_Click" />
+        
         
     </Grid>
 </Window>
