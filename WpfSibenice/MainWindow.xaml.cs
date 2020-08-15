@@ -25,7 +25,6 @@ namespace WpfSibenice {
             spravceHry = new SpravceHry();
             DataContext = spravceHry;
             UkazatObrazky();
-            //hadaneSlovoTextBox.Text = spravceHry.HadaneSlovo.Maskovane();
             
         }
 
@@ -38,10 +37,19 @@ namespace WpfSibenice {
             }
 
             UkazatObrazky();
-            if (spravceHry.Vyhra()) {
-                MessageBox.Show("Congrats!");
+            if (spravceHry.Prohra()) {
+                new ProhraWindow(spravceHry.HadaneSlovo.TextSlova).ShowDialog();
+
+            }
+            if (spravceHry.Vyhra()) {                
+                PridatSkore();
             }
         }
+        private void PridatSkore() {
+            NewPlayerWindow nw = new NewPlayerWindow(spravceHry.AktualniSkore());
+            nw.ShowDialog();
+        }
+        
         public void UkazatObrazky() {
             int pokusy = spravceHry.SpatnePokusy;
             par1.Visibility = pokusy >= 1 ? Visibility.Visible : Visibility.Hidden;
@@ -62,6 +70,12 @@ namespace WpfSibenice {
         private void restartButton_Click(object sender, RoutedEventArgs e) {
             spravceHry.Restart();
             UkazatObrazky();
+        }
+
+        private void topButton_Click(object sender, RoutedEventArgs e) {
+            SpravceHracu sh = new SpravceHracu();
+            SeznamHracuOkno okno = new SeznamHracuOkno(sh);
+            okno.ShowDialog();
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Text;
 namespace WpfUpominacNarozenin {
     public class SpravceOsob : INotifyPropertyChanged { 
         public event PropertyChangedEventHandler PropertyChanged;
-        public ObservableCollection<Osoba> Osoby { get; set; }
+        public ObservableCollection<Osoba> Osoby { get; set; } //pozor, kdyz tady neni get; set; tak listbox nefunguje
         private string cesta = "osoby.xml";
         public SpravceOsob() {
             Osoby = new ObservableCollection<Osoba>();            

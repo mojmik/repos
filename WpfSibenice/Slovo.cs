@@ -26,6 +26,13 @@ namespace WpfSibenice {
             }
             return s;
         }
+        public string Hadane() {
+            string s = "";
+            foreach (char c in TextSlovaMasked) {
+                s += c;
+            }
+            return s;
+        }
         public char[] MaskujSlovo() {
             char[] maskedSlovo = new char[PocetPismen];
             for (int n=0; n<PocetPismen; n++) {

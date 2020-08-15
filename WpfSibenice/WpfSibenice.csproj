@@ -55,7 +55,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Hrac.cs" />
+    <Compile Include="NewPlayerWindow.xaml.cs">
+      <DependentUpon>NewPlayerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProhraWindow.xaml.cs">
+      <DependentUpon>ProhraWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SeznamHracuOkno.xaml.cs">
+      <DependentUpon>SeznamHracuOkno.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Slovo.cs" />
+    <Compile Include="SpravceHracu.cs" />
     <Compile Include="SpravceHry.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -69,6 +80,18 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="NewPlayerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ProhraWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SeznamHracuOkno.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

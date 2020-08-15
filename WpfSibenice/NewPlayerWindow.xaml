@@ -1,0 +1,21 @@
+﻿<Window x:Class="WpfSibenice.NewPlayerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfSibenice"
+        mc:Ignorable="d"
+        Title="NameWindow" Height="450" Width="800">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Gratuluju, vyhrál jsi!" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" Grid.Row="0" Foreground="#FF23B04D" />
+        <TextBlock Text="Zadej prezidvku" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" Grid.Row="1" />
+        <TextBox Name="nameTextBox" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" Grid.Row="2" />
+        <Button Name="nameOkButton" Content="Ok" Grid.Row="3" Width="100" Click="nameOkButton_Click" />
+    </Grid>
+</Window>

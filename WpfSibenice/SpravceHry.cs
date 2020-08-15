@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Net.Http.Headers;
 
 namespace WpfSibenice {
     class SpravceHry : INotifyPropertyChanged {
@@ -14,12 +15,13 @@ namespace WpfSibenice {
         List<char> Tipy = new List<char>();
         public int Pokusy { get; private set; }
         public int SpatnePokusy { get; private set; }
+        int PocetPokusu = 11;
         public int UhodnutaPismena { get; private set; }
         public Slovo HadaneSlovo { get; private set; }
 
         public string Vysledky {
             get {
-                return "Pokusu " + Pokusy;
+                return "Pokusu: " + Pokusy + " spatne pokusy: " + SpatnePokusy;
             }
 
             private set {
@@ -30,16 +32,22 @@ namespace WpfSibenice {
         public SpravceHry() {
             Restart();
         }
-        public bool TestSlovo(Slovo s) {
-            return true;
+   
+        public int AktualniSkore() {
+            if (!Vyhra()) return 0;
+            int skore = HadaneSlovo.PocetPismen * 10 - SpatnePokusy * 5;
+            return (skore) < 0 ? 0 : (skore);
         }
 
 
         public void Restart() {
             //SlovaList=new List<Slovo>();           
             SlovaList.RemoveAll((Slovo s) => true);
-            SlovaList.Add(new Slovo("babička"));
-            SlovaList.Add(new Slovo("babočka"));
+            string[] slova = { "automat", "robot", "tabule", "lavice", "pikachu", "ruka", "noha", "rameno", "hlava", "rostlina", "poleno" };
+            foreach (string s in slova) {
+                SlovaList.Add(new Slovo(s));
+            }
+                        
             HadaneSlovo = LosujSlovo();
             Pokusy = 0;
             SpatnePokusy = 0;
@@ -64,16 +72,21 @@ namespace WpfSibenice {
                     UhodnutaPismena += vysledekTipu;                    
                 }
                 else {
-                    SpatnePokusy++;                    
+                    SpatnePokusy++;                      
                 }
             }
         }
         protected void VyvolejZmenu(string vlastnost) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(vlastnost));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(vlastnost));          
         }
         public bool Vyhra() {
-            if (UhodnutaPismena == HadaneSlovo.PocetPismen) return true;
+            
+            if (HadaneSlovo.Hadane() == HadaneSlovo.TextSlova) return true;
             else return false;
+        }
+        public bool Prohra() {
+            if (SpatnePokusy >= PocetPokusu) return true;
+            return false;
         }
 
     }
