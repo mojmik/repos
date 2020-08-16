@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -39,11 +40,27 @@ namespace WpfSibenice {
             return (skore) < 0 ? 0 : (skore);
         }
 
+        public string[] natazeniSlovCSV() {
+            List<string> listA = new List<string>();
+            List<string> listB = new List<string>();
+            using (var reader = new StreamReader("slova.csv")) {
+                
+                while (!reader.EndOfStream) {
+                    var line = reader.ReadLine();
+                    var values = line.Split(';');
 
+                    listA.Add(values[0]);
+                    //listB.Add(values[1]);
+                }
+            }
+            string[] outStr= listA.ToArray();
+            return outStr;
+        }
         public void Restart() {
-            //SlovaList=new List<Slovo>();           
+            //SlovaList=new List<Slovo>();                       
             SlovaList.RemoveAll((Slovo s) => true);
-            string[] slova = { "automat", "robot", "tabule", "lavice", "pikachu", "ruka", "noha", "rameno", "hlava", "rostlina", "poleno" };
+            string[] slova = natazeniSlovCSV();
+            //string[] slova = { "automat", "robot", "tabule", "lavice", "pikachu", "ruka", "noha", "rameno", "hlava", "rostlina", "poleno" };
             foreach (string s in slova) {
                 SlovaList.Add(new Slovo(s));
             }
@@ -67,7 +84,8 @@ namespace WpfSibenice {
             }
             else {
                 int vysledekTipu = HadaneSlovo.OdmaskujSlovo(tip[0]);
-                VyvolejZmenu(nameof(HadaneSlovo)); //textbox dole ma sice nastavenej binding, ale timhle mu rekneme, ze se property HadaneSlovo zmenila a ma se aktualizovat
+                VyvolejZmenu(nameof(HadaneSlovo)); //textbox dole ma sice nastavenej binding, ale timhle mu rekneme, ze se property HadaneSlovo zmenila a ma se aktualizovaT ten kdo to delal je pro tata
+                
                 if (vysledekTipu > 0) {
                     UhodnutaPismena += vysledekTipu;                    
                 }

@@ -38,6 +38,7 @@ namespace WpfSibenice {
                     Hraci = (List<Hrac>)ser.Deserialize(sr);
                 }
             }
+            Hraci.Sort();
         }
     }
 }
