@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfSibenice"
         mc:Ignorable="d"
-        Title="MainWindow" Height="850" Width="600">
+        Title="MainWindow" Height="850" Width="600" WindowStartupLocation="CenterScreen">
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
@@ -22,7 +22,7 @@
         <TextBlock Text="Tip" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" FontSize="20" Foreground="#FF62A012"    />
         <TextBlock Text="{Binding Vysledky}" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" FontSize="20" Foreground="#FF62A012"    /> 
         <TextBox Name="tipTextBox" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="center" Width="100" BorderBrush="Black" FontSize="24" TextAlignment="Center" Margin="0,5,0,5" />
-        <Button Name="tipButton" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="center" Width="100" Content="Tipnout" Click="tipButton_Click" />
+        <Button Name="tipButton" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="center" Width="100" Content="Tipnout" Click="tipButton_Click" IsDefault="True" />
         <TextBlock TextAlignment="Center" Text="{Binding HadaneSlovo}" Name="hadaneSlovoTextBox" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="50,0,50,0" FontWeight="Bold" FontSize="30" />
         <Grid Margin="20,0,20,0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="top" HorizontalAlignment="Center" >
             <Image Name="par11" Source="images/11.png" MaxHeight="700" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Visible" />

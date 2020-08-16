@@ -1,0 +1,19 @@
+﻿<Window x:Class="WpfDispatcherTimer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfDispatcherTimer"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+<!-- Tohle je te alternativni verze nastaveni kontextu a view modelu: -->
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+<!-- ^^ -->
+    <Grid>
+        <Grid>
+            <TextBlock Name="Odpocet" Text="{Binding Zbyva}" FontSize="44" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+        </Grid>
+    </Grid>
+</Window>

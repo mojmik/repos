@@ -38,7 +38,7 @@ namespace WpfSibenice {
 
             UkazatObrazky();
             if (spravceHry.Prohra()) {
-                new ProhraWindow(spravceHry.HadaneSlovo.TextSlova).ShowDialog();
+                new ProhraWindow(spravceHry.HadaneSlovo.TextSlova).Show();
 
             }
             if (spravceHry.Vyhra()) {                
@@ -47,7 +47,7 @@ namespace WpfSibenice {
         }
         private void PridatSkore() {
             NewPlayerWindow nw = new NewPlayerWindow(spravceHry.AktualniSkore());
-            nw.ShowDialog();
+            nw.Show();
         }
         
         public void UkazatObrazky() {
@@ -63,7 +63,7 @@ namespace WpfSibenice {
             par9.Visibility = pokusy >= 9 ? Visibility.Visible : Visibility.Hidden;
             par10.Visibility = pokusy >= 10 ? Visibility.Visible : Visibility.Hidden;
             par11.Visibility = pokusy >= 11 ? Visibility.Visible : Visibility.Hidden;
-            
+            tipTextBox.Focus();
 
         }
 
@@ -75,7 +75,7 @@ namespace WpfSibenice {
         private void topButton_Click(object sender, RoutedEventArgs e) {
             SpravceHracu sh = new SpravceHracu();
             SeznamHracuOkno okno = new SeznamHracuOkno(sh);
-            okno.ShowDialog();
+            okno.Show();
         }
     }
 }
