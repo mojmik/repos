@@ -5,7 +5,7 @@ namespace PrikladNaradi
     class Program
     {
         static void Main(string[] args)
-        {
+        {                      
             Bedna b = new Bedna(10000);
             b.VlozNaradi(new Kladivo("Kladívko",1200));
             b.VlozNaradi(new Kladivo("Velké kladivo", 3000,true));
