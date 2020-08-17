@@ -1,0 +1,41 @@
+﻿<Window x:Class="WpfDispatcherTimerHodiny.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfDispatcherTimerHodiny"
+        mc:Ignorable="d"
+        Title="Hodiny" Height="450" Width="658"  WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Width="350" Height="350">
+            <Image Name="Pozadi" Grid.Column="0" Grid.RowSpan="2" Width="350" Height="350" Source="obrazek.png" ></Image>
+            <Label Name="DigitalHodiny" Content="00:00:00" Visibility="Hidden" FontSize="26" Margin="0 50 0 0" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+        </Grid>
+        <Rectangle Name="OMinuty" Margin="170,0,177,102" Stroke="Black" StrokeThickness="4" Width="1" Height="100" VerticalAlignment="Center">
+            <Rectangle.RenderTransform>
+                <RotateTransform x:Name="Minuty" CenterX="2" CenterY="99" Angle="0" />
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Name="OHodiny" Margin="170,0,174,72" Stroke="Black" StrokeThickness="4" Width="1" Height="70" VerticalAlignment="Center">
+            <Rectangle.RenderTransform>
+                <RotateTransform x:Name="Hodiny" CenterX="3" CenterY="68" Angle="0" />
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Name="OSekundy" Margin="172,0,177,126" Stroke="Red" Height="120" Width="1" VerticalAlignment="Center">
+            <Rectangle.RenderTransform>
+                <RotateTransform x:Name="Sekundy" CenterX="0" CenterY="120" Angle="0" />
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <StackPanel Background="Gray" Height="300" Width="200" Grid.Column="1">
+            <Label Margin="0 30 0 0" HorizontalAlignment="Center">Typ</Label>
+            <RadioButton Name="Analogove" Checked="Analogove_Checked" IsChecked="True" Margin="65 30 0 0" Content="Analogové"></RadioButton>
+            <RadioButton Name="Digitalni" Checked="Digitalni_Checked" Margin="65 20 0 0" Content="Digitální"></RadioButton>
+            <RadioButton Name="Kombinovane" Checked="Kombinovane_Checked" Margin="65 20 0 0" Content="Kombinované"></RadioButton>
+            <CheckBox Name="Format24" IsChecked="True" Margin="45 60 0 0" Content="24 hodinový formát" Checked="Format24_Checked"></CheckBox>
+        </StackPanel>
+    </Grid>
+</Window>

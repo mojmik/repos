@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30406.217
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfNakupniSeznam", "WpfNakupniSeznam.csproj", "{EFEE3EDF-5E87-4B3F-B5ED-91FE34D7C7AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFEE3EDF-5E87-4B3F-B5ED-91FE34D7C7AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFEE3EDF-5E87-4B3F-B5ED-91FE34D7C7AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFEE3EDF-5E87-4B3F-B5ED-91FE34D7C7AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFEE3EDF-5E87-4B3F-B5ED-91FE34D7C7AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B7756F2F-0913-4853-A12B-3F149F11217C}
+	EndGlobalSection
+EndGlobal

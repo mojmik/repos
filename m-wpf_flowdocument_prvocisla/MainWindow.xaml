@@ -1,0 +1,28 @@
+﻿<Window x:Class="WpfNakupniSeznam.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfNakupniSeznam"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="20" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="100" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Pridani polozky: " Grid.Row="0" Grid.Column="0"></TextBlock>
+        <TextBox Name="polozkaTextBox" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"  />
+        <Button Name="pridejButton" Grid.Row="1" Grid.Column="2" Content="Pridat" Click="pridejButton_Click" />
+        <ListBox Name="polozkyListBox" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding Polozky}" />
+        <Button Name="odebratButton" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Center" Width="100" Content="Odebrat" Margin="0.333,0.333,236.333,-0.333" Click="odebratButton_Click" />
+    </Grid>
+</Window>
