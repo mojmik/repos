@@ -22,6 +22,9 @@ namespace WpfPrvocisla {
         public List<int> cislaList { get; set; }
         public int progressPct { get; set; }
         public string maxText { get; set; }
+        
+      
+
         public MainViewModel() {
             backgroundWorker = new BackgroundWorker() {
                 WorkerSupportsCancellation = true,
@@ -80,6 +83,9 @@ namespace WpfPrvocisla {
 
         public void MikPropertyChanged(string propertyName) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            /*
+             * PropertyChanged(this,new PropertyChangedEventArgs(propertyName));
+             */
         }
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e) {
             int max = (int)e.Argument;
