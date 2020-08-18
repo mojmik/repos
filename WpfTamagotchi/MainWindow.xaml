@@ -7,6 +7,40 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="100" />
+            <RowDefinition Height="20" />
+        </Grid.RowDefinitions>
+        <Image Source="{Binding PetImage}" />
+        <TextBlock Text="{Binding infoText}" Grid.Row="2" />
+        <Grid Grid.Row="1" HorizontalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="20" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+            </Grid.ColumnDefinitions>
+            <Image Source="images/pet-food.png" Grid.Column="0" />
+            <ProgressBar x:Name="foodProgress" Grid.Column="0" Grid.Row="1" Margin="10,0,10,0" Value="{Binding FoodProgress}" />
+            <Button Name="foodButton" Content="Krmeni" Grid.Column="0" Grid.Row="2" Margin="10,0,10,0" Click="foodButton_Click" />
+            
+            <Image Source="images/sleeping-pet.png" Grid.Column="1" />
+            <ProgressBar x:Name="sleepProgress" Grid.Column="1" Grid.Row="1" Margin="10,0,10,0" Value="{Binding SleepProgress}" />
+            <Button Name="sleepButton" Content="Spanek" Grid.Column="1" Grid.Row="2" Margin="10,0,10,0" Click="sleepButton_Click" />
+            
+            <Image Source="images/dog.png" Grid.Column="2" />
+            <ProgressBar x:Name="hygieneProgress" Grid.Column="2" Grid.Row="1" Margin="10,0,10,0" Value="{Binding HygieneProgress}" />
+            <Button Name="hygieneButton" Content="Koupani" Grid.Column="2" Grid.Row="2" Margin="10,0,10,0" Click="hygieneButton_Click" />
+            
+            <Image Source="images/walking-pet.png" Grid.Column="3" />
+            <ProgressBar x:Name="walkProgress" Grid.Column="3" Grid.Row="1" Margin="10,0,10,0" Value="{Binding WalkProgress}" />
+            <Button Name="walkButton" Content="Prochazka" Grid.Column="3" Grid.Row="2" Margin="10,0,10,0" Click="walkButton_Click" />
+        </Grid>
     </Grid>
 </Window>
