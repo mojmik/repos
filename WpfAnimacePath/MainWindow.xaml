@@ -1,0 +1,46 @@
+﻿<Window x:Class="WpfAnimacePath.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfAnimacePath"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Rectangle Width="50" Height="30" Fill="LightBlue"
+                Stroke="Blue">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <MatrixTransform x:Name="mtRect">
+                        <MatrixTransform.Matrix >
+                            <Matrix />
+                        </MatrixTransform.Matrix>
+                    </MatrixTransform>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+
+            <Rectangle.Triggers>
+                <EventTrigger RoutedEvent="Rectangle.Loaded">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <MatrixAnimationUsingPath
+                            Storyboard.TargetName="mtRect"
+                            Storyboard.TargetProperty="Matrix"
+                            DoesRotateWithTangent="True"
+                            Duration="00:00:10"
+                            RepeatBehavior="Forever" >
+                                <MatrixAnimationUsingPath.PathGeometry>
+                                    <PathGeometry Figures=
+                                    "M 50,110
+                                    C 50,20 350,20 250,210
+                                    150,500 500,500 500,160
+                                    500,60 50,210 50,110"/>
+                                </MatrixAnimationUsingPath.PathGeometry>
+                            </MatrixAnimationUsingPath>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Rectangle.Triggers>
+        </Rectangle>
+    </Grid>
+</Window>

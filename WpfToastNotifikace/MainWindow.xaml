@@ -1,0 +1,29 @@
+﻿<Window x:Class="WpfToastNotifikace.MainWindow" x:Name="wdwTN"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfToastNotifikace"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Closed="VycistiFrontu">
+    
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Content="Show Information"
+            Style="{StaticResource Tlacitko}"
+            Click="ZobrazInfo"/>
+            <Button Content="Show Success"
+            Style="{StaticResource Tlacitko}"
+            Click="ZobrazSucc"/>
+            <Button Content="Show Warning"
+            Style="{StaticResource Tlacitko}"
+            Click="ZobrazWar"/>
+            <Button Content="Show Error"
+            Style="{StaticResource Tlacitko}"
+            Click="ZobrazError"/>
+            <Button Content="Konec"
+            Style="{StaticResource Konec}"
+            Click="Konec" Margin="0,30,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

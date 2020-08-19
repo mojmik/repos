@@ -1,0 +1,25 @@
+﻿<Window x:Class="WpfDataGrid.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfDataGrid"
+        mc:Ignorable="d"
+        Title="Evidence osob" Height="450" Width="600" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="350"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DataGrid Name="OsobyDataGrid" ItemsSource="{Binding Osoba}" AutoGenerateColumns="False" SelectionUnit="FullRow" SelectionMode="Single"  ColumnWidth="*">
+            <DataGrid.Columns>
+                <DataGridTextColumn MaxWidth="0" Header="Id" Binding="{Binding Id}" />
+                <DataGridTextColumn Header="Jméno" Binding="{Binding Jmeno}" />
+                <DataGridTextColumn Header="Příjmení" Binding="{Binding Prijmeni}" />
+                <DataGridTextColumn Header="Věk" Binding="{Binding Vek}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Name="Vypis" Click="Vypis_Click" Width="100" Height="25" Grid.Row="1" Content="Vypiš"></Button>
+    </Grid>
+</Window>
