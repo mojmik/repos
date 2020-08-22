@@ -7,6 +7,23 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="4*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Name="oriTextBox" Text="Slovicko" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="#FF2BA932" FontSize="24" />
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            <TextBlock Text="Překlad: " />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBox Name="prekladTextBox" Grid.Row="1" Width="200" Height="20" Text="preklad..." Foreground="Gray" TextChanged="prekladTextBox_TextChanged" GotFocus="prekladTextBox_GotFocus" LostFocus="prekladTextBox_LostFocus" />
+                <Button Name="OK" IsDefault="True" Grid.Row="1" Width="100" Height="20" Content="OK" Click="OK_Click" />
+            </StackPanel>
+        </StackPanel>
+        <TextBlock Name="scoreTextBlock" Text="Score: " Grid.Column="1" Grid.Row="0"/>
+        <ScrollViewer Name="infoTextBlock" Content="fewew" Grid.Column="1" Grid.Row="1"></ScrollViewer>
     </Grid>
 </Window>

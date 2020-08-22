@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pocitace>
+    <pocitac nazev="PC149664">
+        <procesor>
+            <nazev>Intel Core i5</nazev>
+            <jader>4</jader>
+            <frekvence>3.2 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>nVIDIA GeForce GTS 250</nazev>
+            <ram>512 MB</ram>
+            <frekvence>745 MHz</frekvence>
+        </grafika>
+        <ram>4 GB</ram>
+    </pocitac>
+    <pocitac nazev="PC582347">
+        <procesor>
+            <nazev>Intel Core i5-4460</nazev>
+            <jader>4</jader>
+            <frekvence>3.2 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>GeForce GTX TITAN X</nazev>
+            <ram>12 GB</ram>
+            <frekvence>1000 MHz</frekvence>
+        </grafika>
+        <ram>8 GB</ram>
+    </pocitac>
+    <pocitac nazev="PC498234">
+        <procesor>
+            <nazev>Intel Core i7-4790K</nazev>
+            <jader>4</jader>
+            <frekvence>4 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>GeForce GTX750 Ti</nazev>
+            <ram>2 GB</ram>
+            <frekvence>1111 MHz</frekvence>
+        </grafika>
+        <ram>6 GB</ram>
+    </pocitac>
+    <pocitac nazev="PC721168">
+        <procesor>
+            <nazev>Intel Core i3-4170</nazev>
+            <jader>2</jader>
+            <frekvence>3.7 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>GeForce GTX970 FTW+</nazev>
+            <ram>4 GB</ram>
+            <frekvence>1216 MHz</frekvence>
+        </grafika>
+        <ram>3 GB</ram>
+    </pocitac>
+    <pocitac nazev="PC316824">
+        <procesor>
+            <nazev>AMD FX-6300</nazev>
+            <jader>6</jader>
+            <frekvence>3.5 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>GeForce GTX980 Ti</nazev>
+            <ram>6 GB</ram>
+            <frekvence>1102 MHz</frekvence>
+        </grafika>
+        <ram>1 GB</ram>
+    </pocitac>
+    <pocitac nazev="PC423414">
+        <procesor>
+            <nazev>AMD FX-4300</nazev>
+            <jader>4</jader>
+            <frekvence>3.8 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>GeForce GTX970</nazev>
+            <ram>4 GB</ram>
+            <frekvence>1228 MHz</frekvence>
+        </grafika>
+        <ram>2 GB</ram>
+    </pocitac>
+    <pocitac nazev="PC793635">
+        <procesor>
+            <nazev>Intel Core i7-5820K</nazev>
+            <jader>6</jader>
+            <frekvence>3.3 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>GeForce GTX970</nazev>
+            <ram>4 GB</ram>
+            <frekvence>1051 MHz</frekvence>
+        </grafika>
+        <ram>16 GB</ram>
+    </pocitac>
+    <pocitac nazev="PC492178">
+        <procesor>
+            <nazev>AMD FX-8320E</nazev>
+            <jader>8</jader>
+            <frekvence>4 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>GeForce GTX750</nazev>
+            <ram>1 GB</ram>
+            <frekvence>1190 MHz</frekvence>
+        </grafika>
+        <ram>8 GB</ram>
+    </pocitac>
+    <pocitac nazev="PC265796">
+        <procesor>
+            <nazev>Intel Celeron G1840</nazev>
+            <jader>2</jader>
+            <frekvence>2.8 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>GeForce GTX980</nazev>
+            <ram>4 GB</ram>
+            <frekvence>1139 MHz</frekvence>
+        </grafika>
+        <ram>6 GB</ram>
+    </pocitac>
+    <pocitac nazev="PC123474">
+        <procesor>
+            <nazev>AMD Athlon X8 860K Black Edition</nazev>
+            <jader>8</jader>
+            <frekvence>4 GHz</frekvence>
+        </procesor>
+        <grafika>
+            <nazev>GeForce GTX750 Ti</nazev>
+            <ram>2 GB</ram>
+            <frekvence>1189 MHz</frekvence>
+        </grafika>
+        <ram>4 GB</ram>
+    </pocitac>
+</pocitace>
