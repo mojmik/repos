@@ -3,7 +3,7 @@
                     xmlns:local="clr-namespace:WpfToastNotifikace.Styly">
     
         <Style x:Key="ZakladniTlacitko" TargetType="Button">
-            <Setter Property="Width" Value="90"/>
+            <Setter Property="Width" Value="150"/>
 
             <Setter Property="Height" Value="30"/>
             <Setter Property="FontFamily" Value="Tahoma"/>

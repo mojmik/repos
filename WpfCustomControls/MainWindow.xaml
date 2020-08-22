@@ -1,0 +1,19 @@
+﻿<Window x:Class="WpfCustomControls.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfCustomControls"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <StackPanel x:Name="hlavniStackPanel" Orientation="Horizontal" Width="800" Height="30">
+            <Label>Maskovanej TextBox</Label>
+            <local:MaskedTextBox HorizontalAlignment="Left" mask="0000.aaaa" valueHandler="RedBox"   />
+            <TextBox Text="textboxnormalni"></TextBox>
+            
+        </StackPanel>
+        
+
+    </Grid>
+</Window>
