@@ -1,0 +1,51 @@
+﻿<Window x:Class="WpfZIPaXMLzamestnanci.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfZIPaXMLzamestnanci"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Canvas Name="imgCanvas" Grid.Row="1" Grid.Column="0">
+            <Image Width="{Binding ElementName=imgCanvas,Path=ActualWidth}" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" x:Name="employeeImage" Source="{Binding Foto.Source}"  />
+            <Button x:Name="selectImage" Width="50" Height="20" Content="..." HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="selectImage_Click" />
+        </Canvas>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition Width="10" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Target="{Binding ElementName=nameTextBox}">Name</Label>
+            <TextBox x:Name="nameTextBox" Grid.Row="0" Grid.Column="1" Text="{Binding Jmeno}" />
+            <Label Grid.Row="1" Grid.Column="0" Target="{Binding ElementName=surnameTextBox}">Surname</Label>
+            <TextBox x:Name="surnameTextBox" Grid.Row="1" Grid.Column="1" Text="{Binding Prijmeni}" />
+            <Label Grid.Row="2" Grid.Column="0" Target="{Binding ElementName=emailTextBox}">Email</Label>
+            <TextBox x:Name="emailTextBox" Grid.Row="2" Grid.Column="1" Text="{Binding Email}" />
+            <Label Grid.Row="3" Grid.Column="0" Target="{Binding ElementName=phoneTextBox}">Phone</Label>
+            <TextBox x:Name="phoneTextBox" Grid.Row="3" Grid.Column="1" Text="{Binding Telefon}" />
+            <Label Grid.Row="4" Grid.Column="0" Target="{Binding ElementName=dateTextBox}">Date</Label>
+            <TextBox x:Name="dateTextBox" Grid.Row="4" Grid.Column="1" Text="{Binding DatumNarozeni}" />
+        </Grid>
+        <Button Name="saveButton" Content="Save" Grid.Row="2" Grid.Column="0" Width="150" Click="saveButton_Click" />
+        <Button Name="loadButton" Content="Load" Grid.Row="2" Grid.Column="1" Width="150" Click="loadButton_Click" />
+    </Grid>
+</Window>

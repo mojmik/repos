@@ -8,13 +8,17 @@ using System.Threading.Tasks;
 namespace WpfFTP {
     class FileManager : INotifyPropertyChanged {
         public List<string> Files { get; set; }
+        FTPtools ftpTools;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void ReadFiles() {
-            FTPtools ftpTools = new FTPtools();
+            ftpTools = new FTPtools();
             Files=ftpTools.GetFiles("ftp://test.rebex.net/pub/example","demo","password");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Files)));
+        }
+        public void Download(string file) {
+            ftpTools.DownloadFile(file);
         }
 
     }

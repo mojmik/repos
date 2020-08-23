@@ -30,5 +30,14 @@ namespace WpfFTP {
         private void goButton_Click(object sender, RoutedEventArgs e) {
             fileMan.ReadFiles(); 
         }
+
+        private void goDownload_Click(object sender, RoutedEventArgs e) {
+            try {
+                if (outListBox.SelectedIndex >= 0) fileMan.Download(fileMan.Files[outListBox.SelectedIndex]);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }
