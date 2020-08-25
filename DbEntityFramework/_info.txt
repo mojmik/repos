@@ -1,0 +1,1 @@
+tady v solutione mame 2 projekty, da se nastavit, ktery bude jako startup, ten se pak spousti

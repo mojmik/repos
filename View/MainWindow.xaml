@@ -1,0 +1,18 @@
+﻿<Window x:Class="View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"        
+        xmlns:localUC="clr-namespace:View"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded_1">
+    <TabControl HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" >
+        <TabItem Header="Osoby">
+            <localUC:PersonsControl x:Name="persons" Loaded="persons_Loaded" />
+        </TabItem>
+
+        <TabItem Header="Faktury">
+            <localUC:InvoicesControl x:Name="invoices" />
+        </TabItem>
+    </TabControl>
+</Window>
