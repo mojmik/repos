@@ -18,10 +18,6 @@ namespace PrvniMonogame {
         public Vector2 GetPosition() {
             return position;
         }
-        public Vector2 GetCenterPosition() {
-            return new Vector2(position.X + texture.Width / 2,
-                        position.Y + texture.Height / 2);
-        }
 
         public Texture2D GetTexture() {
             return texture;

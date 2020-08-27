@@ -29,29 +29,9 @@ namespace PrvniMonogame {
                 position.X += Speed;
         }
 
+        public void Collision() {
 
-        public void Collision(Jelly obj) {
-            if (GetRectangle().Intersects(obj.GetRectangle())) {
-                if (obj is ToxicJelly) {
-                    obj.Delete = true;
-                    Lives--;
-                    game.ScoreMultiply = 1;
-                }
-                else if (obj is SugarJelly) {
-                    obj.Delete = true;
-                    Lives++;
-                    game.ScoreMultiply++;
-                }
-                else {
-                    obj.Delete = true;
-                    EatedJellies++;
-                    game.AddScore(5, obj.GetCenterPosition());
-                }
-            }
-            
         }
-
-
         /// <summary>
         /// tohle se muze odstranit, vykresuljeme ve draw
         /// 
