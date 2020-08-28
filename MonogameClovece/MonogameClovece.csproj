@@ -87,11 +87,12 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="FadeText.cs" />
+    <Compile Include="FadeTextManager.cs" />
     <Compile Include="GameBoard.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="PlayerManager.cs" />
     <Compile Include="PlaySpace.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />

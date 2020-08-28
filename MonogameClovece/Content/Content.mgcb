@@ -37,6 +37,13 @@
 /processorParam:TextureFormat=Color
 /build:clovece.jpg
 
+#begin font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:font.spritefont
+
 #begin modra.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
