@@ -93,6 +93,7 @@
     <Compile Include="GameObject.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="PlayerManager.cs" />
+    <Compile Include="PlayerPiece.cs" />
     <Compile Include="PlaySpace.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
