@@ -13,9 +13,10 @@ namespace mCompWarden2 {
         private DateTime LastCheck { get; set; }
         public long LastPing { get; private set; }
         private string ServerName { get; set; }
-        public RunManager(Logger logger,CommandsManager commandsManager,string serverName = "aadyn") {
+        public RunManager(Logger logger,CommandsManager cmdMan,string serverName = "aadyn") {
             ServerName = serverName;
             runLogger = logger;
+            commandsManager = cmdMan;
         }
         
         public bool IsHostAvailable(string nameOrAddress) {
@@ -35,7 +36,7 @@ namespace mCompWarden2 {
         
         public bool DoRun() {
             if ((DateTime.Now - LastCheck).TotalSeconds < 10) return false;
-
+            commandsManager.LoadLocalCommands();
             if (IsHostAvailable(ServerName) && LastRun < DateTime.Today) {
                 commandsManager.LoadRemoteCommands();
                 LastRun = DateTime.Now;

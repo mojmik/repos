@@ -9,8 +9,8 @@ namespace mCompWarden2 {
         public string UserName { get; set; }
         public string ComputerName { get; set; }
 
-        public Logger() {
-            logFile = @"C:\it\mcompwarden.txt";
+        public Logger(string outFile, string remoteLog) {
+            logFile = outFile;
             remoteLogPath = @"\\aavm2\data2\";
         }
         public void WriteLog(string txt) {
