@@ -7,13 +7,17 @@ using System.Security.Cryptography;
 
 namespace mCompWarden2 {
     class RunManager {
+        public Logger runLogger;
+        public CommandsManager commandsManager;
         public DateTime LastRun { get; private set; }
         private DateTime LastCheck { get; set; }
         public long LastPing { get; private set; }
         private string ServerName { get; set; }
-        public RunManager(string serverName = "aadyn") {
+        public RunManager(Logger logger,CommandsManager commandsManager,string serverName = "aadyn") {
             ServerName = serverName;
+            runLogger = logger;
         }
+        
         public bool IsHostAvailable(string nameOrAddress) {
             bool pingable = false;
             Ping pinger = new Ping();
@@ -28,51 +32,16 @@ namespace mCompWarden2 {
             }
             return pingable;
         }
-        public List<string> GetRemoteCommands() {
-            string fileName = @"\\rentex.intra\company\data\Company\mkavan_upravy\scripts\mCompWarden2\all.txt";
-            List<string> remoteCommands=new List<string>();
-            using (System.IO.StreamReader reader = new System.IO.StreamReader(fileName)) {
-                string line;
-                while ((line = reader.ReadLine()) != null) {
-                    remoteCommands.Add(line);
-                }
-            }
-            
-            fileName = @"\\rentex.intra\company\data\Company\mkavan_upravy\scripts\mCompWarden2\" + System.Environment.MachineName + "-" + System.Environment.UserName + ".txt";
-            using (System.IO.StreamReader reader = new System.IO.StreamReader(fileName)) {
-                string line;
-                while ((line = reader.ReadLine()) != null) {
-                    remoteCommands.Add(line);
-                }
-            }
-            return remoteCommands;
-        }
-        public void RunCommand(string command,string arguments="") {
-            var proc = new System.Diagnostics.Process {
-                StartInfo = new System.Diagnostics.ProcessStartInfo {
-                    FileName = @command,
-                    Arguments = @arguments,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true
-                    //WorkingDirectory = @"C:\MyAndroidApp\"
-                }
-            };
-            proc.Start();
-        }
-        public void RunCommands(List <string> commandList) {
-            foreach (string cmd in commandList) {
-                RunCommand(cmd);
-            }            
-        }
+        
         public bool DoRun() {
             if ((DateTime.Now - LastCheck).TotalSeconds < 10) return false;
 
             if (IsHostAvailable(ServerName) && LastRun < DateTime.Today) {
-                RunCommands(GetRemoteCommands());
+                commandsManager.LoadRemoteCommands();
                 LastRun = DateTime.Now;
                 return true;
             }
+            commandsManager.RunCommands();
             return false;
         }
     }

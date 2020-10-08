@@ -29,7 +29,7 @@ namespace mCompWarden2 {
         public string GetUserName() {
             return System.Environment.UserName;
         }
-        public void WriteRemoteLog(string widget, string value) {
+        public void WriteRemoteInfo(string widget, string value) {
             //  \\aavm2\data2\mlog_%random%%random%_%COMPUTERNAME%_%USERNAME%.txt
 
             string outLog = $"{ComputerName};{UserName};{widget};{value}";
@@ -39,7 +39,14 @@ namespace mCompWarden2 {
                     file.WriteLine(outLog);
             }
         }
-        
+        public void WriteRemoteLog(string logTxt) {
+            string fileName = @"" + Program.mainPath + "mainlog.txt";
+            using (System.IO.StreamWriter file =
+                new System.IO.StreamWriter(@fileName, true)) {
+                file.WriteLine(logTxt);
+            }
+        }
+
     }
 }
 
