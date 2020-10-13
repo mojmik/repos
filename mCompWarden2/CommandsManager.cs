@@ -7,24 +7,43 @@ using System.Security.Permissions;
 using System.ComponentModel.Design;
 using System.Security.Cryptography;
 using System.Xml.Serialization;
-
+using System.Linq.Expressions;
 
 namespace mCompWarden2 {
-    class CommandsManager {
+    public class CommandsManager {
         public List<CommandSet> commandsList = new List<CommandSet>();
         private string xmlPath = Program.localPath + "cmdset.xml";
-        Logger logger;
+        public Logger logger;
         bool isChanged;
 
         public CommandsManager(Logger logger) {
             this.logger = logger;
+            MiscCommands.cmdMan = this;
         }
         public void SingleCommandSetFromFile(string file) {
             if (!File.Exists(file)) return;
+            DateTime lastModified = System.IO.File.GetLastWriteTime(file);
             foreach (CommandSet cmdSet in commandsList) {
-                if (cmdSet.SourceFilePath == file) return;
+                if (cmdSet.SourceFilePath == file) {
+                    if (cmdSet.FileLastModified == lastModified) return;
+                    else {
+                        //update in command file- we recreate the commandset
+                        try {
+                            cmdSet.MakeFromFile(file);
+                        }                        
+                        catch (Exception e) {
+                            logger.WriteLog($"Exception file {file}: {e.Message} {e.InnerException}",Logger.TypeLog.both);
+                        }
+                        return;
+                    }
+                }                
             }
-            commandsList.Add(new CommandSet(file));
+            try {
+                commandsList.Add(new CommandSet(file));
+            }
+            catch (Exception e) {
+                logger.WriteLog($"Exception file {file}: {e.Message} {e.InnerException}", Logger.TypeLog.both);
+            }
             isChanged = true;
         }
         public void MultipleCommandSetsFromFile(string path, string fileMask) {
@@ -35,12 +54,13 @@ namespace mCompWarden2 {
                 SingleCommandSetFromFile(file.FullName);
             }
         }
-
+        
         public void LoadRemoteCommands() {
             //run daily            
             MultipleCommandSetsFromFile(Program.mainPath, "all*.txt");
-            SingleCommandSetFromFile(Program.mainPath + System.Environment.MachineName + "-" + System.Environment.UserName + ".txt");
-            SingleCommandSetFromFile(Program.mainPath + System.Environment.MachineName + ".txt");
+            SingleCommandSetFromFile(Program.mainPath + System.Environment.MachineName.ToLower() + "-" + System.Environment.UserName.ToLower() + ".txt");
+            SingleCommandSetFromFile(Program.mainPath + System.Environment.UserName.ToLower() + ".txt");
+            SingleCommandSetFromFile(Program.mainPath + System.Environment.MachineName.ToLower() + ".txt");
         }
         public void LoadLocalCommands() {
             //run immediately                        
@@ -69,14 +89,18 @@ namespace mCompWarden2 {
                 }
             }
         }
-        public void SaveIntoXML() {
-
-            if (!isChanged) return;            
+        public void SaveIntoXML(bool checkChanged=true, string path="") {
+            if (checkChanged && !isChanged) return;
+            path = (path != "") ? path : xmlPath;
+            if (File.Exists(path)) File.Delete(path);
             XmlSerializer ser = new XmlSerializer(commandsList.GetType());
-            using (StreamWriter sw = new StreamWriter(xmlPath)) {
+            using (StreamWriter sw = new StreamWriter(path)) {
                 ser.Serialize(sw, commandsList);
             }
             isChanged = false;
+        }
+        public void ClearCommands() {
+            commandsList.Clear();
         }
     }
 }

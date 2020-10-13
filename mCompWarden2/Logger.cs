@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace mCompWarden2 {
-    class Logger {
+    public class Logger {
         string logFilePath, remoteLogPath, remoteInfoPath,remoteUrl;
         public enum TypeLog { local, remote, both }
         public Logger(string outFile, string remoteLog) {

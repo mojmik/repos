@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Linq;
 
 using System.Text;
@@ -15,6 +16,7 @@ namespace mCompWarden2 {
 
         //na pozadi to bezi diky Project > Properties> Application tab > change Output type to "Windows application".
         public static string mainPath = @"\\rentex.intra\company\data\Company\mkavan_upravy\scripts\mCompWarden2\";
+        public static string outPath = @"\\rentex.intra\company\data\Company\mkavan_upravy\scripts\mCompWarden2\out\";
         public static string localPath = @"c:\it\compwarden\";
         public static string commandsLocalPath = localPath + @"cmd\";
         public static string commandsArcLocalPath = localPath + @"cmd\arc\";
@@ -32,11 +34,11 @@ namespace mCompWarden2 {
 
         /*
          * kazdej prikaz muze mit na radce @cmdsettings:opakovani;isRemote;NeedsNetwork;NeedsUser;ExcludedComputers
+         * 
          */
 
         static System.Threading.Mutex singleton = new Mutex(true, "mCompWarden2-"+System.Environment.UserName);
 
-        
 
         static void Main(string[] args) {
             if (!singleton.WaitOne(TimeSpan.Zero, true)) {
@@ -59,7 +61,7 @@ namespace mCompWarden2 {
                 runMan.DoRun();
                 if (runMan.LastPing > -1) {
                     if (runMan.IsTime("ping", 5, "m")) {
-                        logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
+                        if (System.Environment.UserName == "SYSTEM") logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
                     }
                 }
                     
