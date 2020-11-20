@@ -69,14 +69,21 @@ namespace mCompWarden2 {
 
         public void RunCommands(bool isOnline) {
             foreach (CommandSet cmd in commandsList.ToList()) {
-                if (cmd.Run(isOnline)) {
-                    logger.WriteLog($"cmd {cmd.SourceFilePath} ran successfully at {cmd.LastRun} ",Logger.TypeLog.both);
-                    if (!cmd.IsRepeating) {
-                        cmd.ArchiveSource();
+                try {
+                    if (cmd.IsRemoved(isOnline)) {
                         commandsList.Remove(cmd);
                     }
-
-                    isChanged = true;
+                    else if (cmd.Run(isOnline)) {
+                        logger.WriteLog($"cmd {cmd.SourceFilePath} ran successfully at {cmd.LastRun} ", Logger.TypeLog.both);
+                        if (!cmd.IsRepeating) {
+                            cmd.ArchiveSource();
+                            commandsList.Remove(cmd);
+                        }
+                        isChanged = true;
+                    }
+                }
+                catch (Exception e) {
+                    logger.WriteLog($"Exception run at file {cmd.SourceFilePath}: {e.Message} {e.InnerException}", Logger.TypeLog.both);
                 }
             }
         }

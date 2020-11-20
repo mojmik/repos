@@ -39,6 +39,9 @@ namespace mCompWarden2 {
 
         static System.Threading.Mutex singleton = new Mutex(true, "mCompWarden2-"+System.Environment.UserName);
 
+        public static string GetVer() {
+            return "v2.1";
+        }
 
         static void Main(string[] args) {
             if (!singleton.WaitOne(TimeSpan.Zero, true)) {
@@ -54,7 +57,7 @@ namespace mCompWarden2 {
             System.IO.Directory.CreateDirectory(commandsLocalPath);
             System.IO.Directory.CreateDirectory(commandsArcLocalPath);
             logger.WriteLog("mcompwarden2 starting",Logger.TypeLog.both);
-            logger.WriteLog("networks: " + netTools.GetIPs("full"), Logger.TypeLog.both);
+            logger.WriteLog("networks: " + NetworkTools.GetIPs(), Logger.TypeLog.both);
             for (; ; ) {
                 Thread.Sleep(5000);
                 if (runMan.IsTime("load", 100, "s")) runMan.LoadCommands();

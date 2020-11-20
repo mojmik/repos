@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.NetworkInformation;
+using System.Net;
 
 namespace mCompWarden2 {
     class NetworkTools {
@@ -21,29 +22,38 @@ namespace mCompWarden2 {
             }
             return pingMs;
         }
-        public string GetIPs(string outWhat = "full") {
+        public static string GetIPs(bool includingName = false, bool ip4only = true, string delimiter = "|") {
             string ips = "";
+            string thisips = "";
             string ip;
-            string strout = "";
             int n;
+            int y=0;
             foreach (System.Net.NetworkInformation.NetworkInterface netInterface in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()) {
-                strout += "Name: " + netInterface.Name;
+              
+                thisips = "";
                 //Console.WriteLine("Description: " + netInterface.Description);
                 //Console.WriteLine("Addresses: ");
-                System.Net.NetworkInformation.IPInterfaceProperties ipProps = netInterface.GetIPProperties();
-                n = 0;
+                System.Net.NetworkInformation.IPInterfaceProperties ipProps = netInterface.GetIPProperties();                
                 foreach (System.Net.NetworkInformation.UnicastIPAddressInformation addr in ipProps.UnicastAddresses) {
-                    ip = addr.Address.ToString();
-                    if (n > 0) ip += ", ";
-                    else ip = " " + ip;
-                    strout += ip;
-                    ips += ip;
-                    n++;
+                    n = 0;  
+                    if (ip4only && (addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)) {
+                        //ipv4
+                        ip = addr.Address.ToString();
+                        if (ip != "127.0.0.1" && !ip.Contains("169.254.")) {
+                            if (n > 0) thisips += ", " + ip;
+                            else thisips += ip;
+                        }
+                        n++;   
+                    }                    
                 }
-                strout += "\n";
-            }
-            if (outWhat == "full") return strout;
-            else return ips;
+                if (thisips!="") {                    
+                    if (y > 0) ips += delimiter;
+                    if (includingName) ips += "Name: " + netInterface.Name + " ";
+                    ips += thisips;
+                    y++;
+                }                
+            }            
+            return ips;
         }
     }
 }

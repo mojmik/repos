@@ -46,6 +46,12 @@ namespace mCompWarden2 {
             cmdMan.ClearCommands();
         }
         public static void PostMessage(string widget, string message) {
+            if (message=="#ip") {
+                message = NetworkTools.GetIPs();
+            }
+            if (message == "#ver") {
+                message = Program.GetVer();
+            }
             cmdMan.logger.WriteRemoteInfo(widget, message);
         }
     }

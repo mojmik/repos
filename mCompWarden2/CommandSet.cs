@@ -88,6 +88,7 @@ namespace mCompWarden2 {
             return true;
         }
         public bool SpecialCommand(string command) {
+            if (command.Length < 1) return false;
             if (command.Substring(0, 1) == "&") {
                 string specialCommand = command.Substring(1);
                 string cmdParams="";
@@ -117,6 +118,12 @@ namespace mCompWarden2 {
                     if (cmdMultiParams.Length==2) MiscCommands.PostMessage(cmdMultiParams[0],cmdMultiParams[1]);
                 }
                 return true;
+            }
+            return false;
+        }
+        public bool IsRemoved(bool isOnline) {
+            if ((isOnline && NeedsNetwork) || (!NeedsNetwork)) {
+                if (!File.Exists(SourceFilePath)) return true;                
             }
             return false;
         }

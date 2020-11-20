@@ -31,7 +31,9 @@ namespace mCompWarden2 {
             }            
         }
         private string NowDt() {
-            return DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            string dt=DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            dt = dt.Replace(". ", "-");
+            return dt;
         }
         public void WriteLog(string txt, TypeLog typLogu) {
             txt = $"{NowDt()} {GetComputerName()} {GetUserName()} {txt}";
@@ -64,6 +66,7 @@ namespace mCompWarden2 {
                 data["val"] = value;
                 data["dt"] = NowDt();
                 string resp=PostLogRecord(data);
+                //WriteLog("remote info posted " + resp, TypeLog.local);
                 WriteLog("remote info posted", TypeLog.local);
             }
             else {
