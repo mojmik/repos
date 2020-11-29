@@ -2,47 +2,63 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Net.NetworkInformation;
+
 using System.Security.Cryptography;
 
 namespace mCompWarden2 {
-    class RunManager {
-        public Logger runLogger;
+    class RunManager {        
         public CommandsManager commandsManager;
-        public DateTime LastRun { get; private set; }
-        private DateTime LastCheck { get; set; }
+        public NetworkTools netTools;
+
         public long LastPing { get; private set; }
         private string ServerName { get; set; }
-        public RunManager(Logger logger,CommandsManager cmdMan,string serverName = "aadyn") {
-            ServerName = serverName;
-            runLogger = logger;
+        
+        private DateTime PingTick { get; set; }
+        private DateTime LoadTick { get; set; }
+
+        private Dictionary<string, DateTime> timer=new Dictionary<string, DateTime>();
+        public RunManager(CommandsManager cmdMan,string serverPingName,NetworkTools networkTools) {
+            ServerName = serverPingName;            
             commandsManager = cmdMan;
+            netTools = networkTools;
         }
         
-        public bool IsHostAvailable(string nameOrAddress) {
-            bool pingable = false;
-            Ping pinger = new Ping();
-            try {
-                PingReply reply = pinger.Send(nameOrAddress);
-                pingable = reply.Status == IPStatus.Success;
-                LastPing = reply.RoundtripTime;
-            }
-            catch (PingException) {
-                LastPing = -1;
-                // Discard PingExceptions and return false;
-            }
-            return pingable;
-        }
-        
-        public bool DoRun() {
-            if ((DateTime.Now - LastCheck).TotalSeconds < 10) return false;
-            commandsManager.LoadLocalCommands();
-            if (IsHostAvailable(ServerName) && LastRun < DateTime.Today) {
-                commandsManager.LoadRemoteCommands();
-                LastRun = DateTime.Now;
+    
+
+        public bool IsTime(string what,double cnt,string type) {
+            if (!timer.ContainsKey(what)) {
+                timer[what] = DateTime.Now;
                 return true;
             }
-            commandsManager.RunCommands();
+            DateTime thatTime = timer[what];
+            double ranDiff=0;
+            if (thatTime == null) {
+                
+            }
+            if (type== "s") ranDiff = (DateTime.Now - thatTime).TotalSeconds;
+            if (type== "m") ranDiff = (DateTime.Now - thatTime).TotalMinutes;
+            if (type== "h") ranDiff = (DateTime.Now - thatTime).TotalHours;
+            if (type== "d") ranDiff = (DateTime.Now - thatTime).TotalDays;
+
+            if (ranDiff < cnt) {
+                return false;                
+            }
+
+            timer[what] = DateTime.Now;
+            return true;
+        }
+
+        public void LoadCommands() {            
+            commandsManager.LoadLocalCommands();
+            LastPing = netTools.IsHostAvailable(ServerName);
+            if (LastPing > -1) {
+                commandsManager.LoadRemoteCommands();
+            }
+        }
+        public bool DoRun() {           
+            commandsManager.RunCommands((LastPing>-1) ? true : false);
+            bool doSaveXml = false;
+            if (doSaveXml) commandsManager.SaveIntoXML();
             return false;
         }
     }
