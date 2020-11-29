@@ -1,0 +1,203 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px; /* Vertically center the text there */
+}
+
+body {
+    background: url('../images/pozadi_sede.png') #1c2228;
+    margin: 73px 0px 0px 0px;
+    font: 14px Verdana;
+    min-width: 960px;
+}
+
+h2, h3, h4, h5, h6 {
+    text-align: center;
+    color: #0a294b;
+    font-family: Arial;
+    text-shadow: 3px 3px 7px #666666;
+}
+
+h2 {
+    font-size: 1.7em;
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: normal;
+    color: white;
+    text-align: center;
+    text-shadow: 2px 2px 1px #0a294b;
+}
+
+#logo {
+    background: url('../images/logo.png') no-repeat;
+    width: 250px;
+    height: 60px;
+    float: left;
+    margin: 7px 0px 0px 20px;
+}
+
+    #logo h1 {
+        margin: 14px 0px 0px 10px;
+    }
+
+nav ul {
+    margin: 0px;
+    list-style-type: none;
+}
+
+    nav ul li {
+        float: left;
+        padding: 0px 25px;
+        margin: 0 5px;
+        font-size: 17px;
+        height: 73px;
+        line-height: 4.3em;
+    }
+
+        nav ul li:hover, .aktivni {
+            background: #ffbb00;
+            box-shadow: 0px 0px 5px black;
+        }
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+.centrovany {
+    text-align: center;
+}
+
+#centrovac {
+    margin: 0px auto;
+    width: 1200px;
+}
+
+header {
+    height: 73px;
+    position: fixed;
+    top: 0px;
+    background: url('../images/pozadi_sede.png') #1c2228;
+    width: 100%;
+}
+
+article {
+    background: url('../images/pozadi.png') #009aca;
+    padding: 30px 0px;
+}
+
+    article header {
+        width: 250px;
+        float: left;
+        position: static;
+        background: none;
+    }
+
+    article section {        
+        float: left;
+        background: white;
+        border: 2px solid #006797;
+        box-shadow: 2px 2px 7px #1c2228;
+        padding: 20px;
+    }
+
+footer {
+    height: 40px;
+    color: white;
+    margin: 20px 0 0 30px;
+}
+
+    footer a {
+        color: #ffbb00;
+        text-decoration: none;
+    }
+
+.cistic {
+    clear: both;
+}
+
+.vlevo {
+    float: left;
+}
+
+#dovednosti td {
+    width: 33%;
+    padding: 10px;
+    vertical-align: top;
+    border: 1px solid gray;
+}
+
+#dovednosti {
+    border-collapse: collapse;
+}
+
+#reference img {
+    border: 1px solid gray;
+    padding: 6px;
+    box-shadow: 3px 3px 6px #999999;
+    margin-right: 6px;
+}
