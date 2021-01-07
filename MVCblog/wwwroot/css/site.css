@@ -157,12 +157,13 @@ article {
         background: none;
     }
 
-    article section {        
+    article section {
         float: left;
         background: white;
         border: 2px solid #006797;
         box-shadow: 2px 2px 7px #1c2228;
         padding: 20px;
+        width: 100%;
     }
 
 footer {

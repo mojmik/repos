@@ -19,7 +19,21 @@ namespace MVCblog.Controllers {
             return View();
         }
 
+    
+        public IActionResult Contact() {
+            return View();
+        }
+       
+
         public IActionResult Privacy() {
+            return View();
+        }
+
+        public IActionResult Skills() {
+            return View();
+        }
+
+        public IActionResult References() {
             return View();
         }
 
