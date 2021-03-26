@@ -1,0 +1,36 @@
+﻿@model IEnumerable<MVCblog.Models.Article>
+
+@{
+    ViewData["Title"] = "Seznam článků";
+
+}
+
+@if (User.IsInRole("admin")) {
+    <p>
+        <a asp-action="Create">Vytvořit nový</a>
+    </p>
+}
+else {
+    <p>
+        <a href='Account/Login/'>login</a>
+    </p>
+}
+
+<table class="table" id="clanky">
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    <h2><a asp-action="Details" asp-route-id="@item.Id">@item.Title</a></h2>
+                    <p>@item.Description</p>
+                    @if (User.IsInRole("admin")) {
+                        <p>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Editovat</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Odstranit</a>
+                        </p>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

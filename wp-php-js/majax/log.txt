@@ -1,0 +1,448 @@
+1202-01-2021 01:30:02-log mik
+02-01-2021 07:38:44-log mik
+02-01-2021 07:38:48-log mik
+02-01-2021 07:39:12-log mik
+02-01-2021 07:48:46-log mik
+02-01-2021 07:53:37-log mik
+02-01-2021 07:55:18-log mik
+02-01-2021 07:57:54-log mik
+02-01-2021 08:04:00-log mik
+02-01-2021 08:04:56-log mik
+02-01-2021 08:05:35-log mik
+02-01-2021 08:06:40-log mik
+02-01-2021 08:07:32-log mik
+02-01-2021 08:07:53-log mik
+02-01-2021 08:11:20-log mik
+02-01-2021 08:11:21-log mik
+02-01-2021 08:16:08-log mik
+02-01-2021 08:17:09-log mik
+02-01-2021 08:17:21-log mik
+02-01-2021 08:18:18-log mik
+02-01-2021 08:18:26-log mik
+02-01-2021 08:20:25-log mik
+02-01-2021 08:21:05-log mik
+02-01-2021 08:21:21-log mik
+02-01-2021 08:22:48-log mik
+02-01-2021 08:23:08-log mik
+02-01-2021 08:23:34-log mik
+02-01-2021 08:24:00-log mik
+02-01-2021 08:25:14-log mik
+02-01-2021 08:25:32-log mik
+02-01-2021 08:25:49-log mik
+02-01-2021 08:38:42-log mik
+02-01-2021 08:38:56-log mik
+02-01-2021 08:41:23-log mik
+02-01-2021 08:48:59-log mik
+02-01-2021 08:49:28-log mik
+02-01-2021 08:50:25-log mik
+02-01-2021 08:51:26-log mik
+02-01-2021 08:55:59-log mik
+02-01-2021 08:56:31-log mik
+02-01-2021 08:57:14-log mik
+02-01-2021 08:57:31-log mik
+02-01-2021 08:58:15-log mik
+02-01-2021 09:12:07-log mik
+02-01-2021 09:12:10-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:13:20-log mik
+02-01-2021 09:13:23-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:21:34-log mik
+02-01-2021 09:21:38-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:21:45-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:21:49-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:21:51-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:22:00-log mik
+02-01-2021 09:22:02-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:22:09-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:22:11-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:22:12-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:22:12-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:22:14-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:29:47-log mik
+02-01-2021 09:29:51-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:30:40-log mik
+02-01-2021 09:30:42-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:30:49-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:30:53-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:32:04-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:33:20-log mik
+02-01-2021 09:33:24-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:35:24-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:36:03-log mik
+02-01-2021 09:36:08-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:36:39-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:37:09-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:38:11-log mik
+02-01-2021 09:38:49-log mik
+02-01-2021 09:39:41-log mik
+02-01-2021 09:39:43-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:39:45-log mik
+02-01-2021 09:40:52-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:41:20-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:43:26-log mik
+02-01-2021 09:43:30-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:44:30-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:49:11-log mik
+02-01-2021 09:49:22-log mik
+02-01-2021 09:49:52-log mik
+02-01-2021 09:50:25-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:51:12-log mik
+02-01-2021 09:51:13-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:52:14-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:52:28-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:53:14-log mik
+02-01-2021 09:53:19-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 09:54:17-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:00:01-log mik
+02-01-2021 10:00:04-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:03:35-log mik
+02-01-2021 10:04:17-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:08:51-log mik
+02-01-2021 10:08:51-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:09:12-log mik
+02-01-2021 10:09:12-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:09:19-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:12:12-log mik
+02-01-2021 10:12:13-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:12:20-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:12:23-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:13:02-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+02-01-2021 10:13:17-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:33:47-log mik
+03-01-2021 01:35:05-log mik
+03-01-2021 01:35:09-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:36:18-log mik
+03-01-2021 01:36:19-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:48:45-log mik
+03-01-2021 01:48:45-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:48:48-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:04-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:09-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:15-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:18-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:24-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:27-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:33-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:38-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:44-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:49-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:53-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:49:55-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:50:01-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:50:09-log mik
+03-01-2021 01:50:12-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:51:01-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 01:55:34-log mik
+03-01-2021 01:55:44-name: hp_price filter: 
+03-01-2021 01:55:44-name: hp_vendor filter: 
+03-01-2021 01:55:44-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 02:01:29-log mik
+03-01-2021 02:01:30-name: hp_price filter:  - 
+03-01-2021 02:01:30-name: hp_vendor filter:  - 
+03-01-2021 02:01:30-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 02:02:06-name: hp_price filter:  - 
+03-01-2021 02:02:06-name: hp_vendor filter:  - 
+03-01-2021 02:02:06-query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 02:10:16 log mik
+03-01-2021 02:10:16 action: 
+03-01-2021 02:10:16 type: 
+03-01-2021 02:10:16 category: 
+03-01-2021 02:10:16 name: hp_price filter:  - 
+03-01-2021 02:10:16 name: hp_vendor filter:  - 
+03-01-2021 02:10:16 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 02:10:23 action: 
+03-01-2021 02:10:23 type: 
+03-01-2021 02:10:23 category: 
+03-01-2021 02:10:23 name: hp_price filter:  - 
+03-01-2021 02:10:23 name: hp_vendor filter:  - 
+03-01-2021 02:10:23 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 02:11:12 log mik
+03-01-2021 02:11:21 action: filter_projects
+03-01-2021 02:11:21 type: mik2
+03-01-2021 02:11:21 category: backpacksbagsaccessories
+03-01-2021 02:11:21 name: hp_price filter:  - 
+03-01-2021 02:11:21 name: hp_vendor filter:  - 
+03-01-2021 02:11:21 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 02:12:11 log mik
+03-01-2021 02:12:13 action: filter_projects
+03-01-2021 02:12:13 type: mik1
+03-01-2021 02:12:13 category: accessoriesmen
+03-01-2021 02:12:13 name: hp_price filter:  - 
+03-01-2021 02:12:13 name: hp_vendor filter:  - 
+03-01-2021 02:12:13 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 02:14:58 log mik
+03-01-2021 02:15:03 action: filter_projects
+03-01-2021 02:15:03 type: mik2
+03-01-2021 02:15:03 category: backpacksbagsaccessories
+03-01-2021 02:15:03 name: hp_price filter: Array - 
+03-01-2021 02:15:03 name: hp_vendor filter: Array - aaaab
+03-01-2021 02:15:03 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"backpacksbagsaccessories","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"","type":"NUMERIC","compare":">"},"1":{"key":"hp_vendor","value":"aaaab","type":"","compare":"="}}}
+03-01-2021 02:15:08 action: filter_projects
+03-01-2021 02:15:08 type: mik2
+03-01-2021 02:15:08 category: backpacksbagsaccessories
+03-01-2021 02:15:08 name: hp_price filter: Array - 
+03-01-2021 02:15:08 name: hp_vendor filter: Array - aaaab
+03-01-2021 02:15:08 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"backpacksbagsaccessories","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"","type":"NUMERIC","compare":">"},"1":{"key":"hp_vendor","value":"aaaab","type":"","compare":"="}}}
+03-01-2021 02:15:40 action: filter_projects
+03-01-2021 02:15:40 type: mik1
+03-01-2021 02:15:40 category: accessoriesmen
+03-01-2021 02:15:40 name: hp_price filter: Array - 10
+03-01-2021 02:15:40 name: hp_vendor filter: Array - 
+03-01-2021 02:15:40 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"10","type":"NUMERIC","compare":">"},"1":{"key":"hp_vendor","value":"","type":"","compare":"="}}}
+03-01-2021 02:15:52 action: filter_projects
+03-01-2021 02:15:52 type: mik1
+03-01-2021 02:15:52 category: accessoriesmen
+03-01-2021 02:15:52 name: hp_price filter: Array - 1
+03-01-2021 02:15:52 name: hp_vendor filter: Array - 
+03-01-2021 02:15:52 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"1","type":"NUMERIC","compare":">"},"1":{"key":"hp_vendor","value":"","type":"","compare":"="}}}
+03-01-2021 02:17:39 log mik
+03-01-2021 02:17:41 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"","type":"NUMERIC","compare":">"},"1":{"key":"hp_vendor","value":"","type":"","compare":"="}}}
+03-01-2021 02:18:09 log mik
+03-01-2021 02:18:11 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen"}
+03-01-2021 02:22:29 log mik
+03-01-2021 02:22:32 name: hp_price filter: Array - 1
+03-01-2021 02:22:32 name: hp_vendor filter:  - 
+03-01-2021 02:22:32 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"1","type":"NUMERIC","compare":">"}}}
+03-01-2021 02:22:59 name: hp_price filter: Array - 1
+03-01-2021 02:22:59 name: hp_vendor filter: Array - bbb
+03-01-2021 02:22:59 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"1","type":"NUMERIC","compare":">"},"1":{"key":"hp_vendor","value":"bbb","type":"","compare":"="}}}
+03-01-2021 02:23:39 log mik
+03-01-2021 02:23:42 name: hp_price filter:  - 
+03-01-2021 02:23:42 name: hp_vendor filter: Array - vvv
+03-01-2021 02:23:42 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"vvv","type":"","compare":"="}}}
+03-01-2021 02:24:20 log mik
+03-01-2021 02:24:22 name: hp_price filter:  - 
+03-01-2021 02:24:22 name: hp_vendor filter: Array - bbb
+03-01-2021 02:24:22 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"backpacksbagsaccessories","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"bbb","type":"","compare":"="}}}
+03-01-2021 02:24:54 log mik
+03-01-2021 02:24:56 name: hp_price filter:  - 
+03-01-2021 02:24:56 name: hp_vendor filter: Array - ccc
+03-01-2021 02:24:56 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"ccc","type":"","compare":"="}}}
+03-01-2021 02:25:23 log mik
+03-01-2021 02:25:26 name: hp_price filter:  - 
+03-01-2021 02:25:26 name: hp_vendor filter: Array - ddd
+03-01-2021 02:25:26 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"ddd","type":"","compare":"="}}}
+03-01-2021 02:25:47 log mik
+03-01-2021 02:25:49 name: hp_price filter:  - 
+03-01-2021 02:25:49 name: hp_vendor filter: Array - ddd
+03-01-2021 02:25:49 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"ddd","type":"","compare":"="}}}
+03-01-2021 02:28:08 log mik
+03-01-2021 02:28:11 name: hp_price filter:  - 
+03-01-2021 02:28:11 name: hp_vendor filter: Array - asa
+03-01-2021 02:28:11 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"asa","type":"","compare":"="}}}
+03-01-2021 02:28:52 log mik
+03-01-2021 02:28:55 name: hp_price filter:  - 
+03-01-2021 02:28:55 name: hp_vendor filter: Array - asd
+03-01-2021 02:28:55 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"asd","type":"","compare":"="}}}
+03-01-2021 02:29:51 log mik
+03-01-2021 02:29:53 name: hp_price filter:  - 
+03-01-2021 02:29:53 name: hp_vendor filter: Array - asd
+03-01-2021 02:29:53 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"asd","type":"","compare":"="}}}
+03-01-2021 02:30:03 name: hp_price filter:  - 
+03-01-2021 02:30:03 name: hp_vendor filter: Array - asd
+03-01-2021 02:30:03 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"asd","type":"","compare":"="}}}
+03-01-2021 02:30:15 name: hp_price filter:  - 
+03-01-2021 02:30:15 name: hp_vendor filter:  - 
+03-01-2021 02:30:15 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND"}}
+03-01-2021 08:57:52 log mik
+03-01-2021 09:02:37 log mik
+03-01-2021 09:06:02 log mik
+03-01-2021 09:08:02 log mik
+03-01-2021 09:08:48 log mik
+03-01-2021 09:09:25 log mik
+03-01-2021 09:10:15 name: hp_price filter:  - 
+03-01-2021 09:10:15 name: hp_vendor filter:  - 
+03-01-2021 09:10:15 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 09:13:39 name: hp_price filter:  - 
+03-01-2021 09:13:39 name: hp_vendor filter:  - 
+03-01-2021 09:13:39 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 09:24:32 log mik
+03-01-2021 09:25:10 name: hp_price filter:  - 
+03-01-2021 09:25:10 name: hp_vendor filter: Array - hp_vendor|Amiclubwear
+03-01-2021 09:25:10 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"hp_vendor|Amiclubwear","type":"","compare":"="}}}
+03-01-2021 09:25:15 name: hp_price filter:  - 
+03-01-2021 09:25:15 name: hp_vendor filter: Array - hp_vendor|Amiclubwear
+03-01-2021 09:25:15 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"beach-bottomscover-upsswimwear","meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"hp_vendor|Amiclubwear","type":"","compare":"="}}}
+03-01-2021 09:27:25 log mik
+03-01-2021 09:27:28 name: hp_price filter:  - 
+03-01-2021 09:27:28 name: hp_vendor filter: Array - Newchic
+03-01-2021 09:27:28 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Newchic","type":"","compare":"="}}}
+03-01-2021 09:27:30 name: hp_price filter:  - 
+03-01-2021 09:27:30 name: hp_vendor filter: Array - Newchic|Dresslily
+03-01-2021 09:27:30 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Newchic|Dresslily","type":"","compare":"="}}}
+03-01-2021 09:27:50 name: hp_price filter:  - 
+03-01-2021 09:27:50 name: hp_vendor filter: Array - Newchic
+03-01-2021 09:27:50 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Newchic","type":"","compare":"="}}}
+03-01-2021 09:28:01 name: hp_price filter:  - 
+03-01-2021 09:28:01 name: hp_vendor filter:  - 
+03-01-2021 09:28:01 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 09:28:06 name: hp_price filter:  - 
+03-01-2021 09:28:06 name: hp_vendor filter: Array - Dresslily
+03-01-2021 09:28:06 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Dresslily","type":"","compare":"="}}}
+03-01-2021 09:28:16 name: hp_price filter:  - 
+03-01-2021 09:28:16 name: hp_vendor filter:  - 
+03-01-2021 09:28:16 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 09:28:18 name: hp_price filter:  - 
+03-01-2021 09:28:18 name: hp_vendor filter: Array - Fairyseason
+03-01-2021 09:28:18 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Fairyseason","type":"","compare":"="}}}
+03-01-2021 09:34:02 log mik
+03-01-2021 09:34:08 name: hp_price filter:  - 
+03-01-2021 09:34:08 name: hp_vendor filter: Array - Dresslily
+03-01-2021 09:34:08 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Dresslily","type":"","compare":"="}}}
+03-01-2021 09:34:28 log mik
+03-01-2021 09:34:32 name: hp_price filter:  - 
+03-01-2021 09:34:32 name: hp_vendor filter: Array - Dresslily
+03-01-2021 09:34:32 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Dresslily","type":"","compare":"="}}}
+03-01-2021 09:34:53 log mik
+03-01-2021 09:34:56 name: hp_price filter:  - 
+03-01-2021 09:34:56 name: hp_vendor filter: Array - Newchic
+03-01-2021 09:34:56 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Newchic","type":"","compare":"="}}}
+03-01-2021 09:35:15 name: hp_price filter:  - 
+03-01-2021 09:35:15 name: hp_vendor filter:  - 
+03-01-2021 09:35:15 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 09:35:16 name: hp_price filter:  - 
+03-01-2021 09:35:16 name: hp_vendor filter: Array - Amiclubwear
+03-01-2021 09:35:16 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Amiclubwear","type":"","compare":"="}}}
+03-01-2021 09:35:22 name: hp_price filter:  - 
+03-01-2021 09:35:22 name: hp_vendor filter:  - 
+03-01-2021 09:35:22 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 09:35:23 name: hp_price filter:  - 
+03-01-2021 09:35:23 name: hp_vendor filter: Array - RoseGal
+03-01-2021 09:35:23 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"RoseGal","type":"","compare":"="}}}
+03-01-2021 09:35:30 name: hp_price filter:  - 
+03-01-2021 09:35:30 name: hp_vendor filter:  - 
+03-01-2021 09:35:30 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 09:35:39 name: hp_price filter:  - 
+03-01-2021 09:35:39 name: hp_vendor filter: Array - EricDress.com
+03-01-2021 09:35:39 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"EricDress.com","type":"","compare":"="}}}
+03-01-2021 09:36:06 log mik
+03-01-2021 09:36:11 name: hp_price filter:  - 
+03-01-2021 09:36:11 name: hp_vendor filter: Array - Fairyseason
+03-01-2021 09:36:11 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Fairyseason","type":"","compare":"="}}}
+03-01-2021 09:36:22 name: hp_price filter:  - 
+03-01-2021 09:36:22 name: hp_vendor filter: Array - EricDress.com|Fairyseason
+03-01-2021 09:36:22 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"EricDress.com|Fairyseason","type":"","compare":"="}}}
+03-01-2021 09:36:32 name: hp_price filter:  - 
+03-01-2021 09:36:32 name: hp_vendor filter: Array - Milanoo|EricDress.com|Fairyseason
+03-01-2021 09:36:32 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Milanoo|EricDress.com|Fairyseason","type":"","compare":"="}}}
+03-01-2021 09:36:55 name: hp_price filter:  - 
+03-01-2021 09:36:55 name: hp_vendor filter: Array - EricDress.com|Fairyseason
+03-01-2021 09:36:55 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"EricDress.com|Fairyseason","type":"","compare":"="}}}
+03-01-2021 09:36:57 name: hp_price filter:  - 
+03-01-2021 09:36:57 name: hp_vendor filter: Array - EricDress.com
+03-01-2021 09:36:57 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"EricDress.com","type":"","compare":"="}}}
+03-01-2021 09:36:59 name: hp_price filter:  - 
+03-01-2021 09:36:59 name: hp_vendor filter:  - 
+03-01-2021 09:36:59 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+03-01-2021 09:37:04 name: hp_price filter:  - 
+03-01-2021 09:37:04 name: hp_vendor filter: Array - Zaful
+03-01-2021 09:37:04 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Zaful","type":"","compare":"="}}}
+03-01-2021 09:37:19 name: hp_price filter:  - 
+03-01-2021 09:37:19 name: hp_vendor filter: Array - Zaful|Milanoo
+03-01-2021 09:37:19 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Zaful|Milanoo","type":"","compare":"="}}}
+03-01-2021 09:49:17 log mik
+03-01-2021 09:49:23 name: hp_vendor filter: Array - Cashmere Boutique
+03-01-2021 09:49:23 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":"Cashmere Boutique","type":"","compare":"="}}}
+03-01-2021 09:49:28 name: hp_vendor filter: Array - Cashmere Boutique|EricDress.com
+03-01-2021 09:49:28 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":["Cashmere Boutique","EricDress.com"],"type":"","compare":"IN"}}}
+03-01-2021 09:49:47 name: hp_vendor filter: Array - Milanoo|Cashmere Boutique|EricDress.com
+03-01-2021 09:49:47 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":["Milanoo","Cashmere Boutique","EricDress.com"],"type":"","compare":"IN"}}}
+03-01-2021 09:49:57 name: hp_vendor filter: Array - Milanoo|Cashmere Boutique
+03-01-2021 09:49:57 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":["Milanoo","Cashmere Boutique"],"type":"","compare":"IN"}}}
+03-01-2021 09:50:08 name: hp_vendor filter: Array - Milanoo|Cashmere Boutique|EricDress.com
+03-01-2021 09:50:08 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_vendor","value":["Milanoo","Cashmere Boutique","EricDress.com"],"type":"","compare":"IN"}}}
+04-01-2021 07:09:50 log mik
+04-01-2021 07:49:15 log mik
+04-01-2021 08:03:39 log mik
+04-01-2021 08:04:27 log mik
+04-01-2021 08:26:31 log mik
+04-01-2021 08:27:33 log mik
+04-01-2021 09:07:30 log mik
+04-01-2021 09:08:41 log mik
+04-01-2021 09:17:38 log mik
+04-01-2021 09:18:22 log mik
+04-01-2021 09:18:38 log mik
+04-01-2021 09:21:21 log mik
+04-01-2021 09:21:33 log mik
+04-01-2021 09:21:38 log mik
+04-01-2021 09:24:48 log mik
+04-01-2021 09:39:27 log mik
+04-01-2021 09:39:30 name: hp_price filter: Array - $75 - $300
+04-01-2021 09:39:30 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$75 - $300","type":"NUMERIC","compare":">"}}}
+04-01-2021 09:40:01 log mik
+04-01-2021 09:40:05 name: hp_price filter: Array - $75 - $300
+04-01-2021 09:40:05 name: hp_vendor filter: Array - Newchic
+04-01-2021 09:40:05 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$75 - $300","type":"NUMERIC","compare":">"},"1":{"key":"hp_vendor","value":"Newchic","type":"","compare":"="}}}
+04-01-2021 09:42:28 log mik
+04-01-2021 09:42:31 name: hp_price filter: Array - $75 - $300
+04-01-2021 09:42:31 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$75 - $300","type":"NUMERIC","compare":">"}}}
+04-01-2021 09:43:51 log mik
+04-01-2021 09:44:18 log mik
+04-01-2021 09:44:24 name: hp_price filter: Array - $75 - $300
+04-01-2021 09:44:24 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"accessoriesmen","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$75 - $300","type":"NUMERIC","compare":">"}}}
+04-01-2021 09:44:27 name: hp_price filter: Array - $75 - $300
+04-01-2021 09:44:27 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":"bagsaccessories","meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$75 - $300","type":"NUMERIC","compare":">"}}}
+04-01-2021 09:47:02 log mik
+04-01-2021 09:48:06 log mik
+04-01-2021 09:54:34 log mik
+04-01-2021 09:57:15 log mik
+04-01-2021 09:57:32 log mik
+04-01-2021 09:58:05 log mik
+04-01-2021 09:58:29 log mik
+04-01-2021 09:58:41 log mik
+04-01-2021 09:59:08 log mik
+04-01-2021 09:59:59 log mik
+04-01-2021 10:00:02 name: hp_price filter: Array - $23 - $300
+04-01-2021 10:00:02 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$23 - $300","type":"NUMERIC","compare":">"}}}
+04-01-2021 10:00:13 name: hp_price filter: Array - $235 - $300
+04-01-2021 10:00:13 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$235 - $300","type":"NUMERIC","compare":">"}}}
+04-01-2021 10:00:24 name: hp_price filter: Array - $235 - $500
+04-01-2021 10:00:24 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$235 - $500","type":"NUMERIC","compare":">"}}}
+04-01-2021 10:00:26 name: hp_price filter: Array - $447 - $500
+04-01-2021 10:00:26 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$447 - $500","type":"NUMERIC","compare":">"}}}
+04-01-2021 10:00:36 name: hp_price filter: Array - $485 - $500
+04-01-2021 10:00:36 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$485 - $500","type":"NUMERIC","compare":">"}}}
+04-01-2021 10:01:51 name: hp_price filter: Array - $375 - $500
+04-01-2021 10:01:51 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$375 - $500","type":"NUMERIC","compare":">"}}}
+05-01-2021 09:49:14 log mik
+05-01-2021 09:49:14 name: hp_price filter: Array - $332 - $500
+05-01-2021 09:49:14 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":"$332 - $500","type":"NUMERIC","compare":">"}}}
+05-01-2021 09:49:34 log mik
+05-01-2021 09:49:55 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+05-01-2021 10:10:01 log mik
+05-01-2021 10:11:46 log mik
+05-01-2021 10:12:13 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+05-01-2021 10:13:32 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+05-01-2021 10:16:10 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+05-01-2021 10:17:52 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+05-01-2021 10:18:23 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+05-01-2021 10:18:51 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND"}}
+05-01-2021 10:19:42 log mik
+05-01-2021 10:20:01 name: hp_price filter: Array - 75|280
+05-01-2021 10:20:01 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["75","280"],"type":"NUMERIC","compare":"IN"}}}
+05-01-2021 10:23:34 log mik
+05-01-2021 10:23:38 name: hp_price filter: Array - 75|255
+05-01-2021 10:23:38 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["75","255"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:23:52 name: hp_price filter: Array - 236|255
+05-01-2021 10:23:52 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["236","255"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:24:04 name: hp_price filter: Array - 236|500
+05-01-2021 10:24:04 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["236","500"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:24:07 name: hp_price filter: Array - 484|500
+05-01-2021 10:24:07 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["484","500"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:24:34 name: hp_price filter: Array - 500|500
+05-01-2021 10:24:34 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["500","500"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:24:39 name: hp_price filter: Array - 498|500
+05-01-2021 10:24:39 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["498","500"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:24:49 name: hp_price filter: Array - 0|500
+05-01-2021 10:24:49 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["0","500"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:24:54 name: hp_price filter: Array - 0|1
+05-01-2021 10:24:54 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["0","1"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:25:08 name: hp_price filter: Array - 0|6
+05-01-2021 10:25:08 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["0","6"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:25:11 name: hp_price filter: Array - 0|0
+05-01-2021 10:25:11 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["0","0"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:25:16 name: hp_price filter: Array - 0|23
+05-01-2021 10:25:16 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["0","23"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:25:17 name: hp_price filter: Array - 10|23
+05-01-2021 10:25:17 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["10","23"],"type":"NUMERIC","compare":"BETWEEN"}}}
+05-01-2021 10:25:19 name: hp_price filter: Array - 10|10
+05-01-2021 10:25:19 query: {"post_type":"hp_listing","posts_per_page":8,"orderby":"menu_order","order":"desc","taxonomy":"hp_listing_category","taxonomy_terms":null,"meta_query":{"relation":"AND","0":{"key":"hp_price","value":["10","10"],"type":"NUMERIC","compare":"BETWEEN"}}}

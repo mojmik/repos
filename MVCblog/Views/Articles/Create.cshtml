@@ -1,0 +1,44 @@
+﻿@model MVCblog.Models.Article
+
+@{
+    ViewData["Title"] = "Nový článek";
+}
+
+@section Scripts
+{
+    <script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script>
+    <script src="@Url.Content("~/js/initTinyMCE.js")"></script>
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label">Titulek</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Popisek</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <textarea asp-for="Content" class="form-control"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="centrovany">
+                    <input type="submit" value="Vytvořit" class="btn btn-default" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div>
+    <a asp-action="Index">Zpět na seznam</a>
+</div>

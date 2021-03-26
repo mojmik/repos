@@ -1,0 +1,13 @@
+﻿@model MVCblog.Models.Article
+
+@{
+    ViewBag.Title = "Odstranění";
+}
+
+<h3>Opravdu chcete vymazat článek @Model.Title?</h3>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <input type="submit" value="Odstranit" class="btn btn-default" /> |
+    <a asp-action="Index">Zpět na seznam článků</a>
+</form>

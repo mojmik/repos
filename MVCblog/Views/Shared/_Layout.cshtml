@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MVCblog</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    
+    <header>
+        <div id="logo"><h1>HoBi</h1></div>
+        <nav>
+            <ul>
+                <li><a asp-controller="Home" asp-action="Index">Domů</a></li>
+                <li><a asp-controller="Articles" asp-action="Index">Články</a></li>
+                <li><a asp-controller="Home" asp-action="Skills">Dovednosti</a></li>
+                <li><a asp-controller="Home" asp-action="References">Reference</a></li>
+                <li><a asp-controller="Home" asp-action="Contact">Kontakt</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <article>
+        <div id="centrovac">
+            <header>
+                <h1>@ViewData["Title"]</h1> mikmainlayout
+            </header>
+
+            <section>
+                <div class="container body-content">
+                    @RenderBody()
+                </div>
+            </section>
+            <div class="cistic"></div>
+        </div>
+    </article>
+
+    <footer>
+        Vytvořil &copy;HoBi pro <a href="https://www.itnetwork.cz">ITnetwork.cz</a>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
