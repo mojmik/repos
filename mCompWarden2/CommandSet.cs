@@ -59,10 +59,22 @@ namespace mCompWarden2 {
                 if (settings != "") {
                     try {
                         string[] settingStr = settings.Split(';');
+                        IsRepeating = false;
+                        IsRemote = false;
+                        NeedsNetwork = false;
+                        NeedsSystem = false;
+                        if (ExcludedComputers != null) Array.Clear(ExcludedComputers,0,ExcludedComputers.Length);
+                        ExcludedComputersRegex = "";
+
                         if (settingStr[0] != "") {
-                            IsRepeating = true;
-                            RepeatingType = settingStr[0].Substring(0, 1);                            
-                            RepeatingInterval = (settingStr[0].Substring(1) == "") ? 0 : double.Parse(settingStr[0].Substring(1));
+                            if (settingStr[0]=="0") {
+                                IsRepeating = false;
+                            }
+                            else {
+                                IsRepeating = true;
+                                RepeatingType = settingStr[0].Substring(0, 1);
+                                RepeatingInterval = (settingStr[0].Substring(1) == "") ? 0 : double.Parse(settingStr[0].Substring(1));
+                            }                            
                         }
                         if (settingStr[1] == "1") IsRemote = true;  //not used
                         if (settingStr[2] == "1") NeedsNetwork = true;

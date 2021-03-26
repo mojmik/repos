@@ -40,7 +40,7 @@ namespace mCompWarden2 {
         static System.Threading.Mutex singleton = new Mutex(true, "mCompWarden2-"+System.Environment.UserName);
 
         public static string GetVer() {
-            return "v2.1";
+            return "v2.4";
         }
 
         static void Main(string[] args) {
@@ -56,7 +56,7 @@ namespace mCompWarden2 {
             System.IO.Directory.CreateDirectory(localPath);
             System.IO.Directory.CreateDirectory(commandsLocalPath);
             System.IO.Directory.CreateDirectory(commandsArcLocalPath);
-            logger.WriteLog("mcompwarden2 starting",Logger.TypeLog.both);
+            logger.WriteLog($"mcompwarden2 {GetVer()} starting",Logger.TypeLog.both);
             logger.WriteLog("networks: " + NetworkTools.GetIPs(), Logger.TypeLog.both);
             for (; ; ) {
                 Thread.Sleep(5000);

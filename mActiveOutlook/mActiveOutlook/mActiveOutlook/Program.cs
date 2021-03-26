@@ -39,7 +39,7 @@ namespace mActiveOutlook {
                 "-" + System.Environment.MachineName.ToLower() + "-log.txt";
             string makraOk = @"\\rentex.intra\company\hertz_czsk\Company CZ & SK\msignatures\makra\logs\makraok-" + System.Environment.UserName.ToLower() +
                 "-" + System.Environment.MachineName.ToLower() + "";
-            if (File.Exists(installFile)) return;
+            //if (File.Exists(installFile)) return; //tohle neni uplne spolehlivy
 
             if (File.Exists(makraOk)) {
                 DateTime lastModified = System.IO.File.GetLastWriteTime(makraOk);
