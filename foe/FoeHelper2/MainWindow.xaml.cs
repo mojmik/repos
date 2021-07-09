@@ -51,15 +51,15 @@ namespace FoeHelper2
 
         private void GoPixel(object sender, RoutedEventArgs e)
         {
+            
             ts = new CancellationTokenSource();
             ct = ts.Token;
             if (mainState > 0)
             {
                 ts.Cancel();
-                mainStatusTextBlock.Text = "Cancelled";
+                Mout = "Cancelled";
                 return;
-            }
-            mainStatusTextBlock.Text = "Running";
+            }            
             workerTask=Task.Factory.StartNew(() =>
             {
                 mainState = 1;
@@ -71,9 +71,8 @@ namespace FoeHelper2
                     Mout = px.GetColorAt(100 + x, 100);
                     //MouseTools.MoveMouse(1636 + x, 627,0,0);
                     //MouseTools.DoMouseClick();
-                }                
-                Mout = Mout + " and done";
-                */
+                }                                
+                */                
                 mainState = 0;
             },ct);
             

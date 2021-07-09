@@ -50,7 +50,14 @@ namespace FoeHelper2
 
         static Random random = new Random();
         static int mouseSpeed = 15;
-
+        public static void ClickMouse(int x,int y) {
+            MoveMouse(x, y, 0, 0);
+            DoMouseClick();
+        }
+        public static void ClickMouse(int[] coords) {
+            MoveMouse(coords[0], coords[1], 0, 0);
+            DoMouseClick();
+        }
         public static void MoveMouse(int x, int y, int rx, int ry)
         {
             MousePoint c = new MousePoint();

@@ -17,9 +17,9 @@
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="Ready" Name="mainStatusTextBlock" />
-        <TextBlock Grid.Row="0" Grid.Column="2" Text="Ready" Name="outExt" />
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Mout}" />
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Ready" Name="mainStatusTextBlock" />
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Mout}" />
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=MoutExt}" />
         <Button Grid.Column="1" Grid.Row="1" Click="GoKnajpa">Button Knajpa</Button>
         <Button Grid.Column="1" Grid.Row="2" Click="GoPixel">Button 2</Button>
 
