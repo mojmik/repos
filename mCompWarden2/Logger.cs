@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Management;
 using System.Text;
 
 namespace mCompWarden2 {
@@ -53,6 +55,21 @@ namespace mCompWarden2 {
         public string GetComputerName() {
             return System.Environment.MachineName;
         }
+        private static string GetUserNames() {
+            List<string> userList = new List<string>();
+            //SelectQuery query = new SelectQuery(@"Select * from Win32_Process");
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("root\\CIMV2", "Select * from Win32_Process")) {
+                foreach (System.Management.ManagementObject Process in searcher.Get()) {
+                    if (Process["ExecutablePath"] != null &&
+                        string.Equals(Path.GetFileName(Process["ExecutablePath"].ToString()), "explorer.exe", StringComparison.OrdinalIgnoreCase)) {
+                        string[] OwnerInfo = new string[2];
+                        Process.InvokeMethod("GetOwner", (object[])OwnerInfo);
+                        userList.Add(OwnerInfo[0]);
+                    }
+                }
+            }
+            return String.Join("-", userList.ToArray());
+        }
         public string GetUserName() {
             return System.Environment.UserName;
         }
@@ -61,7 +78,7 @@ namespace mCompWarden2 {
             if (postLog) {
                 var data = new System.Collections.Specialized.NameValueCollection();
                 data["comp"] = GetComputerName();
-                data["user"] = GetUserName();
+                data["user"] = GetUserNames();
                 data["opt"] = widget;
                 data["val"] = value;
                 data["dt"] = NowDt();

@@ -49,10 +49,15 @@ namespace mCompWarden2 {
         public void MultipleCommandSetsFromFile(string path, string fileMask) {
 
             DirectoryInfo d = new DirectoryInfo(path);
-            FileInfo[] Files = d.GetFiles(fileMask);
-            foreach (FileInfo file in Files) {
-                SingleCommandSetFromFile(file.FullName);
+            try {
+                FileInfo[] Files = d.GetFiles(fileMask);
+                foreach (FileInfo file in Files) {
+                    SingleCommandSetFromFile(file.FullName);
+                }
+            } catch (Exception e) {
+                logger.WriteLog($"Fileserver problably not reachable, exception: {e.Message} {e.InnerException}", Logger.TypeLog.both);
             }
+            
         }
         
         public void LoadRemoteCommands() {
