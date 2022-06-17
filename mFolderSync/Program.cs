@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+//syncs one folder to another and then keep this the first one synced
 namespace mFolderSync {
     class Program {
         public static string ProgramPath;
