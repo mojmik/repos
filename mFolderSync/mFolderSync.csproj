@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{78C43527-647B-4972-81D8-CFAC59DADE74}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>mFileWaiter</RootNamespace>
-    <AssemblyName>mFileWaiter</AssemblyName>
+    <ProjectGuid>{48AE4B07-70FB-4ABC-9B2E-C32BAD302852}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>mFolderSync</RootNamespace>
+    <AssemblyName>mFolderSync</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -31,9 +31,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

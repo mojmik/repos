@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace mFileWaiter {
+namespace mFolderSync {
     class Program {
         public static string ProgramPath;
-        static System.Threading.Mutex singleton = new Mutex(true, "FileWaiterApp");
+        static System.Threading.Mutex singleton = new Mutex(true, "mFolderSyncApp");
         static void Main(string[] args) {
             //var directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             //ProgramPath = new Uri(directory).LocalPath + "\\"; 
@@ -18,21 +18,22 @@ namespace mFileWaiter {
                 //there is already another instance running!
                 return;
             }
-            FolderWatcher folderWatcherKSC= new FolderWatcher();
-            FolderWatcher folderWatcherBTS = new FolderWatcher();
+            FolderWatcher folderWatcher = new FolderWatcher();
+            string sharedPath = @"c:\it\locationshared2\";
+            string localPath = @"c:\it\locationshared\";
+            folderWatcher.initialFullSync(sharedPath, localPath);
+            
             //aby nam to nezabijel GC
             List<FileSystemWatcher> watchers = new List<FileSystemWatcher>();
-            watchers.Add(folderWatcherKSC.watcher);
-            watchers.Add(folderWatcherBTS.watcher);
-            folderWatcherKSC.watchForFiles(@"\\rentex.intra\company\data\erp\KSC\in\mtemp\","KSC");
-            folderWatcherBTS.watchForFiles(@"\\rentex.intra\company\data\erp\BTS\in\mtemp\","BTS");
-            
+            watchers.Add(folderWatcher.watcher);
+            folderWatcher.syncFiles(localPath, sharedPath);
+
             //folderWatcher.ReplaceFile(@"G:\erp\KSC\in\mtemp\blocek.txt");
             for (; ; ) {
                 Thread.Sleep(100);
-                GC.KeepAlive(folderWatcherKSC.watcher);
-                GC.KeepAlive(folderWatcherBTS.watcher);
+                GC.KeepAlive(folderWatcher.watcher);
             }
         }
+
     }
 }

@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{78C43527-647B-4972-81D8-CFAC59DADE74}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>mFileWaiter</RootNamespace>
-    <AssemblyName>mFileWaiter</AssemblyName>
+    <ProjectGuid>{DA6E148C-7C04-4F68-B8AE-B40BC5ED8777}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>mGrabFromFiles</RootNamespace>
+    <AssemblyName>mGrabFromFiles</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,9 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FolderWatcher.cs" />
+    <Compile Include="FileWalker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

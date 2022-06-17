@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Threading;
 
 namespace mOnScreenKeyboard {
 
@@ -23,9 +24,33 @@ namespace mOnScreenKeyboard {
 		/// </summary>
 		#region ShowOSK
 		public static void ShowOnScreenKeyboard() {
-			string progFiles = @"C:\Program Files\Common Files\Microsoft Shared\ink";
-			string onScreenKeyboardPath = System.IO.Path.Combine(progFiles, "TabTip.exe");
-			Process.Start(onScreenKeyboardPath);
+			//test jestli tabtip bezi
+			bool tabTipRuns = false;
+			/*
+			Process[] oskProcessArray = Process.GetProcessesByName("TabTip");
+			foreach (Process onscreenProcess in oskProcessArray) {
+				tabTipRuns = true;
+			}
+			*/
+			if (!tabTipRuns) {
+				Console.WriteLine("about to run tabtip");
+				string progFiles = @"C:\Program Files\Common Files\Microsoft Shared\ink";
+				string onScreenKeyboardPath = System.IO.Path.Combine(progFiles, "TabTip.exe");
+				Process.Start(onScreenKeyboardPath);
+				Thread.Sleep(1000);
+			}
+
+			OnScreenKeyboard.Show();
+			Thread.Sleep(5000);
+
+			/*
+			Process[] oskProcessArray = Process.GetProcessesByName("TabTip");
+			foreach (Process onscreenProcess in oskProcessArray) {
+				onscreenProcess.Kill();
+				onscreenProcess.Dispose();
+			}
+			*/
+			
 		}
 		#endregion ShowOSK
 
@@ -34,7 +59,8 @@ namespace mOnScreenKeyboard {
 		/// </summary>
 		#region HideOSK
 		public static void HideOnScreenKeyboard() {
-
+			OnScreenKeyboard.Close();
+			/*
 			Process[] oskProcessArray = Process.GetProcessesByName("TabTip");
 			foreach (Process onscreenProcess in oskProcessArray) {
 				onscreenProcess.Kill();
@@ -46,6 +72,7 @@ namespace mOnScreenKeyboard {
 			IntPtr y = new IntPtr(0);
 			IntPtr KeyboardWnd = FindWindow("IPTip_Main_Window", null);
 			PostMessage(KeyboardWnd, WM_SYSCOMMAND, SC_CLOSE, y);
+			*/
 		}
 		#endregion HideOSK
 		static void Main(string[] args) {

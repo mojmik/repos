@@ -52,6 +52,7 @@ namespace mActiveOutlook {
             for (; ; ) {
                 windowTitle = GetActiveWindowTitle();                
                 if (windowTitle != null && windowTitle.Contains("- Outlook") && windowTitle.Contains("hertz")) {
+                    Thread.Sleep(5000);
                     SendKeys.SendWait("%{F11}");
                     SendKeys.SendWait("%{F4}");
                     WriteFile(installFile,"c# install end"+today.ToString());
