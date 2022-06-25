@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 //syncs one folder to another and then keep this the first one synced
-namespace mFolderSync {
+namespace mFolderSyncAsync {
     class Program {
         public static bool AppErr = false;
         public static string ProgramPath;
@@ -22,7 +22,8 @@ namespace mFolderSync {
         private static List<string> excludedComps = new List<string>();
         private static string localPathBase = @"c:\it\folderwatcher\";
         private static string localPathBaseFolder = @"\sharedfolder\";
-
+        public static SyncManager syncMan = new SyncManager();
+        private static Task syncProcessing;
         public static void WriteLogFile(string txt, string filePath = "folderwatcherlog.txt", bool includeDt = true) {
             using (System.IO.StreamWriter file =
                 new System.IO.StreamWriter(localPathBase + filePath, true)) {
@@ -168,12 +169,18 @@ namespace mFolderSync {
 
 
             //folderWatcher.ReplaceFile(@"G:\erp\KSC\in\mtemp\blocek.txt");
+            CancellationTokenSource wtoken = new CancellationTokenSource();
+            //syncProcessing = Task.Factory.StartNew(() => syncMan.keepProcessing(), TaskCreationOptions.AttachedToParent);
+            syncProcessing = Task.Factory.StartNew(() => syncMan.keepProcessing(), TaskCreationOptions.LongRunning);
+
             for (; ; ) {
                 Thread.Sleep(350);
                 foreach (FolderWatcher fw in watchers) {
                     GC.KeepAlive(fw.watcher);
                 }
-                
+                if (syncProcessing.IsCompleted || syncProcessing.Status.ToString() != "Running") {
+                    WriteLogFile("err: worker task completed");
+                }
             }
         }
 

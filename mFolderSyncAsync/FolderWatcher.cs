@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace mFolderSync {
+namespace mFolderSyncAsync {
 
 
     class FolderWatcher {
@@ -184,10 +184,13 @@ namespace mFolderSync {
                 }
             }
         }
+        private void syncFileTask(string src,string folderSrc, string folderDst) {
+            Program.syncMan.addOp(src, folderSrc, folderDst);
+        }
         public void CopyFile(string fullPathSrc, string debugInfo = "") {
             string log = "";
             WriteLog($"file event {debugInfo} src: {fullPathSrc}");            
-            syncFile(fullPathSrc, folderSrc,folderDst);
+            syncFileTask(fullPathSrc, folderSrc,folderDst);
         }
         public void DeleteFile(string fullPathSrc, string debugInfo = "") {
             string log = "";
