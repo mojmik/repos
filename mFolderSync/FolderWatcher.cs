@@ -12,7 +12,8 @@ namespace mFolderSync {
     class FolderWatcher {
         DateTime lastRead = DateTime.MinValue;
 
-        public FileSystemWatcher watcher = new FileSystemWatcher();
+        public FileSystemWatcher watcherSrc = new FileSystemWatcher();
+        public FileSystemWatcher watcherDst = new FileSystemWatcher();
         private string folderSrc, folderDst;
         public bool filesEqual(string f1, string f2) {
             bool f1Ex = File.Exists(f1);
@@ -102,7 +103,14 @@ namespace mFolderSync {
                                  | NotifyFilters.Security
                                  | NotifyFilters.Size; 
             */
-            watcher.NotifyFilter =
+            watcherSrc.NotifyFilter =
+                                NotifyFilters.CreationTime
+                               | NotifyFilters.DirectoryName
+                               | NotifyFilters.FileName
+                               | NotifyFilters.LastWrite
+                               ;
+
+            watcherDst.NotifyFilter =
                                 NotifyFilters.CreationTime
                                | NotifyFilters.DirectoryName
                                | NotifyFilters.FileName
@@ -111,14 +119,24 @@ namespace mFolderSync {
 
             if (!File.Exists(src)) Directory.CreateDirectory(src);
             if (!File.Exists(dst)) Directory.CreateDirectory(dst);
-            watcher.IncludeSubdirectories = true;
-            watcher.Path = src;
-            watcher.Filter = "*.*";
-            watcher.Changed += OnChanged;
-            watcher.Renamed += OnRenamed;
-            watcher.Created += OnCreated;
-            watcher.Deleted += OnDeleted;
-            watcher.EnableRaisingEvents = true;
+            watcherSrc.IncludeSubdirectories = true;
+            watcherSrc.Path = src;
+            watcherSrc.Filter = "*.*";
+            watcherSrc.Changed += OnChanged;
+            watcherSrc.Renamed += OnRenamed;
+            watcherSrc.Created += OnCreated;
+            watcherSrc.Deleted += OnDeleted;
+            watcherSrc.EnableRaisingEvents = true;
+
+            watcherDst.IncludeSubdirectories = true;
+            watcherDst.Path = dst;
+            watcherDst.Filter = "*.*";
+            watcherDst.Changed += OnChanged;
+            watcherDst.Renamed += OnRenamed;
+            watcherDst.Created += OnCreated;
+            watcherDst.Deleted += OnDeleted;
+            watcherDst.EnableRaisingEvents = true;
+
             WriteLog($"sync job started " + DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss"));
         }
         private void WriteLog(string log) {
@@ -130,7 +148,7 @@ namespace mFolderSync {
             }
             
         }
-        private void OnChanged(object source, FileSystemEventArgs e) {
+        private void OnChanged(object source, FileSystemEventArgs e) {            
             DateTime lastWriteTime = File.GetLastWriteTime(e.FullPath);
             if (lastWriteTime != lastRead) {
                 //Copies file to another directory.            
@@ -139,13 +157,27 @@ namespace mFolderSync {
             }
 
         }
+        private void OnRenamed(object source, RenamedEventArgs e) {
+            RenameFile(e.OldFullPath, e.FullPath, "renamed");
+        }
+        private void OnCreated(object source, FileSystemEventArgs e) {
+            string relPath = e.FullPath.Substring(folderSrc.Length + 1);
+            if (Directory.Exists(e.FullPath)) { //jestli to je folder
+                createPath(relPath + "\\", folderDst);
+            }
+            else {
+                //vytvoreni prazdneho souboru
+                CopyFile(e.FullPath, "changed");
+            }
+
+        }
         private void OnDeleted(object source, FileSystemEventArgs e) {
             //Copies file to another directory.
             DeleteFile(e.FullPath, "deleted");
         }
-        public void createPath(string relPath, string folderDst) {
+        public void createPath(string relPath, string dstPath) {
             string[] relFolders = relPath.Split('\\');
-            string relFolderPath = folderDst;
+            string relFolderPath = dstPath;
             for (int n = 0; n < relFolders.Length - 1; n++) {
                 relFolderPath = relFolderPath + "\\" + relFolders[n];
                 if (!Directory.Exists(relFolderPath)) Directory.CreateDirectory(relFolderPath);
@@ -186,14 +218,22 @@ namespace mFolderSync {
         }
         public void CopyFile(string fullPathSrc, string debugInfo = "") {
             string log = "";
-            WriteLog($"file event {debugInfo} src: {fullPathSrc}");            
-            syncFile(fullPathSrc, folderSrc,folderDst);
+            WriteLog($"file event {debugInfo} src: {fullPathSrc}");
+            if (fullPathSrc.StartsWith(folderSrc)) syncFile(fullPathSrc, folderSrc, folderDst);
+            else syncFile(fullPathSrc, folderDst, folderSrc);
         }
         public void DeleteFile(string fullPathSrc, string debugInfo = "") {
-            string log = "";
+            string log = "",relPath,fullPathDst;
             WriteLog($"file event {debugInfo} src: {fullPathSrc}");
-            string relPath = fullPathSrc.Substring(folderSrc.Length + 1);
-            string fullPathDst = folderDst + "\\" + relPath;
+            if (fullPathSrc.StartsWith(folderSrc)) {
+                relPath = fullPathSrc.Substring(folderSrc.Length + 1);
+                fullPathDst = folderDst + "\\" + relPath;
+            } else {
+                relPath = fullPathSrc.Substring(folderDst.Length + 1);
+                fullPathDst = folderSrc + "\\" + relPath;
+            }
+            
+
             if (File.Exists(fullPathDst)) {
                 //is file
                 try {
@@ -214,16 +254,25 @@ namespace mFolderSync {
             }
         }
         public void RenameFile(string oldFullPathSrc, string fullPathSrc, string debugInfo = "") {
+            string srcPath,dstPath;
+            if (oldFullPathSrc.StartsWith(folderSrc)) {
+                dstPath = folderDst;
+                srcPath = folderSrc;
+            }
+            else {
+                dstPath = folderSrc;
+                srcPath = folderDst;
+            }
 
-            string relPath = fullPathSrc.Substring(folderSrc.Length + 1);
-            string fullPathDst = folderDst + "\\" + relPath;
+            string relPath = fullPathSrc.Substring(srcPath.Length + 1);
+            string fullPathDst = dstPath+ "\\" + relPath;
 
-            string relPathOld = oldFullPathSrc.Substring(folderSrc.Length + 1);
-            string fullPathDstOld = folderDst + "\\" + relPathOld;
+            string relPathOld = oldFullPathSrc.Substring(srcPath.Length + 1);
+            string fullPathDstOld = dstPath + "\\" + relPathOld;
 
             WriteLog($"file event {debugInfo} src: {fullPathSrc}");
 
-            createPath(relPath, folderDst);
+            createPath(relPath, dstPath);
 
             if (File.Exists(fullPathDstOld)) {
                 try {
@@ -244,27 +293,21 @@ namespace mFolderSync {
             }
 
         }
-        private void OnRenamed(object source, RenamedEventArgs e) {
-            RenameFile(e.OldFullPath, e.FullPath, "renamed");
-        }
-        private void OnCreated(object source, FileSystemEventArgs e) {
-            string relPath = e.FullPath.Substring(folderSrc.Length + 1);
-            if (Directory.Exists(e.FullPath)) { //jestli to je folder
-                createPath(relPath + "\\", folderDst);
-            } else {
-                //vytvoreni prazdneho souboru
-                CopyFile(e.FullPath, "changed");
-            }
-
-        }
+       
 
         public void Dispose() {
             // avoiding resource leak
-            watcher.Changed -= OnChanged;
-            watcher.Renamed -= OnRenamed;
-            watcher.Created -= OnCreated;
-            watcher.Deleted -= OnDeleted;
-            this.watcher.Dispose();
+            watcherSrc.Changed -= OnChanged;
+            watcherSrc.Renamed -= OnRenamed;
+            watcherSrc.Created -= OnCreated;
+            watcherSrc.Deleted -= OnDeleted;
+            this.watcherSrc.Dispose();
+
+            watcherDst.Changed -= OnChanged;
+            watcherDst.Renamed -= OnRenamed;
+            watcherDst.Created -= OnCreated;
+            watcherDst.Deleted -= OnDeleted;
+            this.watcherDst.Dispose();
         }
     }
 }

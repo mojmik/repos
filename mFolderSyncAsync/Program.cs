@@ -65,7 +65,7 @@ namespace mFolderSyncAsync {
                         string[] locationSet = mTxt[1].Split(';');
                         locationFolders[locationSet[0]] = locationSet[1];
                     }
-                    if (mTxt[0].ToLower() == "computers-exluded".ToLower()) {
+                    if (mTxt[0].ToLower() == "computers-excluded".ToLower()) {
                         excludedComps = mTxt[1].ToLower().Split(';').ToList();
                     }
                     if (mTxt[0].ToLower() == "localPathBase".ToLower()) {
@@ -128,7 +128,7 @@ namespace mFolderSyncAsync {
             }
 
             if (sharedPath.Count<1) {
-                WriteLogFile("not a member of any group");
+                WriteLogFile(userName.ToLower() + " not a member of any group");
                 AppErr = true;
                 return;
             }
@@ -153,7 +153,7 @@ namespace mFolderSyncAsync {
             if (AppErr) {
                 return;
             }
-            WriteLogFile("about to initialsync");
+            WriteLogFile("mFolderSyncAsync v2 about to initialsync");
             for (int n=0;n<sharedPath.Count;n++) {
                 FolderWatcher folderWatcher = new FolderWatcher(); 
                 watchers.Add(folderWatcher);
@@ -176,7 +176,7 @@ namespace mFolderSyncAsync {
             for (; ; ) {
                 Thread.Sleep(350);
                 foreach (FolderWatcher fw in watchers) {
-                    GC.KeepAlive(fw.watcher);
+                    GC.KeepAlive(fw.watcherLocal);
                 }
                 if (syncProcessing.IsCompleted || syncProcessing.Status.ToString() != "Running") {
                     WriteLogFile("err: worker task completed");

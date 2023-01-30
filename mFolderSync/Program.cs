@@ -171,7 +171,8 @@ namespace mFolderSync {
             for (; ; ) {
                 Thread.Sleep(350);
                 foreach (FolderWatcher fw in watchers) {
-                    GC.KeepAlive(fw.watcher);
+                    GC.KeepAlive(fw.watcherSrc);
+                    GC.KeepAlive(fw.watcherDst);
                 }
                 
             }

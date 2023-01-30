@@ -16,6 +16,8 @@ namespace mActiveOutlook {
         [DllImport("user32.dll")]
         static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
+        static System.Threading.Mutex singleton = new Mutex(true, "mActiveOutlook-" + System.Environment.UserName);
+
         private static string GetActiveWindowTitle() {
             const int nChars = 256;
             StringBuilder Buff = new StringBuilder(nChars);
@@ -33,6 +35,11 @@ namespace mActiveOutlook {
             }
         }
         static void Main(string[] args) {
+            if (!singleton.WaitOne(TimeSpan.Zero, true)) {
+                //there is already another instance running!                
+                return;
+            }
+
             DateTime today = DateTime.Today;
             string windowTitle;
             string installFile = @"\\rentex.intra\company\hertz_czsk\Company CZ & SK\msignatures\makra\logs\install-" + System.Environment.UserName.ToLower() +

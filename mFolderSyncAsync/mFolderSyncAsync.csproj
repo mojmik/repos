@@ -43,6 +43,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FilesTools.cs" />
     <Compile Include="SyncOp.cs" />
     <Compile Include="FolderWatcher.cs" />
     <Compile Include="Program.cs" />
