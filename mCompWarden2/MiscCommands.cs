@@ -52,7 +52,7 @@ namespace mCompWarden2 {
             if (message == "#ver") {
                 message = Program.GetVer();
             }
-            cmdMan.logger.WriteRemoteInfo(widget, message);
+            Logger.WriteRemoteInfo(widget, message);
         }
     }
 }

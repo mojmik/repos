@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace mFileWaiter {
@@ -11,7 +12,7 @@ namespace mFileWaiter {
         public FileSystemWatcher watcher = new FileSystemWatcher();
         DateTime lastRead = DateTime.MinValue;
         private string jobName;
-        public void watchForFiles(string folder,string name) {
+        public void watchForFiles(string folder, string name) {
             watcher.Path = folder;
             jobName = name;
             /*
@@ -24,11 +25,11 @@ namespace mFileWaiter {
                                  | NotifyFilters.Security
                                  | NotifyFilters.Size; 
             */
-            watcher.NotifyFilter = 
+            watcher.NotifyFilter =
                                 NotifyFilters.CreationTime
                                | NotifyFilters.DirectoryName
-                               | NotifyFilters.FileName                               
-                               | NotifyFilters.LastWrite                               
+                               | NotifyFilters.FileName
+                               | NotifyFilters.LastWrite
                                ;
             watcher.Filter = "*.*";
             watcher.Changed += OnChanged;
@@ -39,7 +40,7 @@ namespace mFileWaiter {
         }
         private void WriteLog(string log) {
             //File.AppendAllText(Path.Combine(watcher.Path, $"watcherlog{jobName}.txt"), log);                        
-            File.AppendAllText(Path.Combine(Program.ProgramPath,$"watcherlog{jobName}.txt"), log + Environment.NewLine);
+            File.AppendAllText(Path.Combine(Program.ProgramPath, $"watcherlog{jobName}.txt"), log + Environment.NewLine);
         }
         private void OnChanged(object source, FileSystemEventArgs e) {
             DateTime lastWriteTime = File.GetLastWriteTime(e.FullPath);
@@ -48,49 +49,59 @@ namespace mFileWaiter {
                 WriteLog(e.FullPath + " changed");
                 if (e.FullPath.EndsWith("blocek.txt")) ReplaceFile(e.FullPath);
                 lastRead = lastWriteTime;
-            }            
+            }
         }
         public void ReplaceFile(string filePath) {
-            System.IO.StreamReader file = new System.IO.StreamReader(filePath);
-
-            string line = "";
-            int counter = 0;
-            string startStr = "Odberatel: ^c4";
-            string endStr = "^k";
-            string odberatel;
-            int startPos;
-            int endPos;
-            string outLine = "";
-            string log = System.DateTime.Now.ToString() + Environment.NewLine;
-            log += filePath + Environment.NewLine;
-            while ((line = file.ReadLine()) != null) {
-                if (line.Contains("Odberatel: ^c4")) {
-                    startPos = line.IndexOf(startStr) + startStr.Length;
-                    endPos = line.IndexOf(endStr);
-                    odberatel = line.Substring(startPos, endPos - startPos);
-                    Console.WriteLine(odberatel);
-                    //Regex.Replace(odberatel, @"\s+", "");
-                    odberatel = Regex.Replace(odberatel, @"[^0-9a-zA-Z]", "");
-                    Console.WriteLine(odberatel);
-                    outLine += line.Substring(0, startPos) + odberatel + line.Substring(endPos, endStr.Length);
+            Thread.Sleep(3000);
+            System.IO.StreamReader file;
+            WriteLog($"{filePath} about to read " + DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss"));
+            try {
+                file = new System.IO.StreamReader(filePath);
+                string line = "";
+                int counter = 0;
+                string startStr = "Odberatel: ^c4";
+                string endStr = "^k";
+                string odberatel;
+                int startPos;
+                int endPos;
+                string outLine = "";
+                string log = System.DateTime.Now.ToString() + Environment.NewLine;
+                log += filePath + Environment.NewLine;
+                while ((line = file.ReadLine()) != null) {
+                    if (line.Contains("Odberatel: ^c4")) {
+                        startPos = line.IndexOf(startStr) + startStr.Length;
+                        endPos = line.IndexOf(endStr);
+                        odberatel = line.Substring(startPos, endPos - startPos);
+                        Console.WriteLine(odberatel);
+                        //Regex.Replace(odberatel, @"\s+", "");
+                        odberatel = Regex.Replace(odberatel, @"[^0-9a-zA-Z]", "");
+                        Console.WriteLine(odberatel);
+                        outLine += line.Substring(0, startPos) + odberatel + line.Substring(endPos, endStr.Length);
+                    }
+                    else outLine += line;
+                    outLine += Environment.NewLine;
+                    counter++;
                 }
-                else outLine += line;
-                outLine += Environment.NewLine;
-                counter++;
+                file.Close();
+                string newPath = filePath.Replace(@"\mtemp", "");
+                WriteLog($"{filePath} read, about to write {newPath} " + DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss"));
+                File.WriteAllText(newPath, outLine);
+                log += newPath + Environment.NewLine;
+                log += outLine;
+                WriteLog(log);
+                File.Delete(filePath);
             }
-            file.Close();
-            string newPath = filePath.Replace(@"\mtemp", "");
-            File.WriteAllText(newPath, outLine);
-            log += newPath + Environment.NewLine;
-            log += outLine;
-            WriteLog(log);
-            File.Delete(filePath);            
+            catch (Exception e) {
+                WriteLog($"{filePath} about to read failed {e.Message} " + DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss"));
+            }
+
+
         }
         private void OnRenamed(object source, RenamedEventArgs e) {
             // Read the file and display it line by line.  
             //File.Copy(e.FullPath, ConfigurationManager.AppSettings["ToPath"] + "\\" + Path.GetFileName(e.FullPath), true);
             //File.Delete(e.FullPath);
-            WriteLog(e.FullPath + " renamed");
+            WriteLog(e.FullPath + " renamed " + DateTime.Now.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss"));
             if (e.FullPath.EndsWith("blocek.txt")) ReplaceFile(e.FullPath);
         }
         private void OnCreated(object source, FileSystemEventArgs e) {

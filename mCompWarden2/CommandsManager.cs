@@ -13,11 +13,11 @@ namespace mCompWarden2 {
     public class CommandsManager {
         public List<CommandSet> commandsList = new List<CommandSet>();
         private string xmlPath = Program.localPath + "cmdset.xml";
-        public Logger logger;
+        
         bool isChanged;
 
-        public CommandsManager(Logger logger) {
-            this.logger = logger;
+        public CommandsManager() {
+            
             MiscCommands.cmdMan = this;
         }
         public void SingleCommandSetFromFile(string file) {
@@ -32,7 +32,7 @@ namespace mCompWarden2 {
                             cmdSet.MakeFromFile(file);
                         }                        
                         catch (Exception e) {
-                            logger.WriteLog($"Exception file {file}: {e.Message} {e.InnerException}",Logger.TypeLog.both);
+                            Logger.WriteLog($"Exception file {file}: {e.Message} {e.InnerException}",Logger.TypeLog.both);
                         }
                         return;
                     }
@@ -42,7 +42,7 @@ namespace mCompWarden2 {
                 commandsList.Add(new CommandSet(file));
             }
             catch (Exception e) {
-                logger.WriteLog($"Exception file {file}: {e.Message} {e.InnerException}", Logger.TypeLog.both);
+                Logger.WriteLog($"Exception file {file}: {e.Message} {e.InnerException}", Logger.TypeLog.both);
             }
             isChanged = true;
         }
@@ -55,21 +55,47 @@ namespace mCompWarden2 {
                     SingleCommandSetFromFile(file.FullName);
                 }
             } catch (Exception e) {
-                logger.WriteLog($"Fileserver problably not reachable, exception: {e.Message} {e.InnerException}", Logger.TypeLog.both);
+                Logger.WriteLog($"Fileserver problably not reachable, exception: {e.Message} {e.InnerException}", Logger.TypeLog.both);
             }
             
         }
         
         public void LoadRemoteCommands() {
-            //run daily            
-            MultipleCommandSetsFromFile(Program.mainPath, "all*.txt");
-            SingleCommandSetFromFile(Program.mainPath + System.Environment.MachineName.ToLower() + "-" + System.Environment.UserName.ToLower() + ".txt");
-            SingleCommandSetFromFile(Program.mainPath + System.Environment.UserName.ToLower() + ".txt");
-            SingleCommandSetFromFile(Program.mainPath + System.Environment.MachineName.ToLower() + ".txt");
+                                
+
+            var directory = new System.IO.DirectoryInfo(Program.mainPath);
+            var files = directory.GetFiles();
+            foreach (var file in files) {
+                string fileExtension = file.Extension;
+                if (fileExtension == ".cwd") {
+                    if (file.Name.StartsWith("all") || file.Name.StartsWith(Environment.MachineName.ToLower()) || file.Name.StartsWith(Environment.UserName.ToLower())) SingleCommandSetFromFile(file.FullName);
+                }
+                if (fileExtension==".txt") {
+                    if (file.FullName== Program.mainPath + Environment.MachineName.ToLower() + "-" + System.Environment.UserName.ToLower() + ".txt") {
+                        SingleCommandSetFromFile(file.FullName);
+                    }
+                    if (file.FullName== Program.mainPath + System.Environment.UserName.ToLower() + ".txt") {
+                        SingleCommandSetFromFile(file.FullName);
+                    }
+                    if (file.FullName== Program.mainPath + System.Environment.MachineName.ToLower() + ".txt") {
+                        SingleCommandSetFromFile(file.FullName);
+                    }
+                    if (file.Name.StartsWith("all")) {
+                        SingleCommandSetFromFile(file.FullName);
+                    }
+                }
+            }
         }
         public void LoadLocalCommands() {
-            //run immediately                        
-            MultipleCommandSetsFromFile(Program.commandsLocalPath, "*.txt");
+            var directory = new System.IO.DirectoryInfo(Program.commandsLocalPath);
+            var files = directory.GetFiles();
+            foreach (var file in files) {
+                string fileExtension = file.Extension;
+                if (fileExtension == ".cwd") SingleCommandSetFromFile(file.FullName);
+                if (fileExtension == ".txt") {                    
+                        SingleCommandSetFromFile(file.FullName);                    
+                }
+            }
         }
 
         public void RunCommands(bool isOnline) {
@@ -79,7 +105,7 @@ namespace mCompWarden2 {
                         commandsList.Remove(cmd);
                     }
                     else if (cmd.Run(isOnline)) {
-                        logger.WriteLog($"cmd {cmd.SourceFilePath} ran successfully at {cmd.LastRun} ", Logger.TypeLog.both);
+                        Logger.WriteLog($"cmd {cmd.SourceFilePath} ran successfully at {cmd.LastRun} ", Logger.TypeLog.both);
                         if (!cmd.IsRepeating) {
                             cmd.ArchiveSource();
                             commandsList.Remove(cmd);
@@ -88,7 +114,7 @@ namespace mCompWarden2 {
                     }
                 }
                 catch (Exception e) {
-                    logger.WriteLog($"Exception run at file {cmd.SourceFilePath}: {e.Message} {e.InnerException}", Logger.TypeLog.both);
+                    Logger.WriteLog($"Exception run at file {cmd.SourceFilePath}: {e.Message} {e.InnerException}", Logger.TypeLog.both);
                 }
             }
         }

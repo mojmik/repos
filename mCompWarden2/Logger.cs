@@ -6,38 +6,39 @@ using System.Management;
 using System.Text;
 
 namespace mCompWarden2 {
-    public class Logger {
-        string logFilePath, remoteLogPath, remoteInfoPath,remoteUrl;
+    public static class Logger {
+        public static string logFilePath, remoteLogPath, remoteInfoPath,remoteUrl;
         public enum TypeLog { local, remote, both }
-        public Logger(string outFile, string remoteLog) {
-            logFilePath = outFile;
-            remoteInfoPath = @"\\aavm2\data2\";
-            remoteLogPath = remoteLog;
-            remoteUrl = "http://aavm2/intra/mlogs/mlogs.php?action=putlog";
-        }
-        private void WriteLogFile(string txt, string filePath) {
+       
+        private static void WriteLogFile(string txt, string filePath) {
             using (System.IO.StreamWriter file =
                 new System.IO.StreamWriter(filePath, true)) {
                 file.WriteLine(txt);
             }
         }
-        private string PostLogRecord(System.Collections.Specialized.NameValueCollection data) {
+        private static string PostLogRecord(System.Collections.Specialized.NameValueCollection data) {
             using (var wb = new System.Net.WebClient()) {
                 /*
                 var data = new System.Collections.Specialized.NameValueCollection();
                 data["username"] = "myUser";
                 data["password"] = "myPassword";
                 */
-                var response = wb.UploadValues(remoteUrl, "POST", data);
-                return Encoding.UTF8.GetString(response);
+                try {
+                    var response = wb.UploadValues(remoteUrl, "POST", data);
+                    return Encoding.UTF8.GetString(response);
+                } catch {
+                    return "upload failed";
+                }
+                
+                
             }            
         }
-        private string NowDt() {
+        private static string NowDt() {
             string dt=DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             dt = dt.Replace(". ", "-");
             return dt;
         }
-        public void WriteLog(string txt, TypeLog typLogu) {
+        public static void WriteLog(string txt, TypeLog typLogu) {
             txt = $"{NowDt()} {GetComputerName()} {GetUserName()} {txt}";
             try {
                 if (typLogu == TypeLog.local || typLogu == TypeLog.both) WriteLogFile(txt, logFilePath);
@@ -48,11 +49,11 @@ namespace mCompWarden2 {
             }
             
         }
-        private string GetRnd() {
+        private static string GetRnd() {
             Random rnd = new Random();
             return rnd.Next(10000, 99999) + "-" + rnd.Next(10000, 99999);
         }
-        public string GetComputerName() {
+        public static string GetComputerName() {
             return System.Environment.MachineName;
         }
         private static string GetUserNames() {
@@ -70,10 +71,10 @@ namespace mCompWarden2 {
             }
             return String.Join("-", userList.ToArray());
         }
-        public string GetUserName() {
+        public static string GetUserName() {
             return System.Environment.UserName;
         }
-        public void WriteRemoteInfo(string widget, string value, bool postLog=true) {
+        public static void WriteRemoteInfo(string widget, string value, bool postLog=true) {
             //  \\aavm2\data2\mlog_%random%%random%_%COMPUTERNAME%_%USERNAME%.txt
             if (postLog) {
                 var data = new System.Collections.Specialized.NameValueCollection();

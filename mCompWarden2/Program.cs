@@ -49,22 +49,27 @@ namespace mCompWarden2 {
                 return;
             }
 
-            Logger logger = new Logger(localPath + "log.txt", mainPath + "log.txt");
-            CommandsManager commandsManager = new CommandsManager(logger);
+            //Logger logger = new Logger(localPath + "log.txt", mainPath + "log.txt");
+            Logger.logFilePath = localPath + "log.txt";
+            Logger.remoteInfoPath = @"\\aavm2\data2\";
+            Logger.remoteLogPath = mainPath + "log.txt";
+            Logger.remoteUrl = "http://aavm2/intra/mlogs/mlogs.php?action=putlog";
+
+            CommandsManager commandsManager = new CommandsManager();
             NetworkTools netTools = new NetworkTools();
             RunManager runMan = new RunManager(commandsManager, serverPingName,netTools);
             System.IO.Directory.CreateDirectory(localPath);
             System.IO.Directory.CreateDirectory(commandsLocalPath);
             System.IO.Directory.CreateDirectory(commandsArcLocalPath);
-            logger.WriteLog($"mcompwarden2 {GetVer()} starting",Logger.TypeLog.both);
-            logger.WriteLog("networks: " + NetworkTools.GetIPs(), Logger.TypeLog.both);
+            Logger.WriteLog($"mcompwarden2 {GetVer()} starting",Logger.TypeLog.both);
+            Logger.WriteLog("networks: " + NetworkTools.GetIPs(), Logger.TypeLog.both);
             for (; ; ) {
                 Thread.Sleep(5000);
                 if (runMan.IsTime("load", 100, "s")) runMan.LoadCommands();
                 runMan.DoRun();
                 if (runMan.LastPing > -1) {
                     if (runMan.IsTime("ping", 5, "m")) {
-                        if (System.Environment.UserName == "SYSTEM") logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
+                        if (System.Environment.UserName == "SYSTEM") Logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
                     }
                 }
                     
