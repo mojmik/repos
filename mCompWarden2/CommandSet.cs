@@ -116,8 +116,10 @@ namespace mCompWarden2 {
                                             UserName = settingStr[1];
                                             break;
                                         case "RunAt":
-                                            RunAt = DateTime.Parse(settingStr[1]);
-                                            RunAtTime = true;                                            
+                                            if (settingStr[1] != "") {
+                                                RunAt = DateTime.Parse(settingStr[1]);
+                                                RunAtTime = true;
+                                            }
                                             break;
                                         case "IsRepeating":
                                             IsRepeating = bool.Parse(settingStr[1]);
@@ -160,15 +162,15 @@ namespace mCompWarden2 {
                                 throw new Exception("Failed to load command settings", e);
                             }
                         }
-                        
+
                     }
                     lineNum++;
                 }
             }
             if (RunAtTime && IsRunEnvironment()) {
                 if (IsRepeating && RepeatingType == "d") {
-                    
-                    if (RunAt<DateTime.Now) RunAt = (DateTime.Today + RunAt.TimeOfDay).AddDays(RepeatingInterval);
+
+                    if (RunAt < DateTime.Now) RunAt = (DateTime.Today + RunAt.TimeOfDay).AddDays(RepeatingInterval);
                     Logger.WriteLog($"run scheduled {SourceFilePath}: {RunAt.ToShortDateString()} {RunAt.ToShortTimeString()} ", Logger.TypeLog.both);
                 }
             }
@@ -227,12 +229,13 @@ namespace mCompWarden2 {
         public bool IsRunEnvironment() {
             if ((System.Environment.UserName == "SYSTEM") && NeedsUser) return false;
             if ((System.Environment.UserName != "SYSTEM") && NeedsSystem) return false;
+            if ((UserName != "") && (UserName.ToLower() != Environment.UserName.ToLower())) return false;
             string compName = System.Environment.MachineName;
             if (ExcludedComputersRegex != null && ExcludedComputersRegex != "") {
                 var match = System.Text.RegularExpressions.Regex.Match(compName, ExcludedComputersRegex, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
                 if (match.Success) return false;
             }
-            
+
             return true;
         }
         public bool Run(bool isOnline) {
@@ -248,7 +251,7 @@ namespace mCompWarden2 {
                         if (RepeatingType == "m") RunAt = DateTime.Now.AddMinutes(RepeatingInterval);
                         if (RepeatingType == "h") RunAt = DateTime.Now.AddHours(RepeatingInterval);
                         if (RepeatingType == "d") {
-                            RunAt=(DateTime.Today + RunAt.TimeOfDay).AddDays(RepeatingInterval);
+                            RunAt = (DateTime.Today + RunAt.TimeOfDay).AddDays(RepeatingInterval);
                             //RunAt = DateTime.Now.AddDays(RepeatingInterval);
                         }
                         if (RepeatingType == "!") return false; //! means never! 
