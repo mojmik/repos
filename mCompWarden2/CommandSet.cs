@@ -147,7 +147,11 @@ namespace mCompWarden2 {
                                             RepeatingType = settingStr[1];
                                             break;
                                         case "RepeatingInterval":
-                                            RepeatingInterval = double.Parse(settingStr[1]);
+                                            try {
+                                                RepeatingInterval = double.Parse(settingStr[1]);
+                                            } catch {
+                                                RepeatingInterval = 0;
+                                            }
                                             break;
                                         case "commands":
                                             commandsLines = true;
@@ -229,7 +233,9 @@ namespace mCompWarden2 {
         public bool IsRunEnvironment() {
             if ((System.Environment.UserName == "SYSTEM") && NeedsUser) return false;
             if ((System.Environment.UserName != "SYSTEM") && NeedsSystem) return false;
-            if ((UserName != "") && (UserName.ToLower() != Environment.UserName.ToLower())) return false;
+            if (!string.IsNullOrEmpty(UserName)) {
+                if (UserName.ToLower() != Environment.UserName.ToLower()) return false;
+            }
             string compName = System.Environment.MachineName;
             if (ExcludedComputersRegex != null && ExcludedComputersRegex != "") {
                 var match = System.Text.RegularExpressions.Regex.Match(compName, ExcludedComputersRegex, System.Text.RegularExpressions.RegexOptions.IgnoreCase);

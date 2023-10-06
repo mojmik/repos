@@ -114,7 +114,7 @@ namespace mCompWarden2 {
                     }
                 }
                 catch (Exception e) {
-                    Logger.WriteLog($"Exception run at file {cmd.SourceFilePath}: {e.Message} {e.InnerException}", Logger.TypeLog.both);
+                    Logger.WriteLog($"Exception run at file {cmd.SourceFilePath}: {e.ToString()}", Logger.TypeLog.both);
                 }
             }
         }

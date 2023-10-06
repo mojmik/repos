@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,13 +14,13 @@ namespace mFolderSyncAsync {
         public static string ProgramPath;
         private static List<FolderWatcher> watchers = new List<FolderWatcher>();
         static System.Threading.Mutex singleton = new Mutex(true, "mFolderSyncApp");
-        private static string desktopPath, desktopLink,iconPath;
+        private static string desktopPath, desktopLink, iconPath;
         private static string userName = Environment.UserName;
         private static List<string> sharedPath = new List<string>();
         private static List<string> localPath = new List<string>();
         private static List<string> locName = new List<string>();
         private static Dictionary<string, string> locationFolders = new Dictionary<string, string>();
-        private static Dictionary<string, List<string>> members = new Dictionary<string, List<string>>();
+        
         private static List<string> excludedComps = new List<string>();
         private static string localPathBase = @"c:\it\folderwatcher\";
         private static string localPathBaseFolder = @"\sharedfolder\";
@@ -40,10 +42,10 @@ namespace mFolderSyncAsync {
                 writer.WriteLine("[InternetShortcut]");
                 writer.WriteLine("URL=file:///" + linkDst);
                 writer.WriteLine("IconIndex=0");
-                
+
                 string icon = iconFile.Replace('\\', '/');
                 writer.WriteLine("IconFile=" + icon);
-                
+
             }
         }
         public static void initParams() {
@@ -56,7 +58,7 @@ namespace mFolderSyncAsync {
                 AppErr = true;
                 return;
             }
-            
+
             char[] splitters = { '=' };
             foreach (string line in lines) {
                 var mTxt = line.Split(splitters, 2);
@@ -95,28 +97,41 @@ namespace mFolderSyncAsync {
                 return;
             }
 
+            string userDname = WindowsIdentity.GetCurrent().Name;
+            List<string> userSecGroups = GetSecurityGroupsForUserInLowerCase(userDname);
+
+
             foreach (string line in lines) {
                 var mTxt = line.Split(splitters, 2);
                 if (mTxt.Length > 1) {
+                    string userLocation = "";
                     if (mTxt[0].ToLower() == "user".ToLower()) {
                         string[] memberSet = mTxt[1].ToLower().Split(';');
                         string user = memberSet[0];
-                        if (user.ToLower()==userName.ToLower()) {
-                            string userLocation = memberSet[1];
-                            List<string> locations = userLocation.Split('|').ToList();
-                            members[user] = locations;
-                            foreach (string loc in locations) {
-                                try {
-                                    sharedPath.Add(locationFolders[loc]);
-                                }
-                                catch {
-                                    WriteLogFile("member location missing");
-                                    AppErr = true;
-                                }
-                                localPath.Add(localPathBase + localPathBaseFolder + loc + "\\");
-                                locName.Add(loc.ToUpper());
-                            }
+                        if (user.ToLower() == userName.ToLower()) {
+                            userLocation = memberSet[1];
                         }
+                    }
+                    if (mTxt[0].ToLower() == "group".ToLower()) {
+                        string[] memberSet = mTxt[1].ToLower().Split(';');
+                        string group = memberSet[0];
+                        if (userSecGroups.Contains(group.ToLower())) {
+                            userLocation = memberSet[1];
+                        }
+                    }
+                    
+                    List<string> locations = userLocation.Split('|').ToList();
+                    
+                    foreach (string loc in locations) {
+                        try {
+                            sharedPath.Add(locationFolders[loc]);
+                        }
+                        catch {
+                            WriteLogFile("member location missing");
+                            AppErr = true;
+                        }
+                        localPath.Add(localPathBase + localPathBaseFolder + loc + "\\");
+                        locName.Add(loc.ToUpper());
                     }
 
                 }
@@ -127,13 +142,32 @@ namespace mFolderSyncAsync {
                 return;
             }
 
-            if (sharedPath.Count<1) {
+            if (sharedPath.Count < 1) {
                 WriteLogFile(userName.ToLower() + " not a member of any group");
                 AppErr = true;
                 return;
             }
 
 
+        }
+
+        static List<string> GetSecurityGroupsForUserInLowerCase(string username) {
+            List<string> groupNames = new List<string>();
+
+            using (PrincipalContext context = new PrincipalContext(ContextType.Domain))
+            using (UserPrincipal user = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, username)) {
+                if (user != null) {
+                    PrincipalSearchResult<Principal> groups = user.GetAuthorizationGroups();
+
+                    foreach (Principal principal in groups) {
+                        if (principal is GroupPrincipal group) {
+                            groupNames.Add(group.SamAccountName.ToLower());
+                        }
+                    }
+                }
+            }
+
+            return groupNames;
         }
 
         static void Main(string[] args) {
@@ -144,7 +178,7 @@ namespace mFolderSyncAsync {
                 //there is already another instance running!
                 return;
             }
-            
+
             initParams();
             if (sharedPath == null || localPath == null) {
                 WriteLogFile("err: settings not set");
@@ -154,8 +188,8 @@ namespace mFolderSyncAsync {
                 return;
             }
             WriteLogFile("mFolderSyncAsync v2 about to initialsync");
-            for (int n=0;n<sharedPath.Count;n++) {
-                FolderWatcher folderWatcher = new FolderWatcher(); 
+            for (int n = 0; n < sharedPath.Count; n++) {
+                FolderWatcher folderWatcher = new FolderWatcher();
                 watchers.Add(folderWatcher);
                 string locPath = localPath[n];
                 string shPath = sharedPath[n];
