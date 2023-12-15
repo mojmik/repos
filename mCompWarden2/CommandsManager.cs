@@ -103,14 +103,15 @@ namespace mCompWarden2 {
                 try {
                     if (cmd.IsRemoved(isOnline)) {
                         commandsList.Remove(cmd);
-                    }
-                    else if (cmd.Run(isOnline)) {
-                        Logger.WriteLog($"cmd {cmd.SourceFilePath} ran successfully at {cmd.LastRun} ", Logger.TypeLog.both);
-                        if (!cmd.IsRepeating) {
-                            cmd.ArchiveSource();
-                            commandsList.Remove(cmd);
+                    } else {
+                        if (cmd.Run(isOnline)) {
+                            Logger.WriteLog($"cmd {cmd.SourceFilePath} ran successfully at {cmd.LastRun} ", Logger.TypeLog.both);
+                            if (!cmd.IsRepeating) {
+                                cmd.ArchiveSource();
+                                commandsList.Remove(cmd);
+                            }
+                            isChanged = true;
                         }
-                        isChanged = true;
                     }
                 }
                 catch (Exception e) {

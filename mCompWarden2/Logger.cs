@@ -85,7 +85,7 @@ namespace mCompWarden2 {
                 data["dt"] = NowDt();
                 string resp=PostLogRecord(data);
                 //WriteLog("remote info posted " + resp, TypeLog.local);
-                WriteLog("remote info posted", TypeLog.local);
+                //WriteLog("remote info posted", TypeLog.local);
             }
             else {
                 string outLog = $"{GetComputerName()};{GetUserName()};{widget};{value}";

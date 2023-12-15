@@ -186,6 +186,14 @@ namespace mCompWarden2 {
             command = command.Trim();
             command = command.Replace("\r", "");
             command = command.Replace("\n", "");
+            string[] splitCmd = command.Split(' ');
+            if (splitCmd.Length > 1) {
+                if (splitCmd[0]=="wscript") {
+                    string scriptPath = splitCmd[1];
+                    if (!File.Exists(scriptPath)) return false;
+                }
+            }
+
             if (command == "") return false;
             if (command.Substring(0, 1) == ";") return false;
             return true;
