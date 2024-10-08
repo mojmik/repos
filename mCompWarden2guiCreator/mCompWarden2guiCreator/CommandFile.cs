@@ -48,7 +48,7 @@ namespace mCompWarden2guiCreator {
             return this;
         }
         public CommandFile SetMachineName(string inStr) {
-            MachineName = inStr;
+            MachineName = inStr.ToLower();
             return this;
         }
         public CommandFile SetUserName(string inStr) {
