@@ -51,8 +51,13 @@ namespace mActiveOutlook {
             if (File.Exists(makraOk)) {
                 DateTime lastModified = System.IO.File.GetLastWriteTime(makraOk);
                 
-                DateTime lastMonth = today.AddDays(-30);
-                if (lastModified > lastMonth) return;
+                DateTime lastMonth = today.AddDays(-120);
+                
+                if (lastModified > lastMonth)
+                {
+                    Console.WriteLine("filecheck ok");
+                    return;
+                }
             }
             
 

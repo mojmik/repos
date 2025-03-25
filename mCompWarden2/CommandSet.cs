@@ -34,6 +34,7 @@ namespace mCompWarden2 {
         public bool NeedsSystem { get; set; }
         public string MachineName { get; set; }
         public string UserName { get; set; }
+        public bool RunAlready { get; set }
 
         public CommandSet() {
 
@@ -289,6 +290,12 @@ namespace mCompWarden2 {
                     if (RepeatingType == "m") ranDiff = (DateTime.Now - LastRun).TotalMinutes;
                     if (RepeatingType == "h") ranDiff = (DateTime.Now - LastRun).TotalHours;
                     if (RepeatingType == "d") ranDiff = (DateTime.Now - LastRun).TotalDays;
+                    if (RepeatingType == "x")
+                    {
+                        //x znamena, ze to pustime jednou za beh compwardena
+                        if (RunAlready) return false;
+                        ranDiff = RepeatingInterval - 1;
+                    }
                     if (RepeatingType == "!") return false; //! means never!
                     if (ranDiff < RepeatingInterval) return false;
                 }
