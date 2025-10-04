@@ -9,8 +9,10 @@ using System.Net;
 using System.Security.Principal;
 using System.Windows.Forms;
 
-namespace mCompWarden2 {
-    public class CommandSet {
+namespace mCompWarden2
+{
+    public class CommandSet
+    {
         public List<string> CommandLines { get; set; }
         public DateTime LastRun { get; set; }
         public DateTime FileLastModified { get; set; }
@@ -34,17 +36,13 @@ namespace mCompWarden2 {
         public bool NeedsSystem { get; set; }
         public string MachineName { get; set; }
         public string UserName { get; set; }
-        public bool RunAlready { get; set }
+        public bool RunAlready { get; set; }
 
-        public CommandSet() {
+        public CommandSet() { }
+        public CommandSet(string filePath) { MakeFromFile(filePath); }
 
-        }
-        public CommandSet(string filePath) {
-            MakeFromFile(filePath);
-        }
-
-
-        public void MakeFromFile(string filePath) {
+        public void MakeFromFile(string filePath)
+        {
             string line;
             CommandLines = new List<string>();
             SourceFilePath = filePath;
@@ -56,14 +54,19 @@ namespace mCompWarden2 {
             int lineNum = 0;
             int settingsVersion = 0;
             bool commandsLines = false;
-            using (System.IO.StreamReader reader = new System.IO.StreamReader(filePath)) {
-                while ((line = reader.ReadLine()) != null) {
+            using (System.IO.StreamReader reader = new System.IO.StreamReader(filePath))
+            {
+                while ((line = reader.ReadLine()) != null)
+                {
                     if (line == "") continue;
-                    if (lineNum == 0) {
-                        if (line.Contains(settingsHashCodeV1)) {
+                    if (lineNum == 0)
+                    {
+                        if (line.Contains(settingsHashCodeV1))
+                        {
                             line = (line.Length > settingsHashCodeV1.Length) ? line.Substring(settingsHashCodeV1.Length) : "";
 
-                            try {
+                            try
+                            {
                                 string[] settingStr = line.Split(';');
                                 IsRepeating = false;
                                 IsRemote = false;
@@ -72,11 +75,14 @@ namespace mCompWarden2 {
                                 if (ExcludedComputers != null) Array.Clear(ExcludedComputers, 0, ExcludedComputers.Length);
                                 ExcludedComputersRegex = "";
 
-                                if (settingStr[0] != "") {
-                                    if (settingStr[0] == "0") {
+                                if (settingStr[0] != "")
+                                {
+                                    if (settingStr[0] == "0")
+                                    {
                                         IsRepeating = false;
                                     }
-                                    else {
+                                    else
+                                    {
                                         IsRepeating = true;
                                         RepeatingType = settingStr[0].Substring(0, 1);
                                         RepeatingInterval = (settingStr[0].Substring(1) == "") ? 0 : double.Parse(settingStr[0].Substring(1));
@@ -89,27 +95,35 @@ namespace mCompWarden2 {
                                 ExcludedComputers = settingStr[4].Split(',');
                                 ExcludedComputersRegex = settingStr[5];
                             }
-                            catch (Exception e) {
+                            catch (Exception e)
+                            {
                                 throw new Exception("Failed to load command settings", e);
                             }
 
                             settingsVersion = 1;
                         }
-                        if (line.Contains(settingsHashCodeV2)) {
+                        if (line.Contains(settingsHashCodeV2))
+                        {
                             settingsVersion = 2;
                             if (ExcludedComputers != null) Array.Clear(ExcludedComputers, 0, ExcludedComputers.Length);
                             ExcludedComputersRegex = "";
                         }
                     }
-                    else {
-                        if (settingsVersion == 1) {
+                    else
+                    {
+                        if (settingsVersion == 1)
+                        {
                             CommandLines.Add(line);
                         }
-                        if (settingsVersion == 2) {
-                            try {
-                                if (!commandsLines) {
+                        if (settingsVersion == 2)
+                        {
+                            try
+                            {
+                                if (!commandsLines)
+                                {
                                     string[] settingStr = line.Split(new string[] { ":" }, 2, StringSplitOptions.None);
-                                    switch (settingStr[0]) {
+                                    switch (settingStr[0])
+                                    {
                                         case "MachineName":
                                             MachineName = settingStr[1];
                                             break;
@@ -117,7 +131,8 @@ namespace mCompWarden2 {
                                             UserName = settingStr[1];
                                             break;
                                         case "RunAt":
-                                            if (settingStr[1] != "") {
+                                            if (settingStr[1] != "")
+                                            {
                                                 RunAt = DateTime.Parse(settingStr[1]);
                                                 RunAtTime = true;
                                             }
@@ -138,7 +153,6 @@ namespace mCompWarden2 {
                                             NeedsUser = bool.Parse(settingStr[1]);
                                             break;
                                         case "ExcludedComputers":
-
                                             ExcludedComputers = settingStr[1].Split(',');
                                             break;
                                         case "ExcludedComputersRegex":
@@ -148,22 +162,20 @@ namespace mCompWarden2 {
                                             RepeatingType = settingStr[1];
                                             break;
                                         case "RepeatingInterval":
-                                            try {
-                                                RepeatingInterval = double.Parse(settingStr[1]);
-                                            } catch {
-                                                RepeatingInterval = 0;
-                                            }
+                                            try { RepeatingInterval = double.Parse(settingStr[1]); } catch { RepeatingInterval = 0; }
                                             break;
                                         case "commands":
                                             commandsLines = true;
                                             break;
                                     }
                                 }
-                                else {
+                                else
+                                {
                                     CommandLines.Add(line);
                                 }
                             }
-                            catch (Exception e) {
+                            catch (Exception e)
+                            {
                                 throw new Exception("Failed to load command settings", e);
                             }
                         }
@@ -172,24 +184,26 @@ namespace mCompWarden2 {
                     lineNum++;
                 }
             }
-            if (RunAtTime && IsRunEnvironment()) {
-                if (IsRepeating && RepeatingType == "d") {
-
+            if (RunAtTime && IsRunEnvironment())
+            {
+                if (IsRepeating && RepeatingType == "d")
+                {
                     if (RunAt < DateTime.Now) RunAt = (DateTime.Today + RunAt.TimeOfDay).AddDays(RepeatingInterval);
                     Logger.WriteLog($"run scheduled {SourceFilePath}: {RunAt.ToShortDateString()} {RunAt.ToShortTimeString()} ", Logger.TypeLog.both);
                 }
             }
         }
 
-
-
-        public bool CommandIsRunnable(string command) {
+        public bool CommandIsRunnable(string command)
+        {
             command = command.Trim();
             command = command.Replace("\r", "");
             command = command.Replace("\n", "");
             string[] splitCmd = command.Split(' ');
-            if (splitCmd.Length > 1) {
-                if (splitCmd[0]=="wscript") {
+            if (splitCmd.Length > 1)
+            {
+                if (splitCmd[0] == "wscript")
+                {
                     string scriptPath = splitCmd[1];
                     if (!File.Exists(scriptPath)) return false;
                 }
@@ -199,100 +213,212 @@ namespace mCompWarden2 {
             if (command.Substring(0, 1) == ";") return false;
             return true;
         }
-        public bool SpecialCommand(string command) {
+        public bool SpecialCommand(string command)
+        {
             if (command.Length < 1) return false;
-            if (command.Substring(0, 1) == "&") {
+            if (command.Substring(0, 1) == "&")
+            {
                 string specialCommand = command.Substring(1);
                 string cmdParams = "";
 
-                if (specialCommand.IndexOf(":") > 0) {
+                if (specialCommand.IndexOf(":") > 0)
+                {
                     cmdParams = specialCommand.Substring(specialCommand.IndexOf(":")).TrimStart(':');
                     specialCommand = specialCommand.Substring(0, specialCommand.IndexOf(":"));
-                };
+                }
+                ;
 
-                if (specialCommand == "scr") {
+                if (specialCommand == "scr")
+                {
                     Random rnd = new Random();
                     string outFile = Program.outPath + "scr-" + System.Environment.MachineName + "-" + rnd.Next(10000, 99999) + "-" + rnd.Next(10000, 99999) + ".jpg";
                     MiscCommands.SaveScreenshot(outFile);
                 }
-                if (specialCommand == "msg") {
+                if (specialCommand == "msg")
+                {
                     MiscCommands.ShowMessage(cmdParams, "message from admin");
                 }
-                if (specialCommand == "list") {
+                if (specialCommand == "list")
+                {
                     MiscCommands.ListCommands();
                 }
-                if (specialCommand == "clear") {
+                if (specialCommand == "clear")
+                {
                     MiscCommands.ClearCommands();
                 }
-                if (specialCommand == "post") {
+                if (specialCommand == "post")
+                {
                     string[] cmdMultiParams;
                     cmdMultiParams = cmdParams.Split('|');
                     if (cmdMultiParams.Length == 2) MiscCommands.PostMessage(cmdMultiParams[0], cmdMultiParams[1]);
                 }
+                if (specialCommand == "writefile")
+                {
+                    try
+                    {
+                        // Expect key=value items separated by '|'
+                        // Required: path, payload
+                        // Optional: append (0/1), encoding (utf8|utf8bom|ascii|unicode)
+                        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                        foreach (var part in cmdParams.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            var kv = part.Split(new[] { '=' }, 2);
+                            var key = kv[0].Trim();
+                            var val = kv.Length > 1 ? kv[1] : "";
+                            dict[key] = val;
+                        }
+
+                        string path = dict.ContainsKey("path") ? dict["path"] : dict.ContainsKey("target") ? dict["target"] : "";
+                        string payloadB64 = dict.ContainsKey("payload") ? dict["payload"] : "";
+                        bool append = dict.ContainsKey("append") && (dict["append"] == "1" || dict["append"].Equals("true", StringComparison.OrdinalIgnoreCase));
+                        string encName = dict.ContainsKey("encoding") ? dict["encoding"] : "utf8";
+
+                        if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(payloadB64))
+                        {
+                            Logger.WriteLog("writefile: missing 'path' or 'payload'", Logger.TypeLog.both);
+                            return true; // treat as handled to avoid spawning cmd.exe
+                        }
+
+                        // Choose encoding (default: UTF-8 without BOM)
+                        System.Text.Encoding enc;
+                        switch ((encName ?? "").ToLowerInvariant())
+                        {
+                            case "utf8bom": enc = new System.Text.UTF8Encoding(true); break;
+                            case "ascii": enc = System.Text.Encoding.ASCII; break;
+                            case "unicode": enc = System.Text.Encoding.Unicode; break; // UTF-16LE
+                            default: enc = new System.Text.UTF8Encoding(false); break; // utf8
+                        }
+
+                        // Decode payload
+                        string contents;
+                        try
+                        {
+                            var bytes = Convert.FromBase64String(payloadB64);
+                            contents = enc.GetString(bytes);
+                        }
+                        catch (Exception exB64)
+                        {
+                            Logger.WriteLog($"writefile: base64 decode failed: {exB64.Message}", Logger.TypeLog.both);
+                            return true;
+                        }
+
+                        // Ensure directory exists
+                        var dir = System.IO.Path.GetDirectoryName(path);
+                        if (!string.IsNullOrEmpty(dir) && !System.IO.Directory.Exists(dir))
+                            System.IO.Directory.CreateDirectory(dir);
+
+                        // Write or append
+                        if (append)
+                            System.IO.File.AppendAllText(path, contents, enc);
+                        else
+                            System.IO.File.WriteAllText(path, contents, enc);
+
+                        Logger.WriteLog($"writefile: wrote {(append ? "append" : "overwrite")} {path}", Logger.TypeLog.both);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteLog($"writefile: exception {ex}", Logger.TypeLog.both);
+                    }
+                    return true; // handled
+                }
+
                 return true;
             }
             return false;
         }
-        public bool IsRemoved(bool isOnline) {
-            if ((isOnline && NeedsNetwork) || (!NeedsNetwork)) {
+        public bool IsRemoved(bool isOnline)
+        {
+            if ((isOnline && NeedsNetwork) || (!NeedsNetwork))
+            {
                 if (!File.Exists(SourceFilePath)) return true;
             }
             return false;
         }
-        public bool IsRunEnvironment() {
+        public bool IsRunEnvironment()
+        {
             if ((System.Environment.UserName == "SYSTEM") && NeedsUser) return false;
             if ((System.Environment.UserName != "SYSTEM") && NeedsSystem) return false;
-            if (!string.IsNullOrEmpty(UserName)) {
-                if (UserName.ToLower() != Environment.UserName.ToLower()) return false;
-            }
-            string compName = System.Environment.MachineName;
-            if (ExcludedComputersRegex != null && ExcludedComputersRegex != "") {
-                var match = System.Text.RegularExpressions.Regex.Match(compName, ExcludedComputersRegex, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-                if (match.Success) return false;
+
+            // NEW: machine targeting (optional)
+            if (!string.IsNullOrWhiteSpace(MachineName))
+            {
+                var me = System.Environment.MachineName;
+                // allow "all" or exact match (case-insensitive)
+                if (!MachineName.Equals("all", StringComparison.OrdinalIgnoreCase) &&
+                    !MachineName.Equals(me, StringComparison.OrdinalIgnoreCase))
+                    return false;
             }
 
+            if (!string.IsNullOrEmpty(UserName))
+            {
+                if (UserName.ToLower() != Environment.UserName.ToLower()) return false;
+            }
+
+            string compName = System.Environment.MachineName;
+            if (!string.IsNullOrEmpty(ExcludedComputersRegex))
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(
+                    compName, ExcludedComputersRegex, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                if (match.Success) return false;
+            }
             return true;
         }
-        public bool Run(bool isOnline) {
+
+        public bool Run(bool isOnline)
+        {
             double ranDiff = 0;
             if (!isOnline && NeedsNetwork) return false;
             if (IsArchived) return false;
             if (!IsRunEnvironment()) return false;
 
-            if (RunAtTime) {
-                if (RunAt < DateTime.Now) {
-                    if (IsRepeating) {
-                        if (RepeatingType == "s") RunAt = DateTime.Now.AddSeconds(RepeatingInterval);
-                        if (RepeatingType == "m") RunAt = DateTime.Now.AddMinutes(RepeatingInterval);
-                        if (RepeatingType == "h") RunAt = DateTime.Now.AddHours(RepeatingInterval);
-                        if (RepeatingType == "d") {
-                            RunAt = (DateTime.Today + RunAt.TimeOfDay).AddDays(RepeatingInterval);
-                            //RunAt = DateTime.Now.AddDays(RepeatingInterval);
+            if (RunAtTime)
+            {
+                if (RunAt < DateTime.Now)
+                {
+                    // IMPORTANT: let V3 handle advancing AFTER run
+                    var v3 = this as IV3Schedule;
+                    if (v3 == null)
+                    {
+                        // Legacy V2 advance
+                        if (IsRepeating)
+                        {
+                            if (RepeatingType == "s") RunAt = DateTime.Now.AddSeconds(RepeatingInterval);
+                            if (RepeatingType == "m") RunAt = DateTime.Now.AddMinutes(RepeatingInterval);
+                            if (RepeatingType == "h") RunAt = DateTime.Now.AddHours(RepeatingInterval);
+                            if (RepeatingType == "d")
+                            {
+                                RunAt = (DateTime.Today + RunAt.TimeOfDay).AddDays(RepeatingInterval);
+                            }
+                            if (RepeatingType == "!") return false; //! means never! 
+                            Logger.WriteLog($"next run {SourceFilePath}: {RunAt.ToShortDateString()} {RunAt.ToShortTimeString()} ", Logger.TypeLog.both);
                         }
-                        if (RepeatingType == "!") return false; //! means never! 
-                        Logger.WriteLog($"next run {SourceFilePath}: {RunAt.ToShortDateString()} {RunAt.ToShortTimeString()} ", Logger.TypeLog.both);
+                        else
+                        {
+                            // run once at set time
+                            if (RunAtRan) return false;
+                            RunAtRan = true;
+                        }
                     }
-                    else {
-                        //nema se opakovat, spusti se jen jednou
-                        if (RunAtRan) return false;
-                        RunAtRan = true;
-                    }
+                    // else (V3): do not advance here; CommandsManager will call AdvanceAfterRun()
                 }
-                else {
-                    //jeste neprisel datum a cas
+                else
+                {
+                    // not yet time
                     return false;
                 }
             }
-            else {
-                //opakujeme v intervalu od te doby, kdy se to pustilo
-                if (IsRepeating) {
+            else
+            {
+                // interval mode (legacy V2)
+                if (IsRepeating)
+                {
                     if (RepeatingType == "s") ranDiff = (DateTime.Now - LastRun).TotalSeconds;
                     if (RepeatingType == "m") ranDiff = (DateTime.Now - LastRun).TotalMinutes;
                     if (RepeatingType == "h") ranDiff = (DateTime.Now - LastRun).TotalHours;
                     if (RepeatingType == "d") ranDiff = (DateTime.Now - LastRun).TotalDays;
                     if (RepeatingType == "x")
                     {
-                        //x znamena, ze to pustime jednou za beh compwardena
+                        // once per service lifetime
                         if (RunAlready) return false;
                         ranDiff = RepeatingInterval - 1;
                     }
@@ -301,22 +427,24 @@ namespace mCompWarden2 {
                 }
             }
 
-
-            //string[] cmd = ParseMultiSpacedArguments(command);
-            foreach (string command in CommandLines) {
-                if (SpecialCommand(command)) {
+            foreach (string command in CommandLines)
+            {
+                if (SpecialCommand(command))
+                {
                     ;
                 }
-                else if (CommandIsRunnable(command)) {
-                    var proc = new System.Diagnostics.Process {
-                        StartInfo = new System.Diagnostics.ProcessStartInfo {
+                else if (CommandIsRunnable(command))
+                {
+                    var proc = new System.Diagnostics.Process
+                    {
+                        StartInfo = new System.Diagnostics.ProcessStartInfo
+                        {
                             FileName = "cmd.exe",
                             Arguments = "/C " + command,
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
                             WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
                             CreateNoWindow = true
-                            //WorkingDirectory = @"C:\MyAndroidApp\"
                         }
                     };
                     proc.Start();
@@ -327,7 +455,8 @@ namespace mCompWarden2 {
             return true;
         }
 
-        public void ArchiveSource() {
+        public void ArchiveSource()
+        {
             if (IsArchived) return;
             if (!File.Exists(SourceFilePath)) return;
 
@@ -336,11 +465,13 @@ namespace mCompWarden2 {
             File.Move(SourceFilePath, arcFile);
             IsArchived = true;
         }
-        public string[] ParseMultiSpacedArguments(string commandLine) {
+        public string[] ParseMultiSpacedArguments(string commandLine)
+        {
             var isLastCharSpace = false;
             char[] parmChars = commandLine.ToCharArray();
             bool inQuote = false;
-            for (int index = 0; index < parmChars.Length; index++) {
+            for (int index = 0; index < parmChars.Length; index++)
+            {
                 if (parmChars[index] == '"')
                     inQuote = !inQuote;
                 if (!inQuote && parmChars[index] == ' ' && !isLastCharSpace)

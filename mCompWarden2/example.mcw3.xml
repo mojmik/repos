@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Tasks defaultTimezone="Europe/Prague">
+
+	<!-- 1) DAILY at a fixed clock time -->
+	<Task id="nightly-backup" enabled="true">
+		<Description>Run full backup every night at 02:30</Description>
+		<Schedule type="daily" time="02:30" />
+		<Actions>
+			<Action type="RunProgram" file="C:\Tools\backup.exe" args="-full" />
+			<Action type="RunProgram" file="C:\Tools\verify.exe" />
+		</Actions>
+	</Task>
+
+	<!-- 2) WEEKLY on specific days at a time (CSV of Mon..Sun) -->
+	<Task id="weekly-report" enabled="true">
+		<Description>Tues and Fri at 07:00</Description>
+		<Schedule type="weekly" days="Tue,Fri" time="07:00" />
+		<Actions>
+			<Action type="RunProgram" file="C:\Tools\report.exe" />
+			<Action type="WriteFile" path="C:\Temp\last_report.txt" contents="report queued" append="true" />
+		</Actions>
+	</Task>
+
+	<!-- 3) MONTHLY on a given day at a time (clamped to last day if needed) -->
+	<Task id="first-of-month" enabled="true">
+		<Description>Run on the 1st at 06:00</Description>
+		<Schedule type="monthly" day="1" time="06:00" />
+		<Actions>
+			<Action type="WriteFile" path="C:\Temp\month_start.txt" contents="Hello new month" />
+		</Actions>
+	</Task>
+
+	<!-- 4) HOURLY at a specific minute each hour (0..59) -->
+	<Task id="heartbeat-hourly" enabled="true">
+		<Description>Every hour at :15</Description>
+		<Schedule type="hourly" minute="15" />
+		<Actions>
+			<Action type="WriteFile" path="C:\Temp\heartbeat_hourly.txt" contents="alive" append="true" />
+		</Actions>
+	</Task>
+
+	<!-- 5) MINUTELY every N minutes (e.g., 5). No HH:mm time field. -->
+	<Task id="poller-every-5-min" enabled="true">
+		<Description>Poll something every 5 minutes</Description>
+		<Schedule type="minutely" interval="5" />
+		<Actions>
+			<Action type="RunProgram" file="C:\Tools\poller.exe" args="--quick" />
+		</Actions>
+	</Task>
+
+	<!-- 6) Disabled task example -->
+	<Task id="disabled-example" enabled="false">
+		<Description>This task is ignored while disabled</Description>
+		<Schedule type="daily" time="23:00" />
+		<Actions>
+			<Action type="RunProgram" file="C:\Tools\disabled.exe" />
+		</Actions>
+	</Task>
+
+	<!-- 7) Alternate action placement (supported by your loader): top-level <Action/> without <Actions> wrapper -->
+	<Task id="alt-action-placement" enabled="true">
+		<Description>
+			Shows alternate <Action/> placement
+		</Description>
+		<Schedule type="weekly" days="Mon,Wed,Thu" time="09:30" />
+		<Action type="RunProgram" file="C:\Windows\System32\notepad.exe" args="C:\Temp\readme.txt" />
+		<Action type="WriteFile" path="C:\Temp\alt_actions.txt" contents="works too" append="true" />
+	</Task>
+
+</Tasks>

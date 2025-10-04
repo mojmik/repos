@@ -64,11 +64,16 @@ namespace mCompWarden2 {
                                 
 
             var directory = new System.IO.DirectoryInfo(Program.mainPath);
-            var files = directory.GetFiles();
+            var files = directory.GetFiles();            
             foreach (var file in files) {
                 string fileExtension = file.Extension;
                 if (fileExtension == ".cwd") {
-                    if (file.Name.StartsWith("all") || file.Name.StartsWith(Environment.MachineName.ToLower()) || file.Name.StartsWith(Environment.UserName.ToLower())) SingleCommandSetFromFile(file.FullName);
+                    if (file.Name.StartsWith("all") || file.Name.StartsWith(Environment.MachineName.ToLower()) || file.Name.StartsWith(Environment.UserName.ToLower()))
+                    {
+                        //Logger.WriteLog($"gonna load file: {file.FullName}", Logger.TypeLog.both);
+                        SingleCommandSetFromFile(file.FullName);
+                    }
+                            
                 }
                 if (fileExtension==".txt") {
                     if (file.FullName== Program.mainPath + Environment.MachineName.ToLower() + "-" + System.Environment.UserName.ToLower() + ".txt") {
@@ -85,6 +90,7 @@ namespace mCompWarden2 {
                     }
                 }
             }
+            LoadV3ConfigsRemote();            
         }
         public void LoadLocalCommands() {
             var directory = new System.IO.DirectoryInfo(Program.commandsLocalPath);
@@ -96,17 +102,34 @@ namespace mCompWarden2 {
                         SingleCommandSetFromFile(file.FullName);                    
                 }
             }
+            LoadV3ConfigsLocal();
         }
 
-        public void RunCommands(bool isOnline) {
-            foreach (CommandSet cmd in commandsList.ToList()) {
-                try {
-                    if (cmd.IsRemoved(isOnline)) {
+        public void RunCommands(bool isOnline)
+        {
+            foreach (CommandSet cmd in commandsList.ToList())
+            {
+                try
+                {
+                    if (cmd.IsRemoved(isOnline))
+                    {
                         commandsList.Remove(cmd);
-                    } else {
-                        if (cmd.Run(isOnline)) {
+                    }
+                    else
+                    {
+                        if (cmd.Run(isOnline))
+                        {
                             Logger.WriteLog($"cmd {cmd.SourceFilePath} ran successfully at {cmd.LastRun} ", Logger.TypeLog.both);
-                            if (!cmd.IsRepeating) {
+
+                            // NEW: advance schedule only for V3 jobs
+                            var v3 = cmd as IV3Schedule;
+                            if (v3 != null)
+                            {
+                                v3.AdvanceAfterRun();
+                            }
+
+                            if (!cmd.IsRepeating)
+                            {
                                 cmd.ArchiveSource();
                                 commandsList.Remove(cmd);
                             }
@@ -114,7 +137,8 @@ namespace mCompWarden2 {
                         }
                     }
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     Logger.WriteLog($"Exception run at file {cmd.SourceFilePath}: {e.ToString()}", Logger.TypeLog.both);
                 }
             }
@@ -141,5 +165,50 @@ namespace mCompWarden2 {
         public void ClearCommands() {
             commandsList.Clear();
         }
+
+        public void LoadV3ConfigsLocal()
+        {
+            try
+            {
+                var folder = Program.commandsLocalPath;
+                foreach (var path in Directory.GetFiles(folder, "*.mcw3.xml"))
+                {
+                    // Remove previously loaded V3 tasks from this file (fresh reload)
+                    commandsList.RemoveAll(c => string.Equals(c.SourceFilePath, path, StringComparison.OrdinalIgnoreCase));
+
+                    foreach (var v3 in V3ConfigLoader.LoadFile(path))
+                        commandsList.Add(v3);
+
+                    isChanged = true;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLog($"V3 local load failed: {e}", Logger.TypeLog.both);
+            }
+        }
+
+
+        public void LoadV3ConfigsRemote()
+{
+    try
+    {
+        var folder = Program.mainPath;
+        foreach (var path in Directory.GetFiles(folder, "*.mcw3.xml"))
+        {
+            // Remove previously loaded V3 tasks from this file (fresh reload)
+            commandsList.RemoveAll(c => string.Equals(c.SourceFilePath, path, StringComparison.OrdinalIgnoreCase));
+
+            foreach (var v3 in V3ConfigLoader.LoadFile(path))
+                commandsList.Add(v3);
+
+            isChanged = true;
+        }
+    }
+    catch (Exception e)
+    {
+        Logger.WriteLog($"V3 remote load failed: {e}", Logger.TypeLog.both);
+    }
+}
     }
 }

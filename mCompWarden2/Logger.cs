@@ -39,7 +39,7 @@ namespace mCompWarden2 {
             return dt;
         }
         public static void WriteLog(string txt, TypeLog typLogu) {
-            txt = $"{NowDt()} {GetComputerName()} {GetUserName()} {txt}";
+            txt = $"{NowDt()} {GetComputerName()} {GetUserName()} v3.1 {txt}";
             try {
                 if (typLogu == TypeLog.local || typLogu == TypeLog.both) WriteLogFile(txt, logFilePath);
                 if (typLogu == TypeLog.remote || typLogu == TypeLog.both) WriteLogFile(txt, remoteLogPath);
