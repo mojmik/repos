@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.IO;
 
 namespace mCompWarden2 {
 
@@ -37,7 +38,8 @@ namespace mCompWarden2 {
          * 
          */
 
-        static System.Threading.Mutex singleton = new Mutex(true, "mCompWarden2-"+System.Environment.UserName);
+        static System.Threading.Mutex singleton = new Mutex(true, "mCompWarden2-" + System.Environment.UserName);
+        static AutoResetEvent _wakeUp = new AutoResetEvent(false);
 
         public static string GetVer() {
             return "v2.4";
@@ -63,18 +65,48 @@ namespace mCompWarden2 {
             System.IO.Directory.CreateDirectory(commandsArcLocalPath);
             Logger.WriteLog($"mcompwarden2 {GetVer()} starting",Logger.TypeLog.both);
             Logger.WriteLog("networks: " + NetworkTools.GetIPs(), Logger.TypeLog.both);
+
+            // Set up FileSystemWatchers for immediate command detection
+            FileSystemWatcher localWatcher = null;
+            try {
+                localWatcher = new FileSystemWatcher(commandsLocalPath, "*.*");
+                localWatcher.Created += (s, e) => _wakeUp.Set();
+                localWatcher.Changed += (s, e) => _wakeUp.Set();
+                localWatcher.Renamed += (s, e) => _wakeUp.Set();
+                localWatcher.Deleted += (s, e) => _wakeUp.Set();
+                localWatcher.EnableRaisingEvents = true;
+            } catch (Exception ex) {
+                Logger.WriteLog("Could not start local watcher: " + ex.Message, Logger.TypeLog.both);
+            }
+
+            FileSystemWatcher remoteWatcher = null;
+            try {
+                remoteWatcher = new FileSystemWatcher(mainPath, "*.*");
+                remoteWatcher.Created += (s, e) => _wakeUp.Set();
+                remoteWatcher.Changed += (s, e) => _wakeUp.Set();
+                remoteWatcher.Renamed += (s, e) => _wakeUp.Set();
+                remoteWatcher.Deleted += (s, e) => _wakeUp.Set();
+                remoteWatcher.EnableRaisingEvents = true;
+            } catch (Exception ex) {
+                Logger.WriteLog("Could not start remote watcher: " + ex.Message, Logger.TypeLog.both);
+            }
+
             for (; ; ) {
-                Thread.Sleep(5000);
-                if (runMan.IsTime("load", 100, "s")) runMan.LoadCommands();
+                bool signaled = _wakeUp.WaitOne(5000);
+                if (signaled || runMan.IsTime("load", 100, "s")) {
+                    if (signaled) {
+                        Logger.WriteLog("Command file change detected - triggering immediate load.", Logger.TypeLog.both);
+                        runMan.IsTime("load", 0, "s"); // Force reset the polling timer
+                    }
+                    runMan.LoadCommands();
+                }
+
                 runMan.DoRun();
                 if (runMan.LastPing > -1) {
                     if (runMan.IsTime("ping", 5, "m")) {
                         if (System.Environment.UserName == "SYSTEM") Logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
                     }
                 }
-                    
-                        
-
             }
         }
     }
