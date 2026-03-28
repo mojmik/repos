@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -240,8 +240,8 @@ namespace mCompWarden2
             {
                 if (!File.Exists(sourcePath)) return;
 
-                string uncArc = @"\\rentex.intra\company\data\Company\mkavan_upravy\scripts\mCompWarden2\arc";
-                string localArc = Program.commandsArcLocalPath;
+                string uncArc = Program.archiveUNC;
+                string localArc = Program.archiveLocal;
 
                 // If the source is REMOTE (UNC), we do not fall back to local on failure
                 bool sourceIsRemote = IsRemotePath(sourcePath);

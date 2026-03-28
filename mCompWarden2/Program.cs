@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Threading.Tasks;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.IO;
 
 namespace mCompWarden2
 {
@@ -77,55 +76,97 @@ namespace mCompWarden2
                 Logger.remoteLogPath = mainPath + "log.txt";
                 Logger.remoteUrl = "http://aavm2/intra/mlogs/mlogs.php?action=putlog";
 
-            CommandsManager commandsManager = new CommandsManager();
-            NetworkTools netTools = new NetworkTools();
-            RunManager runMan = new RunManager(commandsManager, serverPingName,netTools);
-            System.IO.Directory.CreateDirectory(localPath);
-            System.IO.Directory.CreateDirectory(commandsLocalPath);
-            System.IO.Directory.CreateDirectory(commandsArcLocalPath);
-            Logger.WriteLog($"mcompwarden2 {GetVer()} starting",Logger.TypeLog.both);
-            Logger.WriteLog("networks: " + NetworkTools.GetIPs(), Logger.TypeLog.both);
+                CommandsManager commandsManager = new CommandsManager();
+                NetworkTools netTools = new NetworkTools();
+                RunManager runMan = new RunManager(commandsManager, serverPingName, netTools);
+                System.IO.Directory.CreateDirectory(localPath);
+                System.IO.Directory.CreateDirectory(commandsLocalPath);
+                System.IO.Directory.CreateDirectory(commandsArcLocalPath);
+                Logger.WriteLog($"mcompwarden2 {GetVer()} starting", Logger.TypeLog.both);
+                Logger.WriteLog("networks: " + NetworkTools.GetIPs(), Logger.TypeLog.both);
 
-            // Set up FileSystemWatchers for immediate command detection
-            FileSystemWatcher localWatcher = null;
-            try {
-                localWatcher = new FileSystemWatcher(commandsLocalPath, "*.*");
-                localWatcher.Created += (s, e) => _wakeUp.Set();
-                localWatcher.Changed += (s, e) => _wakeUp.Set();
-                localWatcher.Renamed += (s, e) => _wakeUp.Set();
-                localWatcher.Deleted += (s, e) => _wakeUp.Set();
-                localWatcher.EnableRaisingEvents = true;
-            } catch (Exception ex) {
-                Logger.WriteLog("Could not start local watcher: " + ex.Message, Logger.TypeLog.both);
-            }
-
-            FileSystemWatcher remoteWatcher = null;
-            try {
-                remoteWatcher = new FileSystemWatcher(mainPath, "*.*");
-                remoteWatcher.Created += (s, e) => _wakeUp.Set();
-                remoteWatcher.Changed += (s, e) => _wakeUp.Set();
-                remoteWatcher.Renamed += (s, e) => _wakeUp.Set();
-                remoteWatcher.Deleted += (s, e) => _wakeUp.Set();
-                remoteWatcher.EnableRaisingEvents = true;
-            } catch (Exception ex) {
-                Logger.WriteLog("Could not start remote watcher: " + ex.Message, Logger.TypeLog.both);
-            }
-
-            for (; ; ) {
-                bool signaled = _wakeUp.WaitOne(5000);
-                if (signaled || runMan.IsTime("load", 100, "s")) {
-                    if (signaled) {
-                        Logger.WriteLog("Command file change detected - triggering immediate load.", Logger.TypeLog.both);
-                        runMan.IsTime("load", 0, "s"); // Force reset the polling timer
-                    }
-                    runMan.LoadCommands();
+                // Set up FileSystemWatchers for immediate command detection
+                FileSystemWatcher localWatcher = null;
+                try
+                {
+                    localWatcher = new FileSystemWatcher(commandsLocalPath, "*.*");
+                    localWatcher.Created += (s, e) => _wakeUp.Set();
+                    localWatcher.Changed += (s, e) => _wakeUp.Set();
+                    localWatcher.Renamed += (s, e) => _wakeUp.Set();
+                    localWatcher.Deleted += (s, e) => _wakeUp.Set();
+                    localWatcher.EnableRaisingEvents = true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLog("Could not start local watcher: " + ex.Message, Logger.TypeLog.both);
                 }
 
-                runMan.DoRun();
-                if (runMan.LastPing > -1) {
-                    if (runMan.IsTime("ping", 5, "m")) {
-                        if (System.Environment.UserName == "SYSTEM") Logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
+                FileSystemWatcher remoteWatcher = null;
+                try
+                {
+                    remoteWatcher = new FileSystemWatcher(mainPath, "*.*");
+                    remoteWatcher.Created += (s, e) => _wakeUp.Set();
+                    remoteWatcher.Changed += (s, e) => _wakeUp.Set();
+                    remoteWatcher.Renamed += (s, e) => _wakeUp.Set();
+                    remoteWatcher.Deleted += (s, e) => _wakeUp.Set();
+                    remoteWatcher.EnableRaisingEvents = true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.WriteLog("Could not start remote watcher: " + ex.Message, Logger.TypeLog.both);
+                }
+
+                for (; ; )
+                {
+                    bool signaled = _wakeUp.WaitOne(5000);
+                    if (signaled || runMan.IsTime("load", 100, "s"))
+                    {
+                        if (signaled)
+                        {
+                            Logger.WriteLog("Command file change detected - triggering immediate load.", Logger.TypeLog.both);
+                            runMan.IsTime("load", 0, "s"); // Force reset the polling timer
+                        }
+                        runMan.LoadCommands();
                     }
+
+                    runMan.DoRun();
+                    if (runMan.LastPing > -1)
+                    {
+                        if (runMan.IsTime("ping", 5, "m"))
+                        {
+                            if (System.Environment.UserName == "SYSTEM") Logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLog("FATAL: Error in Main loop: " + ex.ToString(), Logger.TypeLog.both);
+            }
+        }
+    }
+
+    public static class IoSafe
+    {
+        public static void AppendAllTextRetry(string filePath, string content, int maxWaitMs = 1500)
+        {
+            var start = DateTime.Now;
+            while (true)
+            {
+                try
+                {
+                    File.AppendAllText(filePath, content);
+                    return;
+                }
+                catch (IOException)
+                {
+                    if ((DateTime.Now - start).TotalMilliseconds > maxWaitMs) throw;
+                    Thread.Sleep(50);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    if ((DateTime.Now - start).TotalMilliseconds > maxWaitMs) throw;
+                    Thread.Sleep(100);
                 }
             }
         }
