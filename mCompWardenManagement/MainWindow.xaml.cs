@@ -10,6 +10,18 @@ namespace mCompWardenManagement
 {
     public partial class MainWindow : Window
     {
+        // Base folder for saving files (you already had this)
+        static string folder = @"\\rentex.intra\company\mkavan_upravy\scripts\mCompWarden2";
+
+        // NEW: computers export (OU → host list) source file
+        private const string ComputersExportPath =
+            @"\\rentex.intra\company\hertz_czsk\IT Service CZ & SK\IT Procedures & Bulletins\IT only\evidence pocitacu\Computers-Export.txt";
+
+        // NEW: OU index built from Computers-Export.txt → key = "OU-OU-...", value = host list
+        private readonly Dictionary<string, List<string>> _ouIndex = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+        private bool _suppressSelectionChanged;
+
         // --- V2 support you already had ---
         CommandsManager comMan = new CommandsManager();
 
@@ -34,7 +46,8 @@ namespace mCompWardenManagement
             if (HourlyMinuteCombo.SelectedItem == null && HourlyMinuteCombo.Items.Count > 0) HourlyMinuteCombo.SelectedIndex = 0;
 
             // Minutely default to "5" if present
-            if (FindName("MinutelyIntervalCombo") is ComboBox mic)
+            ComboBox mic = FindName("MinutelyIntervalCombo") as ComboBox;
+            if (mic != null)
             {
                 if (mic.SelectedItem == null && mic.Items.Count > 0)
                 {
@@ -46,6 +59,9 @@ namespace mCompWardenManagement
             UpdatePanelsFromFileType();
             UpdateV3Blocks();
             RefreshTaskList();
+
+            // NEW: load OU list into the ComboBox (OuCombo)
+            LoadOuList();
         }
 
         // ============================================================
@@ -102,8 +118,8 @@ namespace mCompWardenManagement
             if (HourCombo == null) HourCombo = FindName("HourCombo") as ComboBox;
             if (MinuteCombo == null) MinuteCombo = FindName("MinuteCombo") as ComboBox;
             if (HourlyMinuteCombo == null) HourlyMinuteCombo = FindName("HourlyMinuteCombo") as ComboBox;
-            if (FindName("MinutelyBlock") is StackPanel mb) MinutelyBlock = mb;
-            if (FindName("MinutelyIntervalCombo") is ComboBox mic) MinutelyIntervalCombo = mic;
+            StackPanel mb = FindName("MinutelyBlock") as StackPanel; if (mb != null) MinutelyBlock = mb;
+            ComboBox mic = FindName("MinutelyIntervalCombo") as ComboBox; if (mic != null) MinutelyIntervalCombo = mic;
 
             if (V3ScheduleTypeCombo == null || WeeklyBlock == null || MonthlyBlock == null ||
                 HourlyBlock == null || TimeBlock == null)
@@ -115,7 +131,7 @@ namespace mCompWardenManagement
                 if (V3ScheduleTypeCombo.Items.Count > 0) V3ScheduleTypeCombo.SelectedIndex = 0;
                 tag = "daily";
             }
-
+            bool isOnce = tag.Equals("once", StringComparison.OrdinalIgnoreCase);
             bool isWeekly = tag.Equals("weekly", StringComparison.OrdinalIgnoreCase);
             bool isMonthly = tag.Equals("monthly", StringComparison.OrdinalIgnoreCase);
             bool isHourly = tag.Equals("hourly", StringComparison.OrdinalIgnoreCase);
@@ -126,7 +142,7 @@ namespace mCompWardenManagement
             HourlyBlock.Visibility = isHourly ? Visibility.Visible : Visibility.Collapsed;
             if (MinutelyBlock != null) MinutelyBlock.Visibility = isMinutely ? Visibility.Visible : Visibility.Collapsed;
 
-            TimeBlock.Visibility = (isHourly || isMinutely) ? Visibility.Collapsed : Visibility.Visible;
+            TimeBlock.Visibility = (isHourly || isMinutely || isOnce) ? Visibility.Collapsed : Visibility.Visible;
 
             if (isHourly)
             {
@@ -149,6 +165,44 @@ namespace mCompWardenManagement
                 if (HourCombo != null && HourCombo.SelectedIndex < 0 && HourCombo.Items.Count > 0) HourCombo.SelectedIndex = 8;
                 if (MinuteCombo != null && MinuteCombo.SelectedIndex < 0 && MinuteCombo.Items.Count > 0) MinuteCombo.SelectedIndex = 0;
             }
+        }
+
+        private static void SelectByTag(ComboBox combo, string tag)
+        {
+            if (combo == null) return;
+            for (int i = 0; i < combo.Items.Count; i++)
+            {
+                ComboBoxItem cbi = combo.Items[i] as ComboBoxItem;
+                if (cbi != null)
+                {
+                    string t = (cbi.Tag as string) ?? "";
+                    if (string.Equals(t, tag, StringComparison.OrdinalIgnoreCase))
+                    {
+                        combo.SelectedIndex = i;
+                        return;
+                    }
+                }
+            }
+            if (combo.Items.Count > 0) combo.SelectedIndex = 0;
+        }
+
+        private static void SelectByText(ComboBox combo, string text)
+        {
+            if (combo == null) return;
+            for (int i = 0; i < combo.Items.Count; i++)
+            {
+                ComboBoxItem cbi = combo.Items[i] as ComboBoxItem;
+                if (cbi != null)
+                {
+                    string s = cbi.Content != null ? cbi.Content.ToString() : "";
+                    if (string.Equals(s, text, StringComparison.OrdinalIgnoreCase))
+                    {
+                        combo.SelectedIndex = i;
+                        return;
+                    }
+                }
+            }
+            if (combo.Items.Count > 0) combo.SelectedIndex = 0;
         }
 
         // ============================================================
@@ -180,7 +234,7 @@ namespace mCompWardenManagement
         private void RemoveTask_Click(object sender, RoutedEventArgs e)
         {
             if (_current == null) return;
-            var idx = _v3Tasks.IndexOf(_current);
+            int idx = _v3Tasks.IndexOf(_current);
             if (idx < 0) return;
 
             _v3Tasks.RemoveAt(idx);
@@ -189,7 +243,7 @@ namespace mCompWardenManagement
 
             if (_v3Tasks.Count > 0)
             {
-                var newIdx = Math.Max(0, idx - 1);
+                int newIdx = Math.Max(0, idx - 1);
                 SelectTask(_v3Tasks[newIdx]);
             }
             else
@@ -212,25 +266,60 @@ namespace mCompWardenManagement
 
         private void TaskList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            PushUIIntoCurrent();
+            if (_suppressSelectionChanged) return;
+
+            // Persist edits from the previously selected task
+            if (_current != null) PushUIIntoCurrent();
+
             var sel = TaskList.SelectedItem as V3TaskModel;
-            SelectTask(sel);
+            _current = sel;
+            PopulateTaskUI(sel);
+        }
+        private static string SanitizeFilePart(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return "all";
+            foreach (var ch in System.IO.Path.GetInvalidFileNameChars())
+                s = s.Replace(ch, '_');
+            return s.Trim();
+        }
+
+        private string GetTargetMachineForV2()
+        {
+            var m = (MachineNameText != null ? MachineNameText.Text : null) ?? "";
+            if (string.IsNullOrWhiteSpace(m)) m = "all";        // <= default to ALL
+            return SanitizeFilePart(m.ToLowerInvariant());
+        }
+
+        private string GetTargetMachineForV3()
+        {
+            var m = (V3MachineText != null ? V3MachineText.Text : null) ?? "";
+            if (string.IsNullOrWhiteSpace(m)) m = "all";        // <= default to ALL
+            return SanitizeFilePart(m.ToLowerInvariant());
         }
 
         private string BuildSuggestedV3Name()
         {
-            string machine = string.IsNullOrWhiteSpace(MachineNameText.Text) ? "all" : MachineNameText.Text.Trim().ToLower();
+            string machine = GetTargetMachineForV3();
             string dt = DateTime.Now.ToString("MM-dd-yyyy_HH-mm-ss");
             var rnd = new Random();
             string rndTxt = rnd.Next(10000, 99999) + "-" + rnd.Next(10000, 99999);
-            string folder = @"\\rentex.intra\company\mkavan_upravy\scripts\mCompWarden2";
             return System.IO.Path.Combine(folder, $"{machine}-{dt}_{rndTxt}.mcw3.xml");
         }
 
         private void SelectTask(V3TaskModel t)
         {
+            // Avoid PushUIIntoCurrent running while we change selection
+            _suppressSelectionChanged = true;
+            try
+            {
+                TaskList.SelectedItem = t;
+            }
+            finally
+            {
+                _suppressSelectionChanged = false;
+            }
+
             _current = t;
-            TaskList.SelectedItem = t;
             PopulateTaskUI(t);
         }
 
@@ -267,7 +356,8 @@ namespace mCompWardenManagement
         private void RemoveAction_Click(object sender, RoutedEventArgs e)
         {
             if (_current == null) return;
-            if (V3ActionsGrid.SelectedItem is V3ActionModel row)
+            V3ActionModel row = V3ActionsGrid.SelectedItem as V3ActionModel;
+            if (row != null)
             {
                 _current.Actions.Remove(row);
                 BindActionsGrid(_current);
@@ -277,7 +367,8 @@ namespace mCompWardenManagement
         private void MoveActionUp_Click(object sender, RoutedEventArgs e)
         {
             if (_current == null) return;
-            if (V3ActionsGrid.SelectedItem is V3ActionModel row)
+            V3ActionModel row = V3ActionsGrid.SelectedItem as V3ActionModel;
+            if (row != null)
             {
                 int i = _current.Actions.IndexOf(row);
                 if (i > 0)
@@ -293,7 +384,8 @@ namespace mCompWardenManagement
         private void MoveActionDown_Click(object sender, RoutedEventArgs e)
         {
             if (_current == null) return;
-            if (V3ActionsGrid.SelectedItem is V3ActionModel row)
+            V3ActionModel row = V3ActionsGrid.SelectedItem as V3ActionModel;
+            if (row != null)
             {
                 int i = _current.Actions.IndexOf(row);
                 if (i >= 0 && i < _current.Actions.Count - 1)
@@ -333,7 +425,7 @@ namespace mCompWardenManagement
             }
             else
             {
-                // V3 save (multi-task)
+                // V3 save (multi-task) — with OU expansion (always recursive)
                 PushUIIntoCurrent();
 
                 if (string.IsNullOrWhiteSpace(FileNameText.Text))
@@ -346,25 +438,73 @@ namespace mCompWardenManagement
                         FileName = System.IO.Path.GetFileName(suggested),
                         InitialDirectory = System.IO.Path.GetDirectoryName(suggested)
                     };
-                    var ok = dlg.ShowDialog();
+                    bool? ok = dlg.ShowDialog();
                     if (ok == true)
                         FileNameText.Text = dlg.FileName;
                     else
                         return;
                 }
 
-                var path = EnsureV3Extension(FileNameText.Text);
+                string basePath = EnsureV3Extension(FileNameText.Text);
 
                 try
                 {
-                    var dir = System.IO.Path.GetDirectoryName(path);
+                    string dir = System.IO.Path.GetDirectoryName(basePath);
                     if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                         Directory.CreateDirectory(dir);
 
-                    var doc = BuildV3Document(DefaultTimezoneText.Text?.Trim(), _v3Tasks);
-                    if (File.Exists(path)) File.Delete(path);
-                    doc.Save(path);
-                    MessageBox.Show("Soubor V3 uložen!");
+                    // Prefer OU expansion if an OU is selected
+                    ComboBox ouCombo = OuCombo as ComboBox; // must exist in XAML
+                    string selectedOu = (ouCombo != null && ouCombo.SelectedItem != null) ? ouCombo.SelectedItem as string : null;
+                    bool useOuExpansion = !string.IsNullOrWhiteSpace(selectedOu);
+
+                    if (!useOuExpansion)
+                    {
+                        // Normal single file save
+                        var doc = BuildV3Document(DefaultTimezoneText.Text != null ? DefaultTimezoneText.Text.Trim() : "", _v3Tasks);
+                        if (File.Exists(basePath)) File.Delete(basePath);
+                        doc.Save(basePath);
+                        MessageBox.Show("Soubor V3 uložen!");
+                    }
+                    else
+                    {
+                        // Expand OU → recursive host list; one file per host with machine=<host>
+                        List<string> hosts = GetHostsInOuRecursive(selectedOu);
+                        if (hosts.Count == 0)
+                        {
+                            MessageBox.Show("Žádné počítače v této OU.");
+                            return;
+                        }
+
+                        int okCount = 0, failCount = 0;
+                        foreach (string host in hosts)
+                        {
+                            // clone tasks per host, stamp machine
+                            List<V3TaskModel> cloned = new List<V3TaskModel>();
+                            foreach (var t in _v3Tasks)
+                            {
+                                var c = t.Clone();
+                                c.MachineName = host;
+                                cloned.Add(c);
+                            }
+
+                            var doc = BuildV3Document(DefaultTimezoneText.Text != null ? DefaultTimezoneText.Text.Trim() : "", cloned);
+                            string path = BuildPerHostFileName(basePath, host);
+
+                            try
+                            {
+                                if (File.Exists(path)) File.Delete(path);
+                                doc.Save(path);
+                                okCount++;
+                            }
+                            catch
+                            {
+                                failCount++;
+                            }
+                        }
+
+                        MessageBox.Show("Hotovo: uloženo " + okCount + " souborů, selhalo " + failCount + ".");
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -407,7 +547,10 @@ namespace mCompWardenManagement
             {
                 try
                 {
-                    var (tz, tasks) = ParseV3Document(file);
+                    var tuple = ParseV3Document(file);
+                    string tz = tuple.DefaultTimezone;
+                    List<V3TaskModel> tasks = tuple.Tasks;
+
                     DefaultTimezoneText.Text = tz ?? "";
                     _v3Tasks.Clear();
                     _v3Tasks.AddRange(tasks);
@@ -472,16 +615,16 @@ namespace mCompWardenManagement
         private void genFileNameButton_Click(object sender, RoutedEventArgs e)
         {
             var tag = GetSelectedTag(FileTypeCombo);
+            string machine = string.Equals(tag, "v3", StringComparison.OrdinalIgnoreCase)
+                ? GetTargetMachineForV3()
+                : GetTargetMachineForV2();
 
-            string ext = (tag == "v3") ? "mcw3.xml" : "cwd";
-            string machine = MachineNameText.Text.Trim();
-            if (string.IsNullOrEmpty(machine)) machine = "all";
-
+            string dt = DateTime.Now.ToString("MM-dd-yyyy_HH-mm-ss");
             var rnd = new Random();
             string rndTxt = rnd.Next(10000, 99999) + "-" + rnd.Next(10000, 99999);
-            string dt = DateTime.Now.ToString("MM-dd-yyyy_HH-mm-ss");
 
-            FileNameText.Text = @"\\server\path\" + machine + "-" + dt + "_" + rndTxt + "." + ext;
+            string ext = string.Equals(tag, "v3", StringComparison.OrdinalIgnoreCase) ? "mcw3.xml" : "cwd";
+            FileNameText.Text = System.IO.Path.Combine(folder, $"{machine}-{dt}_{rndTxt}.{ext}");
         }
 
         private void SetControls(mCompWarden2.CommandSet cmdSet = null, string file = null)
@@ -544,7 +687,7 @@ namespace mCompWardenManagement
 
         private string GetSelectedTag(ComboBox combo)
         {
-            var item = combo?.SelectedItem as ComboBoxItem;
+            var item = combo != null ? combo.SelectedItem as ComboBoxItem : null;
             return item != null ? (item.Tag as string ?? "") : "";
         }
 
@@ -576,29 +719,30 @@ namespace mCompWardenManagement
             TaskEnabledCheck.IsChecked = t.Enabled;
             TaskDescriptionText.Text = t.Description ?? "";
 
-            // --- NEW: targeting → UI ---
+            // Targeting
             V3MachineText.Text = t.MachineName ?? "";
             V3UserText.Text = t.UserName ?? "";
-            if (t.RunAs == "user") V3RunAsCombo.SelectedIndex = 1;
-            else if (t.RunAs == "system") V3RunAsCombo.SelectedIndex = 2;
-            else V3RunAsCombo.SelectedIndex = 0;
+            SelectByTag(V3RunAsCombo, string.IsNullOrWhiteSpace(t.RunAs) ? "either" : t.RunAs);
 
-            if (t.ScheduleType == "weekly") V3ScheduleTypeCombo.SelectedIndex = 1;
-            else if (t.ScheduleType == "monthly") V3ScheduleTypeCombo.SelectedIndex = 2;
-            else if (t.ScheduleType == "hourly") V3ScheduleTypeCombo.SelectedIndex = 3;
-            else if (t.ScheduleType == "minutely") V3ScheduleTypeCombo.SelectedIndex = 4;
-            else V3ScheduleTypeCombo.SelectedIndex = 0; // daily
+            // Schedule type -> select by Tag to be robust
+            SelectByTag(V3ScheduleTypeCombo, string.IsNullOrWhiteSpace(t.ScheduleType) ? "daily" : t.ScheduleType);
             UpdateV3Blocks();
 
+            // Time (for daily/weekly/monthly)
             string hh = "00", mm = "00";
             if (!string.IsNullOrEmpty(t.TimeHHmm))
             {
                 var parts = t.TimeHHmm.Split(':');
-                if (parts.Length == 2) { hh = parts[0]; mm = parts[1]; }
+                if (parts.Length == 2)
+                {
+                    hh = parts[0].PadLeft(2, '0');
+                    mm = parts[1].PadLeft(2, '0');
+                }
             }
-            SelectComboByText(HourCombo, hh);
-            SelectComboByText(MinuteCombo, mm);
+            SelectByText(HourCombo, hh);
+            SelectByText(MinuteCombo, mm);
 
+            // Weekly
             MonCheck.IsChecked = t.WeeklyDays.Contains("Mon");
             TueCheck.IsChecked = t.WeeklyDays.Contains("Tue");
             WedCheck.IsChecked = t.WeeklyDays.Contains("Wed");
@@ -607,13 +751,15 @@ namespace mCompWardenManagement
             SatCheck.IsChecked = t.WeeklyDays.Contains("Sat");
             SunCheck.IsChecked = t.WeeklyDays.Contains("Sun");
 
+            // Monthly
             MonthlyDayText.Text = t.MonthlyDay.HasValue ? t.MonthlyDay.Value.ToString() : "";
 
-            SelectComboByText(HourlyMinuteCombo, (t.HourlyMinute ?? 0).ToString());
-
+            // Hourly/minutely
+            SelectByText(HourlyMinuteCombo, (t.HourlyMinute.HasValue ? t.HourlyMinute.Value : 0).ToString());
             if (MinutelyIntervalCombo != null)
-                SelectComboByText(MinutelyIntervalCombo, (t.MinutelyInterval ?? 5).ToString());
+                SelectByText(MinutelyIntervalCombo, (t.MinutelyInterval.HasValue ? t.MinutelyInterval.Value : 5).ToString());
 
+            // Actions
             BindActionsGrid(t);
         }
 
@@ -628,19 +774,19 @@ namespace mCompWardenManagement
         {
             if (_current == null) return;
 
-            _current.V3Id = TaskIdText.Text?.Trim();
+            _current.V3Id = TaskIdText.Text != null ? TaskIdText.Text.Trim() : null;
             _current.Enabled = TaskEnabledCheck.IsChecked == true;
             _current.Description = TaskDescriptionText.Text ?? "";
-            _current.MachineName = V3MachineText.Text?.Trim() ?? "";
-            _current.UserName = V3UserText.Text?.Trim() ?? "";
+            _current.MachineName = V3MachineText.Text != null ? V3MachineText.Text.Trim() : "";
+            _current.UserName = V3UserText.Text != null ? V3UserText.Text.Trim() : "";
             _current.RunAs = GetSelectedTag(V3RunAsCombo); // "either"|"user"|"system"
 
             var tag = GetSelectedTag(V3ScheduleTypeCombo);
             _current.ScheduleType = string.IsNullOrEmpty(tag) ? "daily" : tag;
 
-            string hh = (HourCombo.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "00";
-            string mm = (MinuteCombo.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "00";
-            _current.TimeHHmm = $"{hh}:{mm}";
+            string hh = (HourCombo.SelectedItem as ComboBoxItem) != null ? ((ComboBoxItem)HourCombo.SelectedItem).Content.ToString() : "00";
+            string mm = (MinuteCombo.SelectedItem as ComboBoxItem) != null ? ((ComboBoxItem)MinuteCombo.SelectedItem).Content.ToString() : "00";
+            _current.TimeHHmm = (hh ?? "00") + ":" + (mm ?? "00");
 
             _current.WeeklyDays.Clear();
             if (MonCheck.IsChecked == true) _current.WeeklyDays.Add("Mon");
@@ -651,17 +797,20 @@ namespace mCompWardenManagement
             if (SatCheck.IsChecked == true) _current.WeeklyDays.Add("Sat");
             if (SunCheck.IsChecked == true) _current.WeeklyDays.Add("Sun");
 
-            if (int.TryParse(MonthlyDayText.Text?.Trim(), out int md)) _current.MonthlyDay = md;
+            int md;
+            if (int.TryParse(MonthlyDayText.Text != null ? MonthlyDayText.Text.Trim() : "", out md)) _current.MonthlyDay = md;
             else _current.MonthlyDay = null;
 
-            if (int.TryParse((HourlyMinuteCombo.SelectedItem as ComboBoxItem)?.Content?.ToString(), out int hm))
+            int hm;
+            if (int.TryParse(((HourlyMinuteCombo.SelectedItem as ComboBoxItem) != null ? ((ComboBoxItem)HourlyMinuteCombo.SelectedItem).Content.ToString() : ""), out hm))
                 _current.HourlyMinute = hm;
             else
                 _current.HourlyMinute = 0;
 
             if (_current.ScheduleType == "minutely")
             {
-                if (int.TryParse((MinutelyIntervalCombo?.SelectedItem as ComboBoxItem)?.Content?.ToString(), out int iv))
+                int iv;
+                if (int.TryParse(((MinutelyIntervalCombo != null && MinutelyIntervalCombo.SelectedItem is ComboBoxItem) ? ((ComboBoxItem)MinutelyIntervalCombo.SelectedItem).Content.ToString() : ""), out iv))
                     _current.MinutelyInterval = iv;
                 else
                     _current.MinutelyInterval = 5;
@@ -710,7 +859,7 @@ namespace mCompWardenManagement
                 if (!string.IsNullOrWhiteSpace(t.V3Id)) taskEl.SetAttributeValue("id", t.V3Id);
                 taskEl.SetAttributeValue("enabled", t.Enabled ? "true" : "false");
 
-                // NEW: targeting attributes (optional)
+                // targeting attributes (optional)
                 if (!string.IsNullOrWhiteSpace(t.MachineName)) taskEl.SetAttributeValue("machine", t.MachineName);
                 if (!string.IsNullOrWhiteSpace(t.UserName)) taskEl.SetAttributeValue("user", t.UserName);
                 if (!string.IsNullOrWhiteSpace(t.RunAs) && t.RunAs != "either") taskEl.SetAttributeValue("runAs", t.RunAs);
@@ -724,12 +873,17 @@ namespace mCompWardenManagement
 
                 if (type == "hourly")
                 {
-                    sched.SetAttributeValue("minute", (t.HourlyMinute ?? 0).ToString());
+                    sched.SetAttributeValue("minute", (t.HourlyMinute.HasValue ? t.HourlyMinute.Value : 0).ToString());
                 }
                 else if (type == "minutely")
                 {
-                    var n = t.MinutelyInterval ?? 5;
+                    int n = t.MinutelyInterval.HasValue ? t.MinutelyInterval.Value : 5;
                     sched.SetAttributeValue("interval", n.ToString());
+                }
+                else if (type == "once")
+                {
+                    // no extras
+                    sched.SetAttributeValue("type", "once");
                 }
                 else
                 {
@@ -779,19 +933,23 @@ namespace mCompWardenManagement
         {
             var doc = XDocument.Load(path);
             var root = doc.Root;
-            if (root == null || !string.Equals(root.Name.LocalName, "Tasks", StringComparison.OrdinalIgnoreCase))
-            {
-                if (doc.Root != null && string.Equals(doc.Root.Name.LocalName, "Task", StringComparison.OrdinalIgnoreCase))
-                {
-                    return ("", new List<V3TaskModel> { ParseSingleTask(doc.Root) });
-                }
-                throw new InvalidOperationException("Root element <Tasks> not found.");
-            }
+            if (root == null)
+                throw new InvalidOperationException("Root element not found.");
 
+            // defaultTimezone (if any)
             string tz = (string)root.Attribute("defaultTimezone") ?? "";
-            var list = new List<V3TaskModel>();
 
-            foreach (var t in root.Elements("Task"))
+            // Accept either <Tasks>…<Task/>… or a single <Task/>
+            IEnumerable<XElement> taskNodes;
+            if (string.Equals(root.Name.LocalName, "Tasks", StringComparison.OrdinalIgnoreCase))
+                taskNodes = root.Elements().Where(e => e.Name.LocalName == "Task");
+            else if (string.Equals(root.Name.LocalName, "Task", StringComparison.OrdinalIgnoreCase))
+                taskNodes = new[] { root };
+            else
+                throw new InvalidOperationException("Root element must be <Tasks> or <Task>.");
+
+            var list = new List<V3TaskModel>();
+            foreach (var t in taskNodes)
                 list.Add(ParseSingleTask(t));
 
             return (tz, list);
@@ -799,132 +957,307 @@ namespace mCompWardenManagement
 
         private static V3TaskModel ParseSingleTask(XElement t)
         {
+            // Attributes (namespace-agnostic)
             var m = new V3TaskModel
             {
                 V3Id = (string)t.Attribute("id") ?? "",
                 Enabled = string.Equals((string)t.Attribute("enabled"), "true", StringComparison.OrdinalIgnoreCase),
-                Description = (string)t.Element("Description") ?? ""
+                MachineName = (string)t.Attribute("machine") ?? "",
+                UserName = (string)t.Attribute("user") ?? "",
+                RunAs = ((string)t.Attribute("runAs") ?? "either").ToLowerInvariant()
             };
-            m.MachineName = (string)t.Attribute("machine") ?? "";
-            m.UserName = (string)t.Attribute("user") ?? "";
-            m.RunAs = ((string)t.Attribute("runAs") ?? "either").ToLowerInvariant();
 
-            var s = t.Element("Schedule");
-            string type = (string)s?.Attribute("type") ?? "daily";
+            // <Description>
+            var descEl = t.Elements().FirstOrDefault(e => e.Name.LocalName == "Description");
+            m.Description = descEl != null ? (string)descEl : "";
+
+            // <Schedule ... />
+            var s = t.Elements().FirstOrDefault(e => e.Name.LocalName == "Schedule");
+            var type = ((string)s.Attribute("type") ?? "daily").ToLowerInvariant();
             m.ScheduleType = type;
 
             if (type == "hourly")
             {
-                if (int.TryParse((string)s?.Attribute("minute"), out int mn)) m.HourlyMinute = mn; else m.HourlyMinute = 0;
+                m.TimeHHmm = ""; // no wall-clock time for hourly
+                int mn;
+                m.HourlyMinute = int.TryParse((string)s.Attribute("minute"), out mn) ? mn : 0;
             }
             else if (type == "minutely")
             {
-                if (int.TryParse((string)s?.Attribute("interval"), out int iv)) m.MinutelyInterval = iv; else m.MinutelyInterval = 5;
+                m.TimeHHmm = ""; // no wall-clock time for minutely
+                int iv;
+                if (int.TryParse((string)s.Attribute("interval"), out iv) && iv > 0) m.MinutelyInterval = iv; else m.MinutelyInterval = 5;
+            }
+            else if (type == "once")
+            {
+                // one-shot
             }
             else
             {
-                m.TimeHHmm = (string)s?.Attribute("time") ?? "00:00";
+                m.TimeHHmm = (string)s.Attribute("time") ?? "00:00";
                 if (type == "weekly")
                 {
-                    var daysAttr = (string)s?.Attribute("days") ?? "";
-                    m.WeeklyDays = daysAttr.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    var days = (string)s.Attribute("days") ?? "";
+                    m.WeeklyDays = days.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 }
                 else if (type == "monthly")
                 {
-                    if (int.TryParse((string)s?.Attribute("day"), out int d)) m.MonthlyDay = d;
+                    int d;
+                    if (int.TryParse((string)s.Attribute("day"), out d)) m.MonthlyDay = d;
                 }
             }
 
-            var acts = t.Element("Actions");
-            if (acts != null)
+            // <Actions> / <Action />
+            var actsParent = t.Elements().FirstOrDefault(e => e.Name.LocalName == "Actions");
+            IEnumerable<XElement> actionEls = actsParent != null
+                ? actsParent.Elements().Where(e => e.Name.LocalName == "Action")
+                : t.Elements().Where(e => e.Name.LocalName == "Action"); // allow top-level actions too
+
+            foreach (var a in actionEls)
             {
-                foreach (var a in acts.Elements("Action"))
+                var atype = ((string)a.Attribute("type") ?? "RunProgram");
+                var row = new V3ActionModel
                 {
-                    var atype = (string)a.Attribute("type") ?? "RunProgram";
-                    var row = new V3ActionModel
-                    {
-                        Type = atype,
-                        Args = (string)a.Attribute("args") ?? "",
-                        Contents = (string)a.Attribute("contents") ?? "",
-                        Append = string.Equals((string)a.Attribute("append"), "true", StringComparison.OrdinalIgnoreCase)
-                    };
+                    Type = atype,
+                    Args = (string)a.Attribute("args") ?? "",
+                    Contents = (string)a.Attribute("contents") ?? "",
+                    Append = string.Equals((string)a.Attribute("append"), "true", StringComparison.OrdinalIgnoreCase)
+                };
 
-                    // Map file/path to unified Target
-                    if (atype.Equals("RunProgram", StringComparison.OrdinalIgnoreCase))
-                        row.Target = (string)a.Attribute("file") ?? (string)a.Attribute("target") ?? "";
-                    else if (atype.Equals("WriteFile", StringComparison.OrdinalIgnoreCase))
-                        row.Target = (string)a.Attribute("path") ?? (string)a.Attribute("target") ?? "";
+                // map file/path to unified Target
+                if (string.Equals(atype, "WriteFile", StringComparison.OrdinalIgnoreCase))
+                    row.Target = (string)a.Attribute("path") ?? (string)a.Attribute("target") ?? "";
+                else
+                    row.Target = (string)a.Attribute("file") ?? (string)a.Attribute("target") ?? "";
 
-                    m.Actions.Add(row);
-                }
+                m.Actions.Add(row);
             }
 
             return m;
         }
-    }
 
-    // ====================================================================
-    //  Simple models for the V3 editor
-    // ====================================================================
-    public class V3TaskModel
-    {
-        public string V3Id { get; set; } = "";
-        public bool Enabled { get; set; } = true;
-        public string Description { get; set; } = "";
-        // NEW targeting
-        public string MachineName { get; set; } = ""; // "" or "all" = any
-        public string UserName { get; set; } = "";
-        public string RunAs { get; set; } = "either"; // "either" | "user" | "system"
-
-        // Schedule
-        public string ScheduleType { get; set; } = "daily"; // daily / weekly / monthly / hourly / minutely
-        public string TimeHHmm { get; set; } = "08:00";     // for daily/weekly/monthly
-        public List<string> WeeklyDays { get; set; } = new List<string>();
-        public int? MonthlyDay { get; set; }
-        public int? HourlyMinute { get; set; } = 0;         // for hourly
-        public int? MinutelyInterval { get; set; } = 5;     // for minutely
-
-        // Actions
-        public List<V3ActionModel> Actions { get; } = new List<V3ActionModel>();
-
-        public V3TaskModel Clone()
+        // ============================================================
+        //  OU support (load, pick, expand recursively)
+        // ============================================================
+        private void LoadOuList()
         {
-            var c = new V3TaskModel
+            // Build index once; then fill ComboBox with OU keys
+            EnsureOuIndexLoaded();
+
+            ComboBox ouCombo = OuCombo as ComboBox;
+            TextBlock ouInfo = OuInfo as TextBlock;
+
+            if (ouCombo == null) return;
+
+            if (_ouIndex.Count == 0)
             {
-                V3Id = V3Id,
-                Enabled = Enabled,
-                Description = Description,
-                ScheduleType = ScheduleType,
-                TimeHHmm = TimeHHmm,
-                WeeklyDays = new List<string>(WeeklyDays),
-                MonthlyDay = MonthlyDay,
-                HourlyMinute = HourlyMinute,
-                MinutelyInterval = MinutelyInterval
-            };
-            foreach (var a in Actions)
-                c.Actions.Add(a.Clone());
-            return c;
+                ouCombo.ItemsSource = null;
+                if (ouInfo != null) ouInfo.Text = "(OU list not available)";
+                return;
+            }
+
+            var keys = _ouIndex.Keys
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(k => k, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            ouCombo.ItemsSource = keys;
+            if (ouInfo != null) ouInfo.Text = "(" + keys.Count + " OUs)";
+            ouCombo.SelectionChanged -= OuCombo_SelectionChanged;
+            ouCombo.SelectionChanged += OuCombo_SelectionChanged;
         }
-    }
 
-    public class V3ActionModel
-    {
-        public string Type { get; set; } = "RunProgram"; // RunProgram | WriteFile
-        public string Target { get; set; } = "";         // exe path OR file path
-        public string Args { get; set; } = "";           // for RunProgram
-        public string Contents { get; set; } = "";       // for WriteFile
-        public bool Append { get; set; } = false;        // for WriteFile
-
-        public V3ActionModel Clone()
+        private void OuCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            return new V3ActionModel
+            try
             {
-                Type = this.Type,
-                Target = this.Target,
-                Args = this.Args,
-                Contents = this.Contents,
-                Append = this.Append
-            };
+                ComboBox ouCombo = OuCombo as ComboBox;
+                TextBlock ouInfo = OuInfo as TextBlock;
+
+                string ou = (ouCombo != null && ouCombo.SelectedItem != null) ? (string)ouCombo.SelectedItem : null;
+                if (string.IsNullOrWhiteSpace(ou))
+                {
+                    if (ouInfo != null) ouInfo.Text = "";
+                    return;
+                }
+
+                // Always recursive per your request
+                List<string> hosts = GetHostsInOuRecursive(ou);
+                if (ouInfo != null) ouInfo.Text = "(" + hosts.Count + " PC)";
+            }
+            catch
+            {
+                TextBlock ouInfo = OuInfo as TextBlock;
+                if (ouInfo != null) ouInfo.Text = "";
+            }
+        }
+
+        private void EnsureOuIndexLoaded()
+        {
+            if (_ouIndex.Count > 0) return;
+
+            try
+            {
+                if (!File.Exists(ComputersExportPath)) return;
+
+                foreach (var raw in File.ReadAllLines(ComputersExportPath))
+                {
+                    string line = (raw ?? "").Trim();
+                    if (line.Length == 0 || line.StartsWith("#")) continue;
+
+                    // Format: OU-OU-...-HOSTNAME (dash-separated)
+                    string[] parts = line.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int i = 0; i < parts.Length; i++) parts[i] = parts[i].Trim();
+                    if (parts.Length < 2) continue;
+
+                    string host = parts[parts.Length - 1];
+                    string ouPath = string.Join("-", parts.Take(parts.Length - 1).ToArray());
+
+                    List<string> list;
+                    if (!_ouIndex.TryGetValue(ouPath, out list))
+                    {
+                        list = new List<string>();
+                        _ouIndex[ouPath] = list;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(host))
+                        list.Add(host);
+                }
+            }
+            catch
+            {
+                // don't crash the UI; ComboBox will just stay empty
+            }
+        }
+
+        private List<string> GetHostsInOuRecursive(string ouPath)
+        {
+            EnsureOuIndexLoaded();
+            var result = new List<string>();
+            if (_ouIndex.Count == 0 || string.IsNullOrWhiteSpace(ouPath)) return result;
+
+            string prefix = ouPath.EndsWith("-") ? ouPath : (ouPath + "-");
+            foreach (var kv in _ouIndex)
+            {
+                if (kv.Key.Equals(ouPath, StringComparison.OrdinalIgnoreCase) ||
+                    kv.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    result.AddRange(kv.Value);
+                }
+            }
+
+            result = result
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            return result;
+        }
+
+        private static string BuildPerHostFileName(string basePath, string hostname, string requiredExt = ".mcw3.xml")
+        {
+            if (string.IsNullOrWhiteSpace(basePath)) throw new ArgumentNullException("basePath");
+            if (string.IsNullOrWhiteSpace(hostname)) throw new ArgumentNullException("hostname");
+
+            // Ensure extension
+            var path = basePath;
+            if (!path.EndsWith(requiredExt, StringComparison.OrdinalIgnoreCase))
+            {
+                if (path.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                    path = path.Substring(0, path.Length - 4);
+                path += requiredExt;
+            }
+
+            var dir = System.IO.Path.GetDirectoryName(path) ?? "";
+            var name = System.IO.Path.GetFileNameWithoutExtension(path) ?? "task";
+            var ext = System.IO.Path.GetExtension(path);
+
+            // Normalize
+            var hn = hostname.Trim();
+
+            // 1) If a wildcard is present, replace it
+            if (name.IndexOf('*') >= 0)
+            {
+                name = name.Replace("*", hn);
+            }
+            // 2) If it starts with "all-", replace that prefix with hostname
+            else if (name.StartsWith("all-", StringComparison.OrdinalIgnoreCase))
+            {
+                name = hn + "-" + name.Substring(4);
+            }
+            // 3) If it already starts with "hostname-", leave it
+            else if (!name.StartsWith(hn + "-", StringComparison.OrdinalIgnoreCase))
+            {
+                // 4) Otherwise, force "hostname-" prefix
+                name = hn + "-" + name;
+            }
+
+            return System.IO.Path.Combine(dir, name + ext);
+        }
+
+        // ====================================================================
+        //  Simple models for the V3 editor
+        // ====================================================================
+        public class V3TaskModel
+        {
+            public string V3Id { get; set; } = "";
+            public bool Enabled { get; set; } = true;
+            public string Description { get; set; } = "";
+            // targeting
+            public string MachineName { get; set; } = ""; // "" or "all" = any
+            public string UserName { get; set; } = "";
+            public string RunAs { get; set; } = "either"; // "either" | "user" | "system"
+
+            // Schedule
+            public string ScheduleType { get; set; } = "daily"; // daily / weekly / monthly / hourly / minutely / once
+            public string TimeHHmm { get; set; } = "08:00";     // for daily/weekly/monthly
+            public List<string> WeeklyDays { get; set; } = new List<string>();
+            public int? MonthlyDay { get; set; }
+            public int? HourlyMinute { get; set; } = 0;         // for hourly
+            public int? MinutelyInterval { get; set; } = 5;     // for minutely
+
+            // Actions
+            public List<V3ActionModel> Actions { get; } = new List<V3ActionModel>();
+
+            public V3TaskModel Clone()
+            {
+                var c = new V3TaskModel
+                {
+                    V3Id = V3Id,
+                    Enabled = Enabled,
+                    Description = Description,
+                    ScheduleType = ScheduleType,
+                    TimeHHmm = TimeHHmm,
+                    WeeklyDays = new List<string>(WeeklyDays),
+                    MonthlyDay = MonthlyDay,
+                    HourlyMinute = HourlyMinute,
+                    MinutelyInterval = MinutelyInterval
+                };
+                foreach (var a in Actions)
+                    c.Actions.Add(a.Clone());
+                return c;
+            }
+        }
+
+        public class V3ActionModel
+        {
+            public string Type { get; set; } = "RunProgram"; // RunProgram | WriteFile
+            public string Target { get; set; } = "";         // exe path OR file path
+            public string Args { get; set; } = "";           // for RunProgram
+            public string Contents { get; set; } = "";       // for WriteFile
+            public bool Append { get; set; } = false;        // for WriteFile
+
+            public V3ActionModel Clone()
+            {
+                return new V3ActionModel
+                {
+                    Type = this.Type,
+                    Target = this.Target,
+                    Args = this.Args,
+                    Contents = this.Contents,
+                    Append = this.Append
+                };
+            }
         }
     }
 }

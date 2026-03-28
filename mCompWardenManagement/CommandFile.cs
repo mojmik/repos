@@ -29,18 +29,23 @@ namespace mCompWardenManagement
         public bool NeedsUser { get; set; }
         public bool NeedsSystem { get; set; }
 
-        // --- V3 vlastnosti ---
-        public string ScheduleType { get; set; }    // daily / weekly / monthly
-        public string TimeHHmm { get; set; }        // "HH:mm"
-        public int? MonthlyDay { get; set; }        // den v měsíci
-        public List<string> WeeklyDays { get; set; } = new List<string>();
-        // --- V3 extra ---
-        public string V3Id { get; set; } = "task1";
+        // --- V3 vlastnosti ---   
+        public string RunAs { get; set; } = "either"; // "either" | "user" | "system"  (<Task runAs="...">)
+
+        // ---- V3: metadata/schedule (ponechte co už máte) ----
+        public string V3Id { get; set; } = "";
         public bool V3Enabled { get; set; } = true;
-        public string Description { get; set; }
-        public int? HourlyMinute { get; set; }   // for type="hourly"
-        public int? MinutelyInterval { get; set; }   // for type="minutely" (>=1)
-        public string DefaultTimezone { get; set; }  // from <Tasks defaultTimezone="...">
+        public string Description { get; set; } = "";
+        public string ScheduleType { get; set; } = "daily";
+        public string TimeHHmm { get; set; } = "08:00";
+        public List<string> WeeklyDays { get; set; } = new List<string>();
+        public int? MonthlyDay { get; set; }
+        public int? HourlyMinute { get; set; }
+        public int? MinutelyInterval { get; set; }
+        public string DefaultTimezone { get; set; } = "";
+
+        // Seznam akcí V3
+        public List<V3Action> V3Actions { get; } = new List<V3Action>();
 
         // --- typ souboru ---
         public enum FileKind { V2, V3 }
@@ -48,14 +53,17 @@ namespace mCompWardenManagement
 
         public class V3Action
         {
-            public string Type { get; set; } // RunProgram, WriteFile
-            public string File { get; set; }
-            public string Args { get; set; }
-            public string Path { get; set; }
-            public string Contents { get; set; }
+            public string Type { get; set; } = "RunProgram"; // RunProgram | WriteFile
+            public string Target { get; set; } = "";         // exe path NEBO cílový soubor
+            public string Args { get; set; } = "";
+            public string Contents { get; set; } = "";
             public bool? Append { get; set; }
+
+            // Back-compat pro starší kód/XAML sloupce:
+            public string File { get => Target; set => Target = value; } // pro RunProgram
+            public string Path { get => Target; set => Target = value; } // pro WriteFile
         }
-        public List<V3Action> V3Actions { get; set; } = new List<V3Action>();
+        
 
         public CommandFile() { }
 
@@ -161,13 +169,22 @@ namespace mCompWardenManagement
                 else
                     w.WriteLine("<Tasks>");
 
-                w.Write($"  <Task id=\"{System.Security.SecurityElement.Escape(V3Id ?? "task1")}\" enabled=\"{(V3Enabled ? "true" : "false")}\">");
-                w.WriteLine();
+                // ----- Task open tag with targeting -----
+                var idAttr = System.Security.SecurityElement.Escape(V3Id ?? "task1");
+                var enabledAttr = (V3Enabled ? "true" : "false");
+
+                // new optional attributes
+                var machineAttr = string.IsNullOrWhiteSpace(MachineName) ? "" : $" machine=\"{System.Security.SecurityElement.Escape(MachineName)}\"";
+                var userAttr = string.IsNullOrWhiteSpace(UserName) ? "" : $" user=\"{System.Security.SecurityElement.Escape(UserName)}\"";
+                var runAsValue = string.IsNullOrWhiteSpace(RunAs) ? "either" : RunAs.ToLowerInvariant();
+                var runAsAttr = runAsValue == "either" ? "" : $" runAs=\"{System.Security.SecurityElement.Escape(runAsValue)}\"";
+
+                w.WriteLine($"  <Task id=\"{idAttr}\" enabled=\"{enabledAttr}\"{machineAttr}{userAttr}{runAsAttr}>");
 
                 if (!string.IsNullOrWhiteSpace(Description))
                     w.WriteLine($"    <Description>{System.Security.SecurityElement.Escape(Description)}</Description>");
 
-                // Schedule
+                // ----- Schedule -----
                 var type = (ScheduleType ?? "daily").ToLowerInvariant();
                 if (type == "hourly")
                 {
@@ -176,9 +193,7 @@ namespace mCompWardenManagement
                 }
                 else if (type == "minutely")
                 {
-                    var iv = (MinutelyInterval.HasValue && MinutelyInterval.Value > 0)
-                                ? MinutelyInterval.Value
-                                : 5; // sane default
+                    var iv = (MinutelyInterval.HasValue && MinutelyInterval.Value > 0) ? MinutelyInterval.Value : 5;
                     w.WriteLine($"    <Schedule type=\"minutely\" interval=\"{iv}\" />");
                 }
                 else if (type == "weekly")
@@ -199,22 +214,22 @@ namespace mCompWardenManagement
                     w.WriteLine($"    <Schedule type=\"daily\" time=\"{time}\" />");
                 }
 
-                // Actions
+                // ----- Actions -----
                 w.WriteLine("    <Actions>");
                 if (V3Actions != null && V3Actions.Count > 0)
                 {
                     foreach (var a in V3Actions)
                     {
-                        var t = (a.Type ?? "RunProgram"); // canonical case
-                        if (t.Equals("runprogram", StringComparison.OrdinalIgnoreCase) || t.Equals("RunProgram"))
+                        var t = (a.Type ?? "RunProgram");
+                        if (t.Equals("RunProgram", StringComparison.OrdinalIgnoreCase))
                         {
-                            var file = System.Security.SecurityElement.Escape(a.File ?? "");
+                            var file = System.Security.SecurityElement.Escape(a.File ?? a.Target ?? "");
                             var args = string.IsNullOrWhiteSpace(a.Args) ? "" : $" args=\"{System.Security.SecurityElement.Escape(a.Args)}\"";
                             w.WriteLine($"      <Action type=\"RunProgram\" file=\"{file}\"{args} />");
                         }
-                        else if (t.Equals("writefile", StringComparison.OrdinalIgnoreCase) || t.Equals("WriteFile"))
+                        else if (t.Equals("WriteFile", StringComparison.OrdinalIgnoreCase))
                         {
-                            var path = System.Security.SecurityElement.Escape(a.Path ?? "");
+                            var path = System.Security.SecurityElement.Escape(a.Path ?? a.Target ?? "");
                             var contents = System.Security.SecurityElement.Escape(a.Contents ?? "");
                             var appendAttr = (a.Append.HasValue && a.Append.Value) ? " append=\"true\"" : "";
                             w.WriteLine($"      <Action type=\"WriteFile\" path=\"{path}\" contents=\"{contents}\"{appendAttr} />");
@@ -223,7 +238,7 @@ namespace mCompWardenManagement
                 }
                 else
                 {
-                    // Back-compat: turn plain CommandLines into RunProgram actions
+                    // Back-compat: prostý seznam příkazů jako RunProgram
                     foreach (var cmd in CommandLines)
                     {
                         var file = System.Security.SecurityElement.Escape(cmd ?? "");
@@ -237,5 +252,6 @@ namespace mCompWardenManagement
             }
             return true;
         }
+
     }
 }
