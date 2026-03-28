@@ -23,6 +23,12 @@
                     <ComboBoxItem Tag="v3">V3 (.mcw3.xml)</ComboBoxItem>
                 </ComboBox>
             </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                <Label Content="Soubor:" Width="80"/>
+                <!-- reuse the same name so your existing code keeps working -->
+                <TextBox x:Name="FileNameText" Width="520"/>
+                <Button x:Name="genFileNameButtonV3" Content="Generovat" Margin="10,0,0,0" Click="genFileNameButton_Click"/>
+            </StackPanel>
 
             <!-- V3 root setting -->
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" x:Name="V3RootBar" Visibility="Collapsed">
@@ -50,8 +56,11 @@
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <Label Content="Soubor:" Width="80"/>
-                        <TextBox Name="FileNameText" Width="520"/>
-                        <Button Name="genFileNameButton" Content="Generovat" Margin="10,0,0,0" Click="genFileNameButton_Click"/>
+                        <!-- Mirror the top FileNameText -->
+                        <TextBox x:Name="FileNameTextV2"
+           Width="520"
+           Text="{Binding ElementName=FileNameText, Path=Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button x:Name="genFileNameButton" Content="Generovat" Margin="10,0,0,0" Click="genFileNameButton_Click"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
@@ -129,6 +138,7 @@
                             <TextBox x:Name="TaskDescriptionText" AcceptsReturn="True" Height="60"/>
                         </StackPanel>
 
+                        <!-- FIXED: GroupBox has exactly one child (a single StackPanel) -->
                         <GroupBox Header="Cílení (Target)" Margin="0,5,0,5">
                             <StackPanel Margin="8">
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
@@ -137,6 +147,7 @@
                                     <Label Content="User:" Width="60" Margin="12,0,0,0"/>
                                     <TextBox x:Name="V3UserText" Width="160" ToolTip="Prázdné = jakýkoli uživatel"/>
                                 </StackPanel>
+
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Run as:" Width="80"/>
                                     <ComboBox x:Name="V3RunAsCombo" Width="140">
@@ -144,6 +155,19 @@
                                         <ComboBoxItem Tag="user">User (desktop)</ComboBoxItem>
                                         <ComboBoxItem Tag="system">System</ComboBoxItem>
                                     </ComboBox>
+                                </StackPanel>
+
+                                <!-- OU row moved INSIDE the same inner StackPanel -->
+                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                    <TextBlock Text="OU:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <ComboBox x:Name="OuCombo"
+                                              Width="420"
+                                              IsEditable="False"
+                                              SelectionChanged="OuCombo_SelectionChanged"/>
+                                    <TextBlock x:Name="OuInfo"
+                                               Text=""
+                                               VerticalAlignment="Center"
+                                               Margin="8,0,0,0"/>
                                 </StackPanel>
                             </StackPanel>
                         </GroupBox>
@@ -159,6 +183,7 @@
                                         <ComboBoxItem Tag="monthly">Měsíčně</ComboBoxItem>
                                         <ComboBoxItem Tag="hourly">Každou hodinu</ComboBoxItem>
                                         <ComboBoxItem Tag="minutely">Každé N minut</ComboBoxItem>
+                                        <ComboBoxItem Tag="once" Content="Jednorázově" />
                                     </ComboBox>
                                 </StackPanel>
 
@@ -349,7 +374,7 @@
 
                                         <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="*"/>
                                         <DataGridTextColumn Header="Args"     Width="150" Binding="{Binding Args,     Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                        
+
                                         <DataGridTextColumn Header="Contents" Width="220" Binding="{Binding Contents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                         <DataGridCheckBoxColumn Header="Append" Width="70" Binding="{Binding Append, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                     </DataGrid.Columns>

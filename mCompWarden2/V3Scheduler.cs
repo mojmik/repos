@@ -44,6 +44,7 @@ namespace mCompWarden2
     /// </summary>
     public static class V3ConfigLoader
     {
+
         public static List<CommandSet> LoadFile(string xmlPath)
         {
             if (!File.Exists(xmlPath))
@@ -68,7 +69,7 @@ namespace mCompWarden2
                     Id = id,
                     Enabled = enabled,
                     ScheduleType = (string)sched.Attribute("type") ?? "",
-                    // NEW: targeting
+                    // targeting
                     MachineName = (string)t.Attribute("machine") ?? "",
                     UserName = (string)t.Attribute("user") ?? "",
                     RunAs = ((string)t.Attribute("runAs") ?? "either").ToLowerInvariant(),
@@ -81,29 +82,32 @@ namespace mCompWarden2
                 {
                     v3.WeeklyDaysCsv = (string)sched.Attribute("days") ?? "";
                     v3.TimeHHmm = (string)sched.Attribute("time") ?? "";
-                    int md;
-                    if (int.TryParse((string)sched.Attribute("day"), out md))
-                        v3.MonthlyDay = md;
+                    if (type == "monthly")
+                    {
+                        if (int.TryParse((string)sched.Attribute("day"), out var md))
+                            v3.MonthlyDay = md;
+                    }
                 }
                 else if (type == "hourly")
                 {
-                    int m;
-                    if (!int.TryParse((string)sched.Attribute("minute"), out m)) m = 0;
-                    if (m < 0) m = 0; if (m > 59) m = 59;
-                    v3.HourlyMinute = m;
+                    if (!int.TryParse((string)sched.Attribute("minute"), out var m)) m = 0;
+                    v3.HourlyMinute = Math.Max(0, Math.Min(59, m));
                 }
                 else if (type == "minutely")
                 {
-                    int n;
-                    if (!int.TryParse((string)sched.Attribute("interval"), out n) || n <= 0) n = 5;
+                    if (!int.TryParse((string)sched.Attribute("interval"), out var n) || n <= 0) n = 5;
                     v3.MinutelyInterval = n;
+                }
+                else if (type == "once")
+                {
+                    // no extra attributes; it's a fire-once task
                 }
                 else
                 {
                     throw new InvalidOperationException($"Task {id}: unknown schedule type '{v3.ScheduleType}'.");
                 }
 
-                // --- parse multiple <Action> and <Actions><Action> ---
+                // --- parse actions (supports <Action> and <Actions><Action>) ---
                 IEnumerable<XElement> actionNodes =
                     t.Elements("Action").Concat(t.Elements("Actions").Elements("Action"));
 
@@ -116,8 +120,8 @@ namespace mCompWarden2
 
                     if (atype == "runprogram")
                     {
-                        var file = (string)act.Attribute("file") ?? "";
-                        var args = (string)act.Attribute("args") ?? "";
+                        var file = System.Net.WebUtility.HtmlDecode((string)act.Attribute("file") ?? "");
+                        var args = System.Net.WebUtility.HtmlDecode((string)act.Attribute("args") ?? "");
                         if (string.IsNullOrWhiteSpace(file))
                             throw new InvalidOperationException($"Task {id}: RunProgram requires 'file'.");
                         string cmd = Quote(file) + (string.IsNullOrWhiteSpace(args) ? "" : " " + args);
@@ -125,20 +129,19 @@ namespace mCompWarden2
                     }
                     else if (atype == "writefile")
                     {
-                        var target = (string)act.Attribute("target")
-                 ?? (string)act.Attribute("path")    // legacy GUI field
-                 ?? "";
-                        var contents = (string)act.Attribute("contents") ?? "";
+                        var target = System.Net.WebUtility.HtmlDecode(
+                            (string)act.Attribute("target")
+                            ?? (string)act.Attribute("path")  // legacy GUI field
+                            ?? ""
+                        );
+                        var contents = System.Net.WebUtility.HtmlDecode((string)act.Attribute("contents") ?? "");
                         bool append = ((string)act.Attribute("append"))?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false;
 
                         if (string.IsNullOrWhiteSpace(target))
                             throw new InvalidOperationException($"Task {id}: WriteFile requires 'target' (or legacy 'path').");
 
-                        // Build a native writefile special command: base64 content, no BOM UTF-8
-                        var payload = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(contents));
+                        var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(contents));
                         var appendFlag = append ? "1" : "0";
-
-                        // key=value pairs joined by '|', no quoting issues
                         var cmd = $"&writefile:path={target}|append={appendFlag}|encoding=utf8|payload={payload}";
                         v3.CommandLines.Add(cmd);
                     }
@@ -148,16 +151,18 @@ namespace mCompWarden2
                     }
                 }
 
-                // Map into a V3CommandSet (inherits CommandSet, so existing code still works)
+                // Map into a V3CommandSet
                 var cmdset = new V3CommandSet
                 {
                     CommandLines = v3.CommandLines,
                     SourceFilePath = xmlPath,
                     SourceFileName = Path.GetFileName(xmlPath),
                     FileLastModified = File.GetLastWriteTime(xmlPath),
-                    IsRepeating = true,            // keep true so CommandsManager doesn't archive after first run
-                    RepeatingType = "d",           // legacy field unused by V3 advance logic
-                    RepeatingInterval = 1,
+
+                    // V2 fields kept for compatibility; schedule advancement handled below
+                    IsRepeating = !string.Equals(v3.ScheduleType, "once", StringComparison.OrdinalIgnoreCase),
+                    RepeatingType = "d",
+                    RepeatingInterval = 1,                    
 
                     ScheduleTypeV3 = v3.ScheduleType,
                     WeeklyDaysCsvV3 = v3.WeeklyDaysCsv,
@@ -165,7 +170,8 @@ namespace mCompWarden2
                     TimeHHmmV3 = v3.TimeHHmm,
                     HourlyMinuteV3 = v3.HourlyMinute ?? 0,
                     MinutelyIntervalV3 = v3.MinutelyInterval ?? 0,
-                    // NEW: targeting → existing CommandSet fields
+
+                    // targeting → existing CommandSet fields
                     MachineName = string.IsNullOrWhiteSpace(v3.MachineName) ? "" : v3.MachineName,
                     UserName = string.IsNullOrWhiteSpace(v3.UserName) ? "" : v3.UserName,
                     NeedsUser = v3.RunAs == "user",
@@ -173,46 +179,56 @@ namespace mCompWarden2
                     NeedsNetwork = v3.NeedsNetwork ?? false
                 };
 
-                // Seed RunAt (first occurrence from "now")
-                DateTime now = DateTime.Now;
-                TimeSpan tod;
-                if (!TryParseHHmm(v3.TimeHHmm, out tod)) tod = new TimeSpan(0, 0, 0);
+                // Seed first RunAt
+                var now = DateTime.Now;
+                if (string.Equals(v3.ScheduleType, "once", StringComparison.OrdinalIgnoreCase))
+                {
+                    // fire as soon as possible; a tiny offset prevents “past” evaluation
+                    cmdset.RunAt = now.AddSeconds(2);
+                    cmdset.RunAtTime = true;
+                }
+                else
+                {
+                    TimeSpan tod;
+                    if (!TryParseHHmm(v3.TimeHHmm, out tod)) tod = new TimeSpan(0, 0, 0);
 
-                var schedule = (v3.ScheduleType ?? "").ToLowerInvariant();
-                if (schedule == "daily")
-                {
-                    cmdset.RunAt = DateTime.Today.Add(tod);
-                    if (cmdset.RunAt <= now) cmdset.RunAt = cmdset.RunAt.AddDays(1);
-                    cmdset.RunAtTime = true;
-                }
-                else if (schedule == "weekly")
-                {
-                    var next = ComputeNextWeeklyOccurrence(now, v3.WeeklyDaysCsv, tod);
-                    cmdset.RunAt = next.When;
-                    cmdset.RepeatingInterval = next.DaysUntil;
-                    cmdset.RunAtTime = true;
-                }
-                else if (schedule == "monthly")
-                {
-                    int day = Math.Max(1, Math.Min(31, v3.MonthlyDay ?? DateTime.Today.Day));
-                    var next = ComputeNextMonthlyOccurrence(now, day, tod);
-                    cmdset.RunAt = next.When;
-                    cmdset.RepeatingInterval = (next.When - now).TotalDays;
-                    cmdset.RunAtTime = true;
-                }
-                else if (schedule == "hourly")
-                {
-                    int minute = v3.HourlyMinute ?? 0;
-                    var candidate = new DateTime(now.Year, now.Month, now.Day, now.Hour, minute, 0);
-                    if (candidate <= now) candidate = candidate.AddHours(1);
-                    cmdset.RunAt = candidate;
-                    cmdset.RunAtTime = true;
-                }
-                else if (schedule == "minutely")
-                {
-                    int interval = v3.MinutelyInterval ?? 5;
-                    cmdset.RunAt = RoundUpToNextMinuteInterval(now, interval);
-                    cmdset.RunAtTime = true;
+                    var schedule = (v3.ScheduleType ?? "").ToLowerInvariant();
+                    bool isOneShot = schedule == "once";
+                    if (schedule == "daily")
+                    {
+                        cmdset.RunAt = DateTime.Today.Add(tod);
+                        if (cmdset.RunAt <= now) cmdset.RunAt = cmdset.RunAt.AddDays(1);
+                        cmdset.RunAtTime = true;
+                    }
+                    else if (schedule == "weekly")
+                    {
+                        var next = ComputeNextWeeklyOccurrence(now, v3.WeeklyDaysCsv, tod);
+                        cmdset.RunAt = next.When;
+                        cmdset.RepeatingInterval = next.DaysUntil;
+                        cmdset.RunAtTime = true;
+                    }
+                    else if (schedule == "monthly")
+                    {
+                        int day = Math.Max(1, Math.Min(31, v3.MonthlyDay ?? DateTime.Today.Day));
+                        var next = ComputeNextMonthlyOccurrence(now, day, tod);
+                        cmdset.RunAt = next.When;
+                        cmdset.RepeatingInterval = (next.When - now).TotalDays;
+                        cmdset.RunAtTime = true;
+                    }
+                    else if (schedule == "hourly")
+                    {
+                        int minute = v3.HourlyMinute ?? 0;
+                        var candidate = new DateTime(now.Year, now.Month, now.Day, now.Hour, minute, 0);
+                        if (candidate <= now) candidate = candidate.AddHours(1);
+                        cmdset.RunAt = candidate;
+                        cmdset.RunAtTime = true;
+                    }
+                    else if (schedule == "minutely")
+                    {
+                        int interval = v3.MinutelyInterval ?? 5;
+                        cmdset.RunAt = RoundUpToNextMinuteInterval(now, interval);
+                        cmdset.RunAtTime = true;
+                    }
                 }
 
                 tasks.Add(cmdset);
@@ -220,6 +236,7 @@ namespace mCompWarden2
 
             return tasks;
         }
+
 
         // --- helpers ---
         private static bool? ParseBoolOrNull(string s)
@@ -331,6 +348,10 @@ namespace mCompWarden2
 
         public void AdvanceAfterRun()
         {
+            // For one-time tasks, do nothing here.
+            if (string.Equals(ScheduleTypeV3, "once", StringComparison.OrdinalIgnoreCase))
+                return;
+
             DateTime now = DateTime.Now;
             TimeSpan tod;
             if (!V3ConfigLoader.TryParseHHmm(TimeHHmmV3, out tod))
@@ -357,9 +378,8 @@ namespace mCompWarden2
             else if (type == "hourly")
             {
                 int minute = Math.Max(0, Math.Min(59, HourlyMinuteV3));
-                // schedule next hour at the same minute
                 var cand = new DateTime(now.Year, now.Month, now.Day, now.Hour, minute, 0).AddHours(1);
-                if (cand <= now) cand = cand.AddHours(1); // safety
+                if (cand <= now) cand = cand.AddHours(1);
                 RunAt = cand;
             }
             else if (type == "minutely")
@@ -368,5 +388,7 @@ namespace mCompWarden2
                 RunAt = V3ConfigLoader.RoundUpToNextMinuteInterval(now, interval);
             }
         }
+
+
     }
 }

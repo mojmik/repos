@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using System.IO;
 using System.Linq;
 
 using System.Text;
@@ -8,19 +8,23 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.IO;
 
-namespace mCompWarden2 {
+namespace mCompWarden2
+{
 
-    class Program {
+    class Program
+    {
 
-      
+
 
 
         //na pozadi to bezi diky Project > Properties> Application tab > change Output type to "Windows application".
         public static string mainPath = @"\\rentex.intra\company\data\Company\mkavan_upravy\scripts\mCompWarden2\";
         public static string outPath = @"\\rentex.intra\company\data\Company\mkavan_upravy\scripts\mCompWarden2\out\";
+        public static string archiveUNC = @"\\rentex.intra\company\data\Company\mkavan_upravy\scripts\mCompWarden2\arc";
         public static string localPath = @"c:\it\compwarden\";
         public static string commandsLocalPath = localPath + @"cmd\";
         public static string commandsArcLocalPath = localPath + @"cmd\arc\";
+        public static string archiveLocal = commandsArcLocalPath;
         public static string serverPingName = "aadyn";
 
         /*
@@ -41,21 +45,37 @@ namespace mCompWarden2 {
         static System.Threading.Mutex singleton = new Mutex(true, "mCompWarden2-" + System.Environment.UserName);
         static AutoResetEvent _wakeUp = new AutoResetEvent(false);
 
-        public static string GetVer() {
-            return "v2.4";
+        public static string GetVer()
+        {
+            return "v4.6";
         }
 
-        static void Main(string[] args) {
-            if (!singleton.WaitOne(TimeSpan.Zero, true)) {
+        [STAThread]
+        static void Main(string[] args)
+        {
+            if (!singleton.WaitOne(TimeSpan.Zero, true))
+            {
                 //there is already another instance running!                
                 return;
             }
 
-            //Logger logger = new Logger(localPath + "log.txt", mainPath + "log.txt");
-            Logger.logFilePath = localPath + "log.txt";
-            Logger.remoteInfoPath = @"\\aavm2\data2\";
-            Logger.remoteLogPath = mainPath + "log.txt";
-            Logger.remoteUrl = "http://aavm2/intra/mlogs/mlogs.php?action=putlog";
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                try { Logger.WriteLog("FATAL UnhandledException: " + e.ExceptionObject, Logger.TypeLog.both); } catch { }
+            };
+            System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (s, e) =>
+            {
+                try { Logger.WriteLog("UnobservedTaskException: " + e.Exception, Logger.TypeLog.both); } catch { }
+                e.SetObserved();
+            };
+
+            try
+            {
+                //Logger logger = new Logger(localPath + "log.txt", mainPath + "log.txt");
+                Logger.logFilePath = localPath + "log.txt";
+                Logger.remoteInfoPath = @"\\aavm2\data2\";
+                Logger.remoteLogPath = mainPath + "log.txt";
+                Logger.remoteUrl = "http://aavm2/intra/mlogs/mlogs.php?action=putlog";
 
             CommandsManager commandsManager = new CommandsManager();
             NetworkTools netTools = new NetworkTools();

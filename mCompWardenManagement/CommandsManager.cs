@@ -165,6 +165,9 @@ namespace mCompWardenManagement
             cf.V3Id = (string)task.Attribute("id") ?? "task1";
             bool enabled;
             cf.V3Enabled = bool.TryParse((string)task.Attribute("enabled"), out enabled) ? enabled : true;
+            cf.MachineName = (string)task.Attribute("machine") ?? "";
+            cf.UserName = (string)task.Attribute("user") ?? "";
+            cf.RunAs = (string)task.Attribute("runAs") ?? "either";
 
             // Description
             var desc = task.Element(task.Name.Namespace + "Description") ??

@@ -43,147 +43,209 @@ namespace mCompWarden2
 
         public void MakeFromFile(string filePath)
         {
-            string line;
             CommandLines = new List<string>();
             SourceFilePath = filePath;
             IsArchived = false;
             SourceFileName = Path.GetFileName(SourceFilePath);
-            FileLastModified = System.IO.File.GetLastWriteTime(filePath);
-            string settingsHashCodeV1 = "@cmdsettings:";
-            string settingsHashCodeV2 = "@cmdsettingsV2";
+
+            // Get last-write time defensively (file may be mid-write)
+            try { FileLastModified = File.GetLastWriteTime(filePath); } catch { FileLastModified = DateTime.MinValue; }
+
+            const string settingsHashCodeV1 = "@cmdsettings:";
+            const string settingsHashCodeV2 = "@cmdsettingsV2";
+
             int lineNum = 0;
             int settingsVersion = 0;
             bool commandsLines = false;
-            using (System.IO.StreamReader reader = new System.IO.StreamReader(filePath))
+
+            // Open with FileShare so we can read while another process is writing/locking
+            // Also add a few retries in case the writer has an exclusive lock for a moment.
+            const int maxAttempts = 5;
+            const int delayMs = 150;
+            for (int attempt = 1; attempt <= maxAttempts; attempt++)
             {
-                while ((line = reader.ReadLine()) != null)
+                try
                 {
-                    if (line == "") continue;
-                    if (lineNum == 0)
+                    using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+                    using (var reader = new StreamReader(fs, Encoding.UTF8, true))
                     {
-                        if (line.Contains(settingsHashCodeV1))
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
                         {
-                            line = (line.Length > settingsHashCodeV1.Length) ? line.Substring(settingsHashCodeV1.Length) : "";
+                            if (string.IsNullOrEmpty(line)) { lineNum++; continue; }
 
-                            try
+                            if (lineNum == 0)
                             {
-                                string[] settingStr = line.Split(';');
-                                IsRepeating = false;
-                                IsRemote = false;
-                                NeedsNetwork = false;
-                                NeedsSystem = false;
-                                if (ExcludedComputers != null) Array.Clear(ExcludedComputers, 0, ExcludedComputers.Length);
-                                ExcludedComputersRegex = "";
-
-                                if (settingStr[0] != "")
+                                if (line.Contains(settingsHashCodeV1))
                                 {
-                                    if (settingStr[0] == "0")
+                                    var payload = (line.Length > settingsHashCodeV1.Length) ? line.Substring(settingsHashCodeV1.Length) : "";
+                                    try
                                     {
+                                        var settingStr = payload.Split(';');
                                         IsRepeating = false;
-                                    }
-                                    else
-                                    {
-                                        IsRepeating = true;
-                                        RepeatingType = settingStr[0].Substring(0, 1);
-                                        RepeatingInterval = (settingStr[0].Substring(1) == "") ? 0 : double.Parse(settingStr[0].Substring(1));
-                                    }
-                                }
-                                if (settingStr[1] == "1") IsRemote = true;  //not used
-                                if (settingStr[2] == "1") NeedsNetwork = true;
-                                if (settingStr[3] == "1") NeedsUser = true;
-                                if (settingStr[3] == "-1") NeedsSystem = true;
-                                ExcludedComputers = settingStr[4].Split(',');
-                                ExcludedComputersRegex = settingStr[5];
-                            }
-                            catch (Exception e)
-                            {
-                                throw new Exception("Failed to load command settings", e);
-                            }
+                                        IsRemote = false;
+                                        NeedsNetwork = false;
+                                        NeedsSystem = false;
+                                        if (ExcludedComputers != null) Array.Clear(ExcludedComputers, 0, ExcludedComputers.Length);
+                                        ExcludedComputersRegex = "";
 
-                            settingsVersion = 1;
-                        }
-                        if (line.Contains(settingsHashCodeV2))
-                        {
-                            settingsVersion = 2;
-                            if (ExcludedComputers != null) Array.Clear(ExcludedComputers, 0, ExcludedComputers.Length);
-                            ExcludedComputersRegex = "";
-                        }
-                    }
-                    else
-                    {
-                        if (settingsVersion == 1)
-                        {
-                            CommandLines.Add(line);
-                        }
-                        if (settingsVersion == 2)
-                        {
-                            try
-                            {
-                                if (!commandsLines)
-                                {
-                                    string[] settingStr = line.Split(new string[] { ":" }, 2, StringSplitOptions.None);
-                                    switch (settingStr[0])
-                                    {
-                                        case "MachineName":
-                                            MachineName = settingStr[1];
-                                            break;
-                                        case "UserName":
-                                            UserName = settingStr[1];
-                                            break;
-                                        case "RunAt":
-                                            if (settingStr[1] != "")
+                                        if (settingStr.Length > 0 && !string.IsNullOrEmpty(settingStr[0]))
+                                        {
+                                            if (settingStr[0] == "0")
                                             {
-                                                RunAt = DateTime.Parse(settingStr[1]);
-                                                RunAtTime = true;
+                                                IsRepeating = false;
                                             }
-                                            break;
-                                        case "IsRepeating":
-                                            IsRepeating = bool.Parse(settingStr[1]);
-                                            break;
-                                        case "IsRemote":
-                                            IsRemote = bool.Parse(settingStr[1]);
-                                            break;
-                                        case "NeedsNetwork":
-                                            NeedsNetwork = bool.Parse(settingStr[1]);
-                                            break;
-                                        case "NeedsSystem":
-                                            NeedsSystem = bool.Parse(settingStr[1]);
-                                            break;
-                                        case "NeedsUser":
-                                            NeedsUser = bool.Parse(settingStr[1]);
-                                            break;
-                                        case "ExcludedComputers":
-                                            ExcludedComputers = settingStr[1].Split(',');
-                                            break;
-                                        case "ExcludedComputersRegex":
-                                            ExcludedComputersRegex = settingStr[1];
-                                            break;
-                                        case "RepeatingType":
-                                            RepeatingType = settingStr[1];
-                                            break;
-                                        case "RepeatingInterval":
-                                            try { RepeatingInterval = double.Parse(settingStr[1]); } catch { RepeatingInterval = 0; }
-                                            break;
-                                        case "commands":
-                                            commandsLines = true;
-                                            break;
+                                            else
+                                            {
+                                                IsRepeating = true;
+                                                RepeatingType = settingStr[0].Substring(0, 1);
+                                                double val;
+                                                RepeatingInterval = (settingStr[0].Length > 1 && double.TryParse(settingStr[0].Substring(1),
+                                                    System.Globalization.NumberStyles.Float,
+                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                    out val)) ? val : 0d;
+                                            }
+                                        }
+
+                                        if (settingStr.Length > 1 && settingStr[1] == "1") IsRemote = true; // not used
+                                        if (settingStr.Length > 2 && settingStr[2] == "1") NeedsNetwork = true;
+                                        if (settingStr.Length > 3)
+                                        {
+                                            if (settingStr[3] == "1") NeedsUser = true;
+                                            if (settingStr[3] == "-1") NeedsSystem = true;
+                                        }
+                                        if (settingStr.Length > 4 && !string.IsNullOrEmpty(settingStr[4]))
+                                            ExcludedComputers = settingStr[4].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                        if (settingStr.Length > 5)
+                                            ExcludedComputersRegex = settingStr[5];
                                     }
+                                    catch (Exception e)
+                                    {
+                                        throw new Exception("Failed to load command settings (V1)", e);
+                                    }
+
+                                    settingsVersion = 1;
                                 }
-                                else
+                                else if (line.Contains(settingsHashCodeV2))
+                                {
+                                    settingsVersion = 2;
+                                    if (ExcludedComputers != null) Array.Clear(ExcludedComputers, 0, ExcludedComputers.Length);
+                                    ExcludedComputersRegex = "";
+                                }
+                            }
+                            else
+                            {
+                                if (settingsVersion == 1)
                                 {
                                     CommandLines.Add(line);
                                 }
-                            }
-                            catch (Exception e)
-                            {
-                                throw new Exception("Failed to load command settings", e);
-                            }
-                        }
+                                else if (settingsVersion == 2)
+                                {
+                                    try
+                                    {
+                                        if (!commandsLines)
+                                        {
+                                            var settingStr = line.Split(new[] { ":" }, 2, StringSplitOptions.None);
+                                            var key = settingStr[0];
+                                            var val = (settingStr.Length > 1) ? settingStr[1] : "";
 
+                                            switch (key)
+                                            {
+                                                case "MachineName":
+                                                    MachineName = val;
+                                                    break;
+                                                case "UserName":
+                                                    UserName = val;
+                                                    break;
+                                                case "RunAt":
+                                                    if (!string.IsNullOrWhiteSpace(val))
+                                                    {
+                                                        DateTime dt;
+                                                        if (DateTime.TryParse(val, System.Globalization.CultureInfo.InvariantCulture,
+                                                                               System.Globalization.DateTimeStyles.AssumeLocal, out dt))
+                                                        {
+                                                            RunAt = dt;
+                                                            RunAtTime = true;
+                                                        }
+                                                    }
+                                                    break;
+                                                case "IsRepeating":
+                                                    bool bRep;
+                                                    if (bool.TryParse(val, out bRep)) IsRepeating = bRep;
+                                                    break;
+                                                case "IsRemote":
+                                                    bool bRem;
+                                                    if (bool.TryParse(val, out bRem)) IsRemote = bRem;
+                                                    break;
+                                                case "NeedsNetwork":
+                                                    bool bNet;
+                                                    if (bool.TryParse(val, out bNet)) NeedsNetwork = bNet;
+                                                    break;
+                                                case "NeedsSystem":
+                                                    bool bSys;
+                                                    if (bool.TryParse(val, out bSys)) NeedsSystem = bSys;
+                                                    break;
+                                                case "NeedsUser":
+                                                    bool bUsr;
+                                                    if (bool.TryParse(val, out bUsr)) NeedsUser = bUsr;
+                                                    break;
+                                                case "ExcludedComputers":
+                                                    ExcludedComputers = string.IsNullOrEmpty(val)
+                                                        ? null
+                                                        : val.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                                    break;
+                                                case "ExcludedComputersRegex":
+                                                    ExcludedComputersRegex = val ?? "";
+                                                    break;
+                                                case "RepeatingType":
+                                                    RepeatingType = val ?? "";
+                                                    break;
+                                                case "RepeatingInterval":
+                                                    double d;
+                                                    RepeatingInterval = double.TryParse(val, System.Globalization.NumberStyles.Float,
+                                                        System.Globalization.CultureInfo.InvariantCulture, out d) ? d : 0d;
+                                                    break;
+                                                case "commands":
+                                                    commandsLines = true;
+                                                    break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            CommandLines.Add(line);
+                                        }
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        throw new Exception("Failed to load command settings (V2)", e);
+                                    }
+                                }
+                            }
+
+                            lineNum++;
+                        }
                     }
-                    lineNum++;
+
+                    // If we got here, read succeeded
+                    break;
+                }
+                catch (IOException) when (attempt < maxAttempts)
+                {
+                    System.Threading.Thread.Sleep(delayMs);
+                    continue;
+                }
+                catch (UnauthorizedAccessException) when (attempt < maxAttempts)
+                {
+                    System.Threading.Thread.Sleep(delayMs);
+                    continue;
+                }
+                catch
+                {
+                    // rethrow unexpected
+                    throw;
                 }
             }
+
             if (RunAtTime && IsRunEnvironment())
             {
                 if (IsRepeating && RepeatingType == "d")
@@ -200,13 +262,10 @@ namespace mCompWarden2
             command = command.Replace("\r", "");
             command = command.Replace("\n", "");
             string[] splitCmd = command.Split(' ');
-            if (splitCmd.Length > 1)
+            if (splitCmd.Length > 0 && string.Equals(splitCmd[0], "wscript", StringComparison.OrdinalIgnoreCase))
             {
-                if (splitCmd[0] == "wscript")
-                {
-                    string scriptPath = splitCmd[1];
-                    if (!File.Exists(scriptPath)) return false;
-                }
+                var scriptPath = (splitCmd.Length > 1) ? splitCmd[1].Trim() : "";
+                if (!string.IsNullOrEmpty(scriptPath) && !File.Exists(scriptPath)) return false;
             }
 
             if (command == "") return false;
@@ -373,84 +432,84 @@ namespace mCompWarden2
 
             if (RunAtTime)
             {
-                if (RunAt < DateTime.Now)
+                if (RunAt >= DateTime.Now) return false;
+
+                var v3 = this as IV3Schedule;
+                if (v3 == null)
                 {
-                    // IMPORTANT: let V3 handle advancing AFTER run
-                    var v3 = this as IV3Schedule;
-                    if (v3 == null)
+                    if (IsRepeating)
                     {
-                        // Legacy V2 advance
-                        if (IsRepeating)
-                        {
-                            if (RepeatingType == "s") RunAt = DateTime.Now.AddSeconds(RepeatingInterval);
-                            if (RepeatingType == "m") RunAt = DateTime.Now.AddMinutes(RepeatingInterval);
-                            if (RepeatingType == "h") RunAt = DateTime.Now.AddHours(RepeatingInterval);
-                            if (RepeatingType == "d")
-                            {
-                                RunAt = (DateTime.Today + RunAt.TimeOfDay).AddDays(RepeatingInterval);
-                            }
-                            if (RepeatingType == "!") return false; //! means never! 
-                            Logger.WriteLog($"next run {SourceFilePath}: {RunAt.ToShortDateString()} {RunAt.ToShortTimeString()} ", Logger.TypeLog.both);
-                        }
-                        else
-                        {
-                            // run once at set time
-                            if (RunAtRan) return false;
-                            RunAtRan = true;
-                        }
+                        if (RepeatingType == "s") RunAt = DateTime.Now.AddSeconds(RepeatingInterval);
+                        else if (RepeatingType == "m") RunAt = DateTime.Now.AddMinutes(RepeatingInterval);
+                        else if (RepeatingType == "h") RunAt = DateTime.Now.AddHours(RepeatingInterval);
+                        else if (RepeatingType == "d") RunAt = (DateTime.Today + RunAt.TimeOfDay).AddDays(RepeatingInterval);
+                        else if (RepeatingType == "!") return false; // never
+                        Logger.WriteLog($"next run {SourceFilePath}: {RunAt:G}", Logger.TypeLog.both);
                     }
-                    // else (V3): do not advance here; CommandsManager will call AdvanceAfterRun()
+                    else
+                    {
+                        if (RunAtRan) return false;
+                        RunAtRan = true;
+                    }
                 }
-                else
-                {
-                    // not yet time
-                    return false;
-                }
+                // V3 advance happens in CommandsManager after successful run
             }
             else
             {
-                // interval mode (legacy V2)
                 if (IsRepeating)
                 {
                     if (RepeatingType == "s") ranDiff = (DateTime.Now - LastRun).TotalSeconds;
-                    if (RepeatingType == "m") ranDiff = (DateTime.Now - LastRun).TotalMinutes;
-                    if (RepeatingType == "h") ranDiff = (DateTime.Now - LastRun).TotalHours;
-                    if (RepeatingType == "d") ranDiff = (DateTime.Now - LastRun).TotalDays;
-                    if (RepeatingType == "x")
+                    else if (RepeatingType == "m") ranDiff = (DateTime.Now - LastRun).TotalMinutes;
+                    else if (RepeatingType == "h") ranDiff = (DateTime.Now - LastRun).TotalHours;
+                    else if (RepeatingType == "d") ranDiff = (DateTime.Now - LastRun).TotalDays;
+                    else if (RepeatingType == "x")
                     {
-                        // once per service lifetime
                         if (RunAlready) return false;
                         ranDiff = RepeatingInterval - 1;
                     }
-                    if (RepeatingType == "!") return false; //! means never!
+                    else if (RepeatingType == "!") return false;
+
                     if (ranDiff < RepeatingInterval) return false;
                 }
             }
 
-            foreach (string command in CommandLines)
+            foreach (var raw in CommandLines ?? Enumerable.Empty<string>())
             {
+                var command = (raw ?? "").Replace("\r", "").Replace("\n", "").Trim();
+                if (command.Length == 0) continue;
+
                 if (SpecialCommand(command))
                 {
-                    ;
+                    // handled internally
                 }
                 else if (CommandIsRunnable(command))
                 {
-                    var proc = new System.Diagnostics.Process
+                    try
                     {
-                        StartInfo = new System.Diagnostics.ProcessStartInfo
+                        var psi = new System.Diagnostics.ProcessStartInfo
                         {
                             FileName = "cmd.exe",
                             Arguments = "/C " + command,
                             UseShellExecute = false,
                             RedirectStandardOutput = true,
+                            RedirectStandardError = false,
                             WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
                             CreateNoWindow = true
-                        }
-                    };
-                    proc.Start();
-                }
+                        };
 
+                        using (var proc = new System.Diagnostics.Process { StartInfo = psi })
+                        {
+                            proc.Start();
+                            // Do not WaitForExit to avoid blocking the scheduler thread
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteLog("Process start failed for: " + command + " ex: " + ex, Logger.TypeLog.both);
+                    }
+                }
             }
+
             LastRun = DateTime.Now;
             return true;
         }
@@ -458,12 +517,33 @@ namespace mCompWarden2
         public void ArchiveSource()
         {
             if (IsArchived) return;
-            if (!File.Exists(SourceFilePath)) return;
+            if (string.IsNullOrWhiteSpace(SourceFilePath)) return;
 
-            string arcFile = Program.commandsArcLocalPath + SourceFileName;
-            if (File.Exists(arcFile)) File.Delete(arcFile);
-            File.Move(SourceFilePath, arcFile);
-            IsArchived = true;
+            try
+            {
+                if (!File.Exists(SourceFilePath)) { IsArchived = true; return; }
+
+                string targetDir = Program.commandsArcLocalPath ?? "";
+                try { Directory.CreateDirectory(targetDir); } catch { /* ignore */ }
+
+                string dest = Path.Combine(targetDir, SourceFileName ?? ("arch_" + Guid.NewGuid().ToString("N")));
+                try
+                {
+                    if (File.Exists(dest)) File.Delete(dest);
+                    File.Move(SourceFilePath, dest);
+                }
+                catch
+                {
+                    // If move fails (locked), copy then best-effort delete
+                    try { File.Copy(SourceFilePath, dest, true); } catch { }
+                    try { File.Delete(SourceFilePath); } catch { }
+                }
+                IsArchived = true;
+            }
+            catch
+            {
+                // never throw from archiving
+            }
         }
         public string[] ParseMultiSpacedArguments(string commandLine)
         {
