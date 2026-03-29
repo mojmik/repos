@@ -47,7 +47,7 @@ namespace mCompWarden2
 
         public static string GetVer()
         {
-            return "v4.9";
+            return "v5.0";
         }
 
         [STAThread]
