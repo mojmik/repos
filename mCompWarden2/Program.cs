@@ -43,6 +43,7 @@ namespace mCompWarden2
 
         static System.Threading.Mutex singleton = new Mutex(true, "mCompWarden2-" + System.Environment.UserName);
         static AutoResetEvent _wakeUp = new AutoResetEvent(false);
+        private static string _lastChangedFile = "";
 
         public static string GetVer()
         {
@@ -125,7 +126,7 @@ namespace mCompWarden2
                     {
                         if (signaled)
                         {
-                            Logger.WriteLog("Command file change detected - triggering immediate load.", Logger.TypeLog.both);
+                            Logger.WriteLog($"Command file change detected ({_lastChangedFile}) - triggering immediate load.", Logger.TypeLog.both);
                             runMan.IsTime("load", 0, "s"); // Force reset the polling timer
                         }
                         runMan.LoadCommands();
@@ -161,6 +162,7 @@ namespace mCompWarden2
                 string ext = Path.GetExtension(e.Name).ToLower();
                 if (ext == ".txt" || ext == ".cwd" || ext == ".xml")
                 {
+                    _lastChangedFile = e.Name;
                     _wakeUp.Set();
                 }
             }
