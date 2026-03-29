@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -486,16 +486,38 @@ namespace mCompWarden2
                 {
                     try
                     {
-                        var psi = new System.Diagnostics.ProcessStartInfo
+                        System.Diagnostics.ProcessStartInfo psi;
+                        var match = System.Text.RegularExpressions.Regex.Match(command, @"^(?<path>.*\.ps1)(?<args>.*)$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+                        if (match.Success)
                         {
-                            FileName = "cmd.exe",
-                            Arguments = "/C " + command,
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = false,
-                            WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                            CreateNoWindow = true
-                        };
+                            string scriptPath = match.Groups["path"].Value.Trim().Trim('"');
+                            string scriptArgs = match.Groups["args"].Value.Trim();
+                            
+                            Logger.WriteLog(string.Format("Running PowerShell script via explorer trick: \"{0}\" {1}", scriptPath, scriptArgs), Logger.TypeLog.both);
+                            psi = new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = "explorer.exe",
+                                Arguments = string.Format("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File \"{0}\" {1}", scriptPath, scriptArgs),
+                                UseShellExecute = false,
+                                CreateNoWindow = true,
+                                RedirectStandardOutput = false,
+                                RedirectStandardError = false
+                            };
+                        }
+                        else
+                        {
+                            psi = new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = "cmd.exe",
+                                Arguments = "/C " + command,
+                                UseShellExecute = false,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = false,
+                                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                                CreateNoWindow = true
+                            };
+                        }
 
                         using (var proc = new System.Diagnostics.Process { StartInfo = psi })
                         {

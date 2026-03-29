@@ -122,6 +122,14 @@ namespace mCompWarden2
                 for (; ; )
                 {
                     bool signaled = _wakeUp.WaitOne(5000);
+                    if (signaled)
+                    {
+                        // Debounce: wait 1s for file operations (like from Notepad or network save) to settle
+                        System.Threading.Thread.Sleep(1000);
+                        // Consume any redundant signals that arrived during the wait
+                        while (_wakeUp.WaitOne(0)) ;
+                    }
+
                     if (signaled || runMan.IsTime("load", 100, "s"))
                     {
                         if (signaled)
