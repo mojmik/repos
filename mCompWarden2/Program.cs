@@ -90,10 +90,11 @@ namespace mCompWarden2
                 try
                 {
                     localWatcher = new FileSystemWatcher(commandsLocalPath, "*.*");
-                    localWatcher.Created += (s, e) => _wakeUp.Set();
-                    localWatcher.Changed += (s, e) => _wakeUp.Set();
-                    localWatcher.Renamed += (s, e) => _wakeUp.Set();
-                    localWatcher.Deleted += (s, e) => _wakeUp.Set();
+                    localWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
+                    localWatcher.Created += OnWatcherEvent;
+                    localWatcher.Changed += OnWatcherEvent;
+                    localWatcher.Renamed += OnWatcherEvent;
+                    localWatcher.Deleted += OnWatcherEvent;
                     localWatcher.EnableRaisingEvents = true;
                 }
                 catch (Exception ex)
@@ -105,10 +106,11 @@ namespace mCompWarden2
                 try
                 {
                     remoteWatcher = new FileSystemWatcher(mainPath, "*.*");
-                    remoteWatcher.Created += (s, e) => _wakeUp.Set();
-                    remoteWatcher.Changed += (s, e) => _wakeUp.Set();
-                    remoteWatcher.Renamed += (s, e) => _wakeUp.Set();
-                    remoteWatcher.Deleted += (s, e) => _wakeUp.Set();
+                    remoteWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
+                    remoteWatcher.Created += OnWatcherEvent;
+                    remoteWatcher.Changed += OnWatcherEvent;
+                    remoteWatcher.Renamed += OnWatcherEvent;
+                    remoteWatcher.Deleted += OnWatcherEvent;
                     remoteWatcher.EnableRaisingEvents = true;
                 }
                 catch (Exception ex)
@@ -142,6 +144,30 @@ namespace mCompWarden2
             catch (Exception ex)
             {
                 Logger.WriteLog("FATAL: Error in Main loop: " + ex.ToString(), Logger.TypeLog.both);
+            }
+        }
+
+        private static void OnWatcherEvent(object sender, FileSystemEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(e.Name)) return;
+
+                // Ignore the log file to prevent infinite loops (remote log is in the watched mainPath)
+                string remoteLogFile = Path.GetFileName(Logger.remoteLogPath);
+                if (e.Name.Equals(remoteLogFile, StringComparison.OrdinalIgnoreCase)) return;
+
+                // Only signal for actual command/config files
+                string ext = Path.GetExtension(e.Name).ToLower();
+                if (ext == ".txt" || ext == ".cwd" || ext == ".xml")
+                {
+                    _wakeUp.Set();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Never allow watcher events to crash the app
+                try { Logger.WriteLog("Watcher event error: " + ex.Message, Logger.TypeLog.both); } catch { }
             }
         }
     }
