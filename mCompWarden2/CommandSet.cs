@@ -494,11 +494,11 @@ namespace mCompWarden2
                             string scriptPath = match.Groups["path"].Value.Trim().Trim('"');
                             string scriptArgs = match.Groups["args"].Value.Trim();
                             
-                            Logger.WriteLog(string.Format("Running PowerShell script via explorer trick: \"{0}\" {1}", scriptPath, scriptArgs), Logger.TypeLog.both);
+                            Logger.WriteLog(string.Format("Running PowerShell script: \"{0}\" {1}", scriptPath, scriptArgs), Logger.TypeLog.both);
                             psi = new System.Diagnostics.ProcessStartInfo
                             {
-                                FileName = "explorer.exe",
-                                Arguments = string.Format("powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File \"{0}\" {1}", scriptPath, scriptArgs),
+                                FileName = "powershell.exe",
+                                Arguments = string.Format("-ExecutionPolicy Bypass -WindowStyle Hidden -File \"{0}\" {1}", scriptPath, scriptArgs),
                                 UseShellExecute = false,
                                 CreateNoWindow = true,
                                 RedirectStandardOutput = false,
