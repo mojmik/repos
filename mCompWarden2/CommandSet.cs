@@ -487,13 +487,10 @@ namespace mCompWarden2
                     try
                     {
                         System.Diagnostics.ProcessStartInfo psi;
-                        var match = System.Text.RegularExpressions.Regex.Match(command, @"^(?<path>.*\.ps1)(?<args>.*)$", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                        string scriptPath, scriptArgs;
 
-                        if (match.Success)
+                        if (TryParseLeadingPs1Command(command, out scriptPath, out scriptArgs))
                         {
-                            string scriptPath = match.Groups["path"].Value.Trim().Trim('"');
-                            string scriptArgs = match.Groups["args"].Value.Trim();
-                            
                             Logger.WriteLog(string.Format("Running PowerShell script: \"{0}\" {1}", scriptPath, scriptArgs), Logger.TypeLog.both);
                             psi = new System.Diagnostics.ProcessStartInfo
                             {
@@ -583,6 +580,50 @@ namespace mCompWarden2
             }
 
             return (new string(parmChars)).Split('\n');
+        }
+
+        private static bool TryParseLeadingPs1Command(string command, out string scriptPath, out string scriptArgs)
+        {
+            scriptPath = null;
+            scriptArgs = "";
+
+            if (string.IsNullOrWhiteSpace(command))
+                return false;
+
+            string trimmed = command.Trim();
+            string firstToken;
+            string rest;
+
+            if (trimmed.StartsWith("\""))
+            {
+                int closingQuote = trimmed.IndexOf('"', 1);
+                if (closingQuote <= 0)
+                    return false;
+
+                firstToken = trimmed.Substring(1, closingQuote - 1);
+                rest = trimmed.Substring(closingQuote + 1).Trim();
+            }
+            else
+            {
+                int firstSpace = trimmed.IndexOf(' ');
+                if (firstSpace < 0)
+                {
+                    firstToken = trimmed;
+                    rest = "";
+                }
+                else
+                {
+                    firstToken = trimmed.Substring(0, firstSpace);
+                    rest = trimmed.Substring(firstSpace + 1).Trim();
+                }
+            }
+
+            if (!firstToken.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            scriptPath = firstToken;
+            scriptArgs = rest;
+            return true;
         }
     }
 }

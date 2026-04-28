@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="CommandSet.cs" />
     <Compile Include="CommandsManager.cs" />
+    <Compile Include="HeartbeatReporter.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MiscCommands.cs" />
     <Compile Include="NetworkTools.cs" />

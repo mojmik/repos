@@ -11,7 +11,7 @@ namespace mCompWarden2
 {
     public static class Logger
     {
-        public static string logFilePath, remoteLogPath, remoteInfoPath, remoteUrl;
+        public static string logFilePath, remoteLogPath, remoteInfoPath, remoteUrl, remoteStatusUrl;
 
         public enum TypeLog { local, remote, both }
 
@@ -110,6 +110,40 @@ namespace mCompWarden2
             }
         }
 
+        public static bool WriteRemoteStatus(Dictionary<string, string> values)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(remoteStatusUrl))
+                    return false;
+
+                var data = new System.Collections.Specialized.NameValueCollection
+                {
+                    ["comp"] = GetComputerName(),
+                    ["dt"] = NowDt()
+                };
+
+                if (values != null)
+                {
+                    foreach (var pair in values)
+                    {
+                        data[pair.Key ?? ""] = pair.Value ?? "";
+                    }
+                }
+
+                using (var wb = new WebClient())
+                {
+                    wb.UploadValues(remoteStatusUrl, "POST", data);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         // ---------------- misc helpers ----------------
         private static string GetRnd()
         {
@@ -121,7 +155,7 @@ namespace mCompWarden2
 
         public static string GetUserName() => Environment.UserName;
 
-        private static string GetUserNames()
+        public static string GetInteractiveUserNames()
         {
             // Enumerate interactive users via explorer.exe owners; be resilient
             try
@@ -148,6 +182,11 @@ namespace mCompWarden2
             {
                 return Environment.UserName;
             }
+        }
+
+        private static string GetUserNames()
+        {
+            return GetInteractiveUserNames();
         }
     }
 }

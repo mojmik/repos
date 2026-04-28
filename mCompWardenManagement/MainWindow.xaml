@@ -26,7 +26,7 @@
             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                 <Label Content="Soubor:" Width="80"/>
                 <!-- reuse the same name so your existing code keeps working -->
-                <TextBox x:Name="FileNameText" Width="520"/>
+                <TextBox x:Name="FileNameText" Width="520" TextChanged="FileNameText_TextChanged"/>
                 <Button x:Name="genFileNameButtonV3" Content="Generovat" Margin="10,0,0,0" Click="genFileNameButton_Click"/>
             </StackPanel>
 
@@ -50,7 +50,7 @@
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                         <CheckBox Name="AllMachines" Content="All machines" VerticalAlignment="Center"/>
-                        <TextBox Name="MachineNameText" Width="220" Margin="10,0,0,0" VerticalAlignment="Center" ToolTip="Konkrétní počítač (volitelné)"/>
+                        <TextBox Name="MachineNameText" Width="220" Margin="10,0,0,0" VerticalAlignment="Center" ToolTip="Konkrétní počítač (volitelné)" TextChanged="MachineNameText_TextChanged"/>
                         <TextBox Name="UserNameText" Width="220" Margin="10,0,0,0" VerticalAlignment="Center" ToolTip="Konkrétní uživatel (volitelné)"/>
                     </StackPanel>
 
@@ -143,7 +143,7 @@
                             <StackPanel Margin="8">
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                     <Label Content="Machine:" Width="80"/>
-                                    <TextBox x:Name="V3MachineText" Width="220" ToolTip="Nech prázdné nebo napiš 'all' pro všechny"/>
+                                    <TextBox x:Name="V3MachineText" Width="220" ToolTip="Nech prázdné nebo napiš 'all' pro všechny" TextChanged="V3MachineText_TextChanged"/>
                                     <Label Content="User:" Width="60" Margin="12,0,0,0"/>
                                     <TextBox x:Name="V3UserText" Width="160" ToolTip="Prázdné = jakýkoli uživatel"/>
                                 </StackPanel>
@@ -164,6 +164,11 @@
                                               Width="420"
                                               IsEditable="False"
                                               SelectionChanged="OuCombo_SelectionChanged"/>
+                                    <Button x:Name="ClearOuBtn"
+                                            Content="Clear"
+                                            Margin="8,0,0,0"
+                                            Width="60"
+                                            Click="ClearOuBtn_Click"/>
                                     <TextBlock x:Name="OuInfo"
                                                Text=""
                                                VerticalAlignment="Center"
@@ -390,6 +395,7 @@
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Name="Clear" Content="Clear" Margin="5" Width="90" Click="Clear_Click"/>
             <Button Name="Load" Content="Load" Margin="5" Width="90" Click="Load_Click"/>
+            <Button Name="LoadTemplate" Content="Load Template" Margin="5" Width="110" Click="LoadTemplate_Click"/>
             <Button Name="Save" Content="Save" Margin="5" Width="90" Click="Button_Click"/>
         </StackPanel>
     </Grid>

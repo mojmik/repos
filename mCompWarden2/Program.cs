@@ -47,7 +47,7 @@ namespace mCompWarden2
 
         public static string GetVer()
         {
-            return "v5.02";
+            return "v6.1";
         }
 
         [STAThread]
@@ -76,6 +76,7 @@ namespace mCompWarden2
                 Logger.remoteInfoPath = @"\\aavm2\data2\";
                 Logger.remoteLogPath = mainPath + "log.txt";
                 Logger.remoteUrl = "http://aavm2/intra/mlogs/mlogs.php?action=putlog";
+                Logger.remoteStatusUrl = "http://aavm2/intra/mlogs/mlogs.php?action=heartbeat";
 
                 CommandsManager commandsManager = new CommandsManager();
                 NetworkTools netTools = new NetworkTools();
@@ -148,6 +149,11 @@ namespace mCompWarden2
                             if (System.Environment.UserName == "SYSTEM") Logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
                         }
                     }
+
+                    if (System.Environment.UserName == "SYSTEM" && runMan.IsTime("heartbeat", 2, "m"))
+                    {
+                        HeartbeatReporter.Report(runMan.LastPing);
+                    }
                 }
             }
             catch (Exception ex)
@@ -166,9 +172,12 @@ namespace mCompWarden2
                 string remoteLogFile = Path.GetFileName(Logger.remoteLogPath);
                 if (e.Name.Equals(remoteLogFile, StringComparison.OrdinalIgnoreCase)) return;
 
-                // Only signal for actual command/config files
-                string ext = Path.GetExtension(e.Name).ToLower();
-                if (ext == ".txt" || ext == ".cwd" || ext == ".xml")
+                var watcher = sender as FileSystemWatcher;
+                if (!ShouldTriggerImmediateLoad(watcher, e.Name))
+                    return;
+
+                // Only signal for files this instance would actually consider loading
+                if (IsSupportedCommandFileName(e.Name))
                 {
                     _lastChangedFile = e.Name;
                     _wakeUp.Set();
@@ -179,6 +188,79 @@ namespace mCompWarden2
                 // Never allow watcher events to crash the app
                 try { Logger.WriteLog("Watcher event error: " + ex.Message, Logger.TypeLog.both); } catch { }
             }
+        }
+
+        private static bool IsSupportedCommandFileName(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName)) return false;
+            var name = fileName.Trim();
+            var lower = name.ToLowerInvariant();
+            return lower.EndsWith(".mcw3.xml")
+                || lower.EndsWith(".cwd")
+                || lower.EndsWith(".txt");
+        }
+
+        private static bool ShouldTriggerImmediateLoad(FileSystemWatcher watcher, string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName)) return false;
+
+            var name = Path.GetFileName(fileName) ?? "";
+            var lower = name.ToLowerInvariant();
+            bool isRemoteWatcher = watcher != null &&
+                string.Equals(watcher.Path?.TrimEnd('\\'), mainPath.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase);
+
+            // Local cmd folder: keep existing broad behavior for legacy formats,
+            // but still only react to targeted V3 files.
+            if (!isRemoteWatcher)
+            {
+                if (lower.EndsWith(".mcw3.xml"))
+                    return ShouldLoadV3ByFileName(name);
+                return lower.EndsWith(".cwd") || lower.EndsWith(".txt");
+            }
+
+            // Remote share: mirror the same targeting rules as the loaders.
+            if (lower.EndsWith(".mcw3.xml"))
+                return ShouldLoadV3ByFileName(name);
+            if (lower.EndsWith(".cwd"))
+                return ShouldLoadRemoteCwdByFileName(name);
+            if (lower.EndsWith(".txt"))
+                return ShouldLoadRemoteTxtByFileName(name);
+
+            return false;
+        }
+
+        private static bool ShouldLoadV3ByFileName(string fileName)
+        {
+            var name = (fileName ?? "").ToLowerInvariant();
+            var host = System.Environment.MachineName.ToLowerInvariant();
+            var user = System.Environment.UserName.ToLowerInvariant();
+
+            return name.StartsWith("all")
+                || name.StartsWith(host)
+                || name.StartsWith(user);
+        }
+
+        private static bool ShouldLoadRemoteCwdByFileName(string fileName)
+        {
+            var name = (fileName ?? "").ToLowerInvariant();
+            var host = System.Environment.MachineName.ToLowerInvariant();
+            var user = System.Environment.UserName.ToLowerInvariant();
+
+            return name.StartsWith("all")
+                || name.StartsWith(host)
+                || name.StartsWith(user);
+        }
+
+        private static bool ShouldLoadRemoteTxtByFileName(string fileName)
+        {
+            var name = (fileName ?? "").ToLowerInvariant();
+            var host = System.Environment.MachineName.ToLowerInvariant();
+            var user = System.Environment.UserName.ToLowerInvariant();
+
+            return name == $"{host}-{user}.txt"
+                || name == $"{user}.txt"
+                || name == $"{host}.txt"
+                || name.StartsWith("all");
         }
     }
 
