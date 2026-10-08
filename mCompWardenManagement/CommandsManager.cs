@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,6 +168,13 @@ namespace mCompWardenManagement
             cf.MachineName = (string)task.Attribute("machine") ?? "";
             cf.UserName = (string)task.Attribute("user") ?? "";
             cf.RunAs = (string)task.Attribute("runAs") ?? "either";
+            bool nn;
+            cf.NeedsNetwork = bool.TryParse((string)task.Attribute("needsNetwork"), out nn) ? nn : false;
+            bool singleInst;
+            cf.SingleInstance = bool.TryParse((string)task.Attribute("singleInstance"), out singleInst) ? singleInst : false;
+            cf.WorkDir = (string)task.Attribute("workDir") ?? (string)task.Attribute("workingDir") ?? "";
+            cf.Domain = (string)task.Attribute("domain") ?? "";
+            cf.PasswordEnc = (string)task.Attribute("passwordEnc") ?? (string)task.Attribute("password") ?? "";
 
             // Description
             var desc = task.Element(task.Name.Namespace + "Description") ??
@@ -236,7 +243,7 @@ namespace mCompWardenManagement
                     cf.V3Actions.Add(new CommandFile.V3Action
                     {
                         Type = "RunProgram",
-                        File = (string)a.Attribute("file") ?? "",
+                        File = (string)a.Attribute("file") ?? (string)a.Attribute("target") ?? "",
                         Args = (string)a.Attribute("args") ?? ""
                     });
                 }
@@ -251,9 +258,18 @@ namespace mCompWardenManagement
                     cf.V3Actions.Add(new CommandFile.V3Action
                     {
                         Type = "WriteFile",
-                        Path = (string)a.Attribute("path") ?? "",
+                        Path = (string)a.Attribute("path") ?? (string)a.Attribute("target") ?? "",
                         Contents = (string)a.Attribute("contents") ?? "",
                         Append = appendVal
+                    });
+                }
+                else if (t == "postmessage" || t == "post")
+                {
+                    cf.V3Actions.Add(new CommandFile.V3Action
+                    {
+                        Type = "PostMessage",
+                        Target = (string)a.Attribute("widget") ?? (string)a.Attribute("opt") ?? (string)a.Attribute("target") ?? "info",
+                        Contents = (string)a.Attribute("message") ?? (string)a.Attribute("val") ?? (string)a.Attribute("contents") ?? ""
                     });
                 }
                 // unknown types ignored (or you can throw)
@@ -266,6 +282,8 @@ namespace mCompWardenManagement
                     return string.IsNullOrWhiteSpace(v.Args) ? v.File : (v.File + " " + v.Args);
                 if (v.Type == "WriteFile")
                     return $"WriteFile -> {v.Path}";
+                if (v.Type == "PostMessage" || v.Type == "Post")
+                    return $"PostMessage [{v.Target}] -> {v.Contents}";
                 return "";
             }).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
 

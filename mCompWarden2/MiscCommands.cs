@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -46,12 +46,7 @@ namespace mCompWarden2 {
             cmdMan.ClearCommands();
         }
         public static void PostMessage(string widget, string message) {
-            if (message=="#ip") {
-                message = NetworkTools.GetIPs();
-            }
-            if (message == "#ver") {
-                message = Program.GetVer();
-            }
+            message = SystemInfoProvider.ResolveTokens(message);
             Logger.WriteRemoteInfo(widget, message);
         }
     }

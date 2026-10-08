@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,6 +44,11 @@ namespace mCompWardenManagement
         public int? MinutelyInterval { get; set; }
         public string DefaultTimezone { get; set; } = "";
 
+        public bool SingleInstance { get; set; }
+        public string WorkDir { get; set; } = "";
+        public string Domain { get; set; } = "";
+        public string PasswordEnc { get; set; } = "";
+
         // Seznam akcí V3
         public List<V3Action> V3Actions { get; } = new List<V3Action>();
 
@@ -53,15 +58,17 @@ namespace mCompWardenManagement
 
         public class V3Action
         {
-            public string Type { get; set; } = "RunProgram"; // RunProgram | WriteFile
-            public string Target { get; set; } = "";         // exe path NEBO cílový soubor
+            public string Type { get; set; } = "RunProgram"; // RunProgram | WriteFile | PostMessage
+            public string Target { get; set; } = "";         // exe path, cílový soubor, nebo widget
             public string Args { get; set; } = "";
-            public string Contents { get; set; } = "";
+            public string Contents { get; set; } = "";       // contents pro WriteFile, nebo message pro PostMessage
             public bool? Append { get; set; }
 
             // Back-compat pro starší kód/XAML sloupce:
             public string File { get => Target; set => Target = value; } // pro RunProgram
             public string Path { get => Target; set => Target = value; } // pro WriteFile
+            public string Widget { get => Target; set => Target = value; } // pro PostMessage
+            public string Message { get => Contents; set => Contents = value; } // pro PostMessage
         }
         
 
@@ -178,8 +185,13 @@ namespace mCompWardenManagement
                 var userAttr = string.IsNullOrWhiteSpace(UserName) ? "" : $" user=\"{System.Security.SecurityElement.Escape(UserName)}\"";
                 var runAsValue = string.IsNullOrWhiteSpace(RunAs) ? "either" : RunAs.ToLowerInvariant();
                 var runAsAttr = runAsValue == "either" ? "" : $" runAs=\"{System.Security.SecurityElement.Escape(runAsValue)}\"";
+                var needsNetAttr = NeedsNetwork ? " needsNetwork=\"true\"" : "";
+                var singleInstAttr = SingleInstance ? " singleInstance=\"true\"" : "";
+                var workDirAttr = string.IsNullOrWhiteSpace(WorkDir) ? "" : $" workDir=\"{System.Security.SecurityElement.Escape(WorkDir)}\"";
+                var domainAttr = string.IsNullOrWhiteSpace(Domain) ? "" : $" domain=\"{System.Security.SecurityElement.Escape(Domain)}\"";
+                var passEncAttr = string.IsNullOrWhiteSpace(PasswordEnc) ? "" : $" passwordEnc=\"{System.Security.SecurityElement.Escape(PasswordEnc)}\"";
 
-                w.WriteLine($"  <Task id=\"{idAttr}\" enabled=\"{enabledAttr}\"{machineAttr}{userAttr}{runAsAttr}>");
+                w.WriteLine($"  <Task id=\"{idAttr}\" enabled=\"{enabledAttr}\"{machineAttr}{userAttr}{runAsAttr}{needsNetAttr}{singleInstAttr}{workDirAttr}{domainAttr}{passEncAttr}>");
 
                 if (!string.IsNullOrWhiteSpace(Description))
                     w.WriteLine($"    <Description>{System.Security.SecurityElement.Escape(Description)}</Description>");
@@ -233,6 +245,12 @@ namespace mCompWardenManagement
                             var contents = System.Security.SecurityElement.Escape(a.Contents ?? "");
                             var appendAttr = (a.Append.HasValue && a.Append.Value) ? " append=\"true\"" : "";
                             w.WriteLine($"      <Action type=\"WriteFile\" path=\"{path}\" contents=\"{contents}\"{appendAttr} />");
+                        }
+                        else if (t.Equals("PostMessage", StringComparison.OrdinalIgnoreCase) || t.Equals("Post", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var widget = System.Security.SecurityElement.Escape(a.Widget ?? a.Target ?? "info");
+                            var message = System.Security.SecurityElement.Escape(a.Message ?? a.Contents ?? "");
+                            w.WriteLine($"      <Action type=\"PostMessage\" widget=\"{widget}\" message=\"{message}\" />");
                         }
                     }
                 }

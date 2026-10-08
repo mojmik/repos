@@ -8,6 +8,7 @@ using System.Security.Policy;
 using System.Net;
 using System.Security.Principal;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace mCompWarden2
 {
@@ -37,6 +38,7 @@ namespace mCompWarden2
         public string MachineName { get; set; }
         public string UserName { get; set; }
         public bool RunAlready { get; set; }
+        public bool HasPasswordEnc { get; set; }
 
         public CommandSet() { }
         public CommandSet(string filePath) { MakeFromFile(filePath); }
@@ -272,6 +274,7 @@ namespace mCompWarden2
             if (command.Substring(0, 1) == ";") return false;
             return true;
         }
+
         public bool SpecialCommand(string command)
         {
             if (command.Length < 1) return false;
@@ -285,7 +288,6 @@ namespace mCompWarden2
                     cmdParams = specialCommand.Substring(specialCommand.IndexOf(":")).TrimStart(':');
                     specialCommand = specialCommand.Substring(0, specialCommand.IndexOf(":"));
                 }
-                ;
 
                 if (specialCommand == "scr")
                 {
@@ -305,19 +307,22 @@ namespace mCompWarden2
                 {
                     MiscCommands.ClearCommands();
                 }
-                if (specialCommand == "post")
+                if (specialCommand == "post" || specialCommand == "postmessage")
                 {
-                    string[] cmdMultiParams;
-                    cmdMultiParams = cmdParams.Split('|');
-                    if (cmdMultiParams.Length == 2) MiscCommands.PostMessage(cmdMultiParams[0], cmdMultiParams[1]);
+                    string[] cmdMultiParams = cmdParams.Split(new[] { '|' }, 2);
+                    if (cmdMultiParams.Length == 2)
+                    {
+                        MiscCommands.PostMessage(cmdMultiParams[0].Trim(), cmdMultiParams[1]);
+                    }
+                    else if (cmdMultiParams.Length == 1 && !string.IsNullOrWhiteSpace(cmdMultiParams[0]))
+                    {
+                        MiscCommands.PostMessage("info", cmdMultiParams[0]);
+                    }
                 }
                 if (specialCommand == "writefile")
                 {
                     try
                     {
-                        // Expect key=value items separated by '|'
-                        // Required: path, payload
-                        // Optional: append (0/1), encoding (utf8|utf8bom|ascii|unicode)
                         var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                         foreach (var part in cmdParams.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
                         {
@@ -335,20 +340,18 @@ namespace mCompWarden2
                         if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(payloadB64))
                         {
                             Logger.WriteLog("writefile: missing 'path' or 'payload'", Logger.TypeLog.both);
-                            return true; // treat as handled to avoid spawning cmd.exe
+                            return true;
                         }
 
-                        // Choose encoding (default: UTF-8 without BOM)
                         System.Text.Encoding enc;
                         switch ((encName ?? "").ToLowerInvariant())
                         {
                             case "utf8bom": enc = new System.Text.UTF8Encoding(true); break;
                             case "ascii": enc = System.Text.Encoding.ASCII; break;
-                            case "unicode": enc = System.Text.Encoding.Unicode; break; // UTF-16LE
-                            default: enc = new System.Text.UTF8Encoding(false); break; // utf8
+                            case "unicode": enc = System.Text.Encoding.Unicode; break;
+                            default: enc = new System.Text.UTF8Encoding(false); break;
                         }
 
-                        // Decode payload
                         string contents;
                         try
                         {
@@ -361,12 +364,10 @@ namespace mCompWarden2
                             return true;
                         }
 
-                        // Ensure directory exists
                         var dir = System.IO.Path.GetDirectoryName(path);
                         if (!string.IsNullOrEmpty(dir) && !System.IO.Directory.Exists(dir))
                             System.IO.Directory.CreateDirectory(dir);
 
-                        // Write or append
                         if (append)
                             System.IO.File.AppendAllText(path, contents, enc);
                         else
@@ -378,13 +379,195 @@ namespace mCompWarden2
                     {
                         Logger.WriteLog($"writefile: exception {ex}", Logger.TypeLog.both);
                     }
-                    return true; // handled
+                    return true;
+                }
+                if (specialCommand == "runprogram")
+                {
+                    try
+                    {
+                        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                        foreach (var part in cmdParams.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            var kv = part.Split(new[] { '=' }, 2);
+                            var key = kv[0].Trim();
+                            var val = kv.Length > 1 ? kv[1] : "";
+                            dict[key] = val;
+                        }
+
+                        string DecodeB64(string val)
+                        {
+                            if (string.IsNullOrWhiteSpace(val)) return "";
+                            try
+                            {
+                                var bytes = Convert.FromBase64String(val);
+                                return System.Text.Encoding.UTF8.GetString(bytes);
+                            }
+                            catch
+                            {
+                                return val;
+                            }
+                        }
+
+                        string file = dict.ContainsKey("file") ? DecodeB64(dict["file"]) : "";
+                        string args = dict.ContainsKey("args") ? DecodeB64(dict["args"]) : "";
+                        string workDir = dict.ContainsKey("workdir") ? DecodeB64(dict["workdir"]) : "";
+                        bool singleInstance = dict.ContainsKey("singleinstance") && (dict["singleinstance"] == "1" || dict["singleinstance"].Equals("true", StringComparison.OrdinalIgnoreCase));
+                        string procName = dict.ContainsKey("procname") ? DecodeB64(dict["procname"]) : "";
+                        string domain = dict.ContainsKey("domain") ? DecodeB64(dict["domain"]) : "";
+                        string passEnc = dict.ContainsKey("passenc") ? DecodeB64(dict["passenc"]) : "";
+
+                        if (string.IsNullOrWhiteSpace(file))
+                        {
+                            Logger.WriteLog("runprogram: missing 'file'", Logger.TypeLog.both);
+                            return true;
+                        }
+
+                        if (singleInstance)
+                        {
+                            string targetProcName = procName;
+                            if (string.IsNullOrWhiteSpace(targetProcName))
+                            {
+                                string candidate = System.IO.Path.GetFileNameWithoutExtension(file);
+                                if (!string.Equals(candidate, "cmd", StringComparison.OrdinalIgnoreCase) &&
+                                    !string.Equals(candidate, "powershell", StringComparison.OrdinalIgnoreCase) &&
+                                    !string.Equals(candidate, "pwsh", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    targetProcName = candidate;
+                                }
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(targetProcName))
+                            {
+                                try
+                                {
+                                    var existingProcs = System.Diagnostics.Process.GetProcessesByName(targetProcName);
+                                    if (existingProcs != null && existingProcs.Length > 0)
+                                    {
+                                        Logger.WriteLog($"runprogram: singleInstance check - process '{targetProcName}' is already running ({existingProcs.Length} instance(s)). Skipping execution of '{file}'.", Logger.TypeLog.both);
+                                        return true;
+                                    }
+                                }
+                                catch (Exception exProc)
+                                {
+                                    Logger.WriteLog($"runprogram: process check failed for '{targetProcName}': {exProc.Message}", Logger.TypeLog.both);
+                                }
+                            }
+                        }
+
+                        System.Diagnostics.ProcessStartInfo psi;
+                        string scriptPath, scriptArgs;
+
+                        string fullCmdLine = (file.Contains(" ") ? $"\"{file}\"" : file) + (string.IsNullOrWhiteSpace(args) ? "" : " " + args);
+
+                        if (TryParseLeadingPs1Command(fullCmdLine, out scriptPath, out scriptArgs) || file.EndsWith(".ps1", StringComparison.OrdinalIgnoreCase))
+                        {
+                            string psScript = string.IsNullOrEmpty(scriptPath) ? file : scriptPath;
+                            string psArgs = string.IsNullOrEmpty(scriptPath) ? args : scriptArgs;
+
+                            Logger.WriteLog($"Running PowerShell script: \"{psScript}\" {psArgs}" + (!string.IsNullOrWhiteSpace(workDir) ? $" (WorkDir: {workDir})" : ""), Logger.TypeLog.both);
+                            psi = new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = "powershell.exe",
+                                Arguments = $"-ExecutionPolicy Bypass -WindowStyle Hidden -File \"{psScript}\" {psArgs}",
+                                UseShellExecute = false,
+                                CreateNoWindow = true,
+                                RedirectStandardOutput = false,
+                                RedirectStandardError = false
+                            };
+                        }
+                        else
+                        {
+                            Logger.WriteLog($"Running program: \"{file}\" {args}" + (!string.IsNullOrWhiteSpace(workDir) ? $" (WorkDir: {workDir})" : ""), Logger.TypeLog.both);
+
+                            bool isVbs = file.EndsWith(".vbs", StringComparison.OrdinalIgnoreCase);
+                            bool isBat = file.EndsWith(".bat", StringComparison.OrdinalIgnoreCase) || file.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase);
+
+                            if (isVbs)
+                            {
+                                psi = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = "wscript.exe",
+                                    Arguments = $"//nologo \"{file}\"" + (string.IsNullOrWhiteSpace(args) ? "" : " " + args),
+                                    UseShellExecute = true,
+                                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                                };
+                            }
+                            else if (isBat && string.IsNullOrWhiteSpace(workDir))
+                            {
+                                psi = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = "cmd.exe",
+                                    Arguments = $"/c \"\"{file}\"" + (string.IsNullOrWhiteSpace(args) ? "" : " " + args) + "\"",
+                                    UseShellExecute = true,
+                                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                                };
+                            }
+                            else if (string.IsNullOrWhiteSpace(workDir))
+                            {
+                                psi = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = file,
+                                    Arguments = args ?? "",
+                                    UseShellExecute = true,
+                                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                                };
+                            }
+                            else
+                            {
+                                psi = new System.Diagnostics.ProcessStartInfo
+                                {
+                                    FileName = file,
+                                    Arguments = args ?? "",
+                                    UseShellExecute = false,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = false,
+                                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                                    CreateNoWindow = true
+                                };
+                            }
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(workDir))
+                        {
+                            psi.WorkingDirectory = workDir;
+                        }
+
+                        // Encrypted Password & Credentials (supports AES & DPAPI)
+                        if (!string.IsNullOrWhiteSpace(passEnc))
+                        {
+                            string plainPassword = DpapiHelper.Decrypt(passEnc);
+                            if (!string.IsNullOrWhiteSpace(plainPassword))
+                            {
+                                Logger.WriteLog($"runprogram: launching via CreateProcessWithTokenW for user {(string.IsNullOrWhiteSpace(domain) ? "" : domain + "\\")}{UserName}", Logger.TypeLog.both);
+                                UserProcessLauncher.Launch(domain, UserName, plainPassword, file, args, workDir);
+                                Logger.WriteLog($"runprogram: successfully started {file} as user {(string.IsNullOrWhiteSpace(domain) ? "" : domain + "\\")}{UserName}", Logger.TypeLog.both);
+                            }
+                            else
+                            {
+                                Logger.WriteLog($"runprogram ERROR: passwordEnc decryption failed for user {(string.IsNullOrWhiteSpace(domain) ? "" : domain + "\\")}{UserName}. Skipping execution.", Logger.TypeLog.both);
+                            }
+                        }
+                        else
+                        {
+                            using (var proc = new System.Diagnostics.Process { StartInfo = psi })
+                            {
+                                proc.Start();
+                            }
+                            Logger.WriteLog($"runprogram: started {file}" + (!string.IsNullOrWhiteSpace(workDir) ? $" in {workDir}" : ""), Logger.TypeLog.both);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.WriteLog($"runprogram: exception {ex}", Logger.TypeLog.both);
+                    }
+                    return true;
                 }
 
                 return true;
             }
             return false;
         }
+
         public bool IsRemoved(bool isOnline)
         {
             if ((isOnline && NeedsNetwork) || (!NeedsNetwork))
@@ -393,24 +576,33 @@ namespace mCompWarden2
             }
             return false;
         }
+
         public bool IsRunEnvironment()
         {
-            if ((System.Environment.UserName == "SYSTEM") && NeedsUser) return false;
-            if ((System.Environment.UserName != "SYSTEM") && NeedsSystem) return false;
+            bool isSystemInstance = string.Equals(System.Environment.UserName, "SYSTEM", StringComparison.OrdinalIgnoreCase);
 
-            // NEW: machine targeting (optional)
+            if (HasPasswordEnc)
+            {
+                // Tasks with encrypted passwords must be dispatched by the elevated SYSTEM service instance
+                if (!isSystemInstance) return false;
+            }
+            else
+            {
+                if (isSystemInstance && NeedsUser) return false;
+                if (!isSystemInstance && NeedsSystem) return false;
+
+                if (!string.IsNullOrEmpty(UserName))
+                {
+                    if (!string.Equals(UserName, Environment.UserName, StringComparison.OrdinalIgnoreCase)) return false;
+                }
+            }
+
             if (!string.IsNullOrWhiteSpace(MachineName))
             {
                 var me = System.Environment.MachineName;
-                // allow "all" or exact match (case-insensitive)
                 if (!MachineName.Equals("all", StringComparison.OrdinalIgnoreCase) &&
                     !MachineName.Equals(me, StringComparison.OrdinalIgnoreCase))
                     return false;
-            }
-
-            if (!string.IsNullOrEmpty(UserName))
-            {
-                if (UserName.ToLower() != Environment.UserName.ToLower()) return false;
             }
 
             string compName = System.Environment.MachineName;
@@ -624,6 +816,297 @@ namespace mCompWarden2
             scriptPath = firstToken;
             scriptArgs = rest;
             return true;
+        }
+    }
+
+    public static class UserProcessLauncher
+    {
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool LogonUser(
+            string lpszUsername,
+            string lpszDomain,
+            string lpszPassword,
+            int dwLogonType,
+            int dwLogonProvider,
+            out IntPtr phToken);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool CreateProcessAsUser(
+            IntPtr hToken,
+            string lpApplicationName,
+            string lpCommandLine,
+            IntPtr lpProcessAttributes,
+            IntPtr lpThreadAttributes,
+            bool bInheritHandles,
+            uint dwCreationFlags,
+            IntPtr lpEnvironment,
+            string lpCurrentDirectory,
+            ref STARTUPINFO lpStartupInfo,
+            out PROCESS_INFORMATION lpProcessInformation);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool CreateProcessWithTokenW(
+            IntPtr hToken,
+            uint dwLogonFlags,
+            string lpApplicationName,
+            string lpCommandLine,
+            uint dwCreationFlags,
+            IntPtr lpEnvironment,
+            string lpCurrentDirectory,
+            ref STARTUPINFO lpStartupInfo,
+            out PROCESS_INFORMATION lpProcessInformation);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool ImpersonateLoggedOnUser(IntPtr hToken);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool RevertToSelf();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool CloseHandle(IntPtr hObject);
+
+        private const int LOGON32_LOGON_INTERACTIVE = 2;
+        private const int LOGON32_LOGON_NETWORK = 3;
+        private const int LOGON32_LOGON_BATCH = 4;
+        private const int LOGON32_LOGON_SERVICE = 5;
+        private const int LOGON32_LOGON_NETWORK_CLEARTEXT = 8;
+        private const int LOGON32_LOGON_NEW_CREDENTIALS = 9;
+
+        private const int LOGON32_PROVIDER_DEFAULT = 0;
+        private const uint LOGON_WITH_PROFILE = 0x00000001;
+        private const uint CREATE_NO_WINDOW = 0x08000000;
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct STARTUPINFO
+        {
+            public int cb;
+            public string lpReserved;
+            public string lpDesktop;
+            public string lpTitle;
+            public int dwX;
+            public int dwY;
+            public int dwXSize;
+            public int dwYSize;
+            public int dwXCountChars;
+            public int dwYCountChars;
+            public int dwFillAttribute;
+            public int dwFlags;
+            public short wShowWindow;
+            public short cbReserved2;
+            public IntPtr lpReserved2;
+            public IntPtr hStdInput;
+            public IntPtr hStdOutput;
+            public IntPtr hStdError;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PROCESS_INFORMATION
+        {
+            public IntPtr hProcess;
+            public IntPtr hThread;
+            public int dwProcessId;
+            public int dwThreadId;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct NETRESOURCE
+        {
+            public uint dwScope;
+            public uint dwType;
+            public uint dwDisplayType;
+            public uint dwUsage;
+            public string lpLocalName;
+            public string lpRemoteName;
+            public string lpComment;
+            public string lpProvider;
+        }
+
+        [DllImport("mpr.dll", CharSet = CharSet.Unicode)]
+        private static extern int WNetAddConnection2(ref NETRESOURCE lpNetResource, string lpPassword, string lpUsername, uint dwFlags);
+
+        private static void AuthenticateUncShare(string uncPath, string domain, string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(uncPath) || !uncPath.StartsWith(@"\\")) return;
+
+            try
+            {
+                string[] parts = uncPath.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 2) return;
+
+                string uncShare = @"\\" + parts[0] + @"\" + parts[1];
+                string fullUser = string.IsNullOrWhiteSpace(domain) ? username : domain + @"\" + username;
+
+                var nr = new NETRESOURCE
+                {
+                    dwType = 1, // RESOURCETYPE_DISK
+                    lpRemoteName = uncShare
+                };
+
+                int res = WNetAddConnection2(ref nr, password, fullUser, 0);
+                if (res != 0 && res != 1219) // 1219 = ERROR_SESSION_CREDENTIAL_CONFLICT
+                {
+                    Logger.WriteLog($"WNetAddConnection2 returned {res} for {uncShare} user {fullUser}", Logger.TypeLog.both);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.WriteLog($"AuthenticateUncShare exception: {ex.Message}", Logger.TypeLog.both);
+            }
+        }
+
+        private static string MapUncWorkingDirToDrive(string uncWorkDir, string domain, string username, string password, out string mappedLetter)
+        {
+            mappedLetter = null;
+            if (string.IsNullOrWhiteSpace(uncWorkDir) || !uncWorkDir.StartsWith(@"\\")) return uncWorkDir;
+
+            string fullUser = string.IsNullOrWhiteSpace(domain) ? username : domain + @"\" + username;
+
+            for (char c = 'Z'; c >= 'F'; c--)
+            {
+                string letter = c + ":";
+                if (!Directory.Exists(letter))
+                {
+                    var nr = new NETRESOURCE
+                    {
+                        dwType = 1, // RESOURCETYPE_DISK
+                        lpLocalName = letter,
+                        lpRemoteName = uncWorkDir
+                    };
+
+                    int res = WNetAddConnection2(ref nr, password, fullUser, 0);
+                    if (res == 0 || res == 1219)
+                    {
+                        mappedLetter = letter;
+                        Logger.WriteLog($"UserProcessLauncher: Mapped UNC workDir {uncWorkDir} -> {letter}\\", Logger.TypeLog.both);
+                        return letter + @"\";
+                    }
+                }
+            }
+
+            return uncWorkDir;
+        }
+
+        public static void Launch(string domain, string username, string password, string file, string args, string workDir)
+        {
+            string targetDomain = string.IsNullOrWhiteSpace(domain) ? "." : domain;
+            IntPtr hToken = IntPtr.Zero;
+
+            // LOGON32_LOGON_BATCH (4) first so process executes locally under target user identity (srv)
+            int[] logonTypes = new int[]
+            {
+                LOGON32_LOGON_BATCH,
+                LOGON32_LOGON_SERVICE,
+                LOGON32_LOGON_INTERACTIVE,
+                LOGON32_LOGON_NETWORK_CLEARTEXT,
+                LOGON32_LOGON_NEW_CREDENTIALS
+            };
+
+            int lastError = 0;
+            bool loggedOn = false;
+
+            foreach (int lt in logonTypes)
+            {
+                loggedOn = LogonUser(username, targetDomain, password, lt, LOGON32_PROVIDER_DEFAULT, out hToken);
+                if (loggedOn) break;
+                lastError = Marshal.GetLastWin32Error();
+            }
+
+            if (!loggedOn)
+            {
+                throw new System.ComponentModel.Win32Exception(lastError, $"LogonUser failed for {targetDomain}\\{username} (Win32 Error {lastError})");
+            }
+
+            try
+            {
+                // Authenticate UNC share inside impersonated user token context
+                if (ImpersonateLoggedOnUser(hToken))
+                {
+                    AuthenticateUncShare(file, domain, username, password);
+                    if (!string.IsNullOrWhiteSpace(workDir))
+                        AuthenticateUncShare(workDir, domain, username, password);
+                    RevertToSelf();
+                }
+
+                var si = new STARTUPINFO();
+                si.cb = Marshal.SizeOf(si);
+
+                bool isBatchScript = file.EndsWith(".bat", StringComparison.OrdinalIgnoreCase) || file.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase);
+                bool isCmdExe = file.Equals("cmd.exe", StringComparison.OrdinalIgnoreCase) || file.EndsWith(@"\cmd.exe", StringComparison.OrdinalIgnoreCase);
+
+                string cmdLine;
+                string cwd = null;
+
+                if (!string.IsNullOrWhiteSpace(workDir) && workDir.StartsWith(@"\\"))
+                {
+                    string targetCall;
+                    if (isCmdExe)
+                    {
+                        targetCall = args;
+                    }
+                    else
+                    {
+                        string relFile = file;
+                        if (!string.IsNullOrWhiteSpace(workDir) && file.StartsWith(workDir, StringComparison.OrdinalIgnoreCase))
+                        {
+                            relFile = file.Substring(workDir.Length).TrimStart('\\');
+                        }
+                        if (!relFile.Contains("\\") && !relFile.Contains(":") && !relFile.StartsWith("."))
+                        {
+                            relFile = @".\" + relFile;
+                        }
+                        targetCall = (relFile.Contains(" ") ? $"\"{relFile}\"" : relFile) + (string.IsNullOrWhiteSpace(args) ? "" : " " + args);
+                    }
+
+                    cmdLine = $"cmd.exe /c \"pushd \"{workDir}\" && {targetCall}\"";
+                    cwd = null;
+                }
+                else if (isBatchScript)
+                {
+                    string batchCall = (file.Contains(" ") ? $"\"{file}\"" : file) + (string.IsNullOrWhiteSpace(args) ? "" : " " + args);
+                    cmdLine = $"cmd.exe /c \"{batchCall}\"";
+                    cwd = string.IsNullOrWhiteSpace(workDir) ? null : workDir;
+                }
+                else
+                {
+                    if (isCmdExe)
+                    {
+                        cmdLine = $"cmd.exe {args}";
+                    }
+                    else
+                    {
+                        cmdLine = (file.Contains(" ") ? $"\"{file}\"" : file) + (string.IsNullOrWhiteSpace(args) ? "" : " " + args);
+                    }
+                    cwd = string.IsNullOrWhiteSpace(workDir) ? null : workDir;
+                }
+
+                Logger.WriteLog($"UserProcessLauncher: launching cmdLine '{cmdLine}' (cwd: {(cwd ?? "null")}) for user {targetDomain}\\{username}", Logger.TypeLog.both);
+
+                PROCESS_INFORMATION pi;
+                bool created = CreateProcessAsUser(hToken, null, cmdLine, IntPtr.Zero, IntPtr.Zero, false, CREATE_NO_WINDOW, IntPtr.Zero, cwd, ref si, out pi);
+
+                if (!created)
+                {
+                    created = CreateProcessWithTokenW(hToken, LOGON_WITH_PROFILE, null, cmdLine, CREATE_NO_WINDOW, IntPtr.Zero, cwd, ref si, out pi);
+                }
+
+                if (!created)
+                {
+                    created = CreateProcessWithTokenW(hToken, 0, null, cmdLine, CREATE_NO_WINDOW, IntPtr.Zero, cwd, ref si, out pi);
+                }
+
+                if (!created)
+                {
+                    int err = Marshal.GetLastWin32Error();
+                    throw new System.ComponentModel.Win32Exception(err, $"CreateProcessAsUser/WithTokenW failed for '{cmdLine}' (Win32 Error {err})");
+                }
+
+                CloseHandle(pi.hProcess);
+                CloseHandle(pi.hThread);
+            }
+            finally
+            {
+                if (hToken != IntPtr.Zero) CloseHandle(hToken);
+            }
         }
     }
 }

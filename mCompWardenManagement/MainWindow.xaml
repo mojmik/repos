@@ -1,4 +1,4 @@
-﻿<Window x:Class="mCompWardenManagement.MainWindow"
+<Window x:Class="mCompWardenManagement.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -98,297 +98,285 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <!-- V3 editor (multi-task) -->
-            <Grid x:Name="V3Grid" Visibility="Collapsed">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="260"/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Left: Task list -->
-                <Border Grid.Column="0" Background="White" BorderBrush="#DDD" BorderThickness="1" CornerRadius="6">
-                    <DockPanel Margin="8">
-                        <TextBlock DockPanel.Dock="Top" Text="Úlohy (Tasks)" FontWeight="Bold" Margin="0,0,0,6"/>
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,8">
-                            <Button x:Name="AddTaskBtn" Content="Přidat" Width="70" Margin="0,0,5,0" Click="AddTask_Click"/>
-                            <Button x:Name="RemoveTaskBtn" Content="Odebrat" Width="75" Margin="0,0,5,0" Click="RemoveTask_Click"/>
-                            <Button x:Name="DuplicateTaskBtn" Content="Duplikovat" Width="90" Click="DuplicateTask_Click"/>
+            <!-- V3 editor (single-task layout) -->
+            <ScrollViewer x:Name="V3Grid" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <DockPanel Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                            <Label Content="Úloha ID:" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBox x:Name="TaskIdText" Width="180" Margin="5,0,10,0" VerticalAlignment="Center" ToolTip="Jedinečný identifikátor úlohy (např. daily-maintenance)"/>
+                            <Label Content="Výběr úlohy:" VerticalAlignment="Center" x:Name="TaskSelectLabel" Visibility="Collapsed"/>
+                            <ComboBox x:Name="TaskSelectCombo" Width="180" Margin="5,0,5,0" VerticalAlignment="Center" Visibility="Collapsed" SelectionChanged="TaskSelectCombo_SelectionChanged"/>
+                            <Button x:Name="AddTaskBtn" Content="+ Úloha" Width="60" Margin="5,0,2,0" VerticalAlignment="Center" Visibility="Collapsed" Click="AddTaskBtn_Click" ToolTip="Přidat další úlohu do souboru"/>
+                            <Button x:Name="RemoveTaskBtn" Content="- Úloha" Width="60" Margin="2,0,5,0" VerticalAlignment="Center" Visibility="Collapsed" Click="RemoveTaskBtn_Click" ToolTip="Odebrat aktuální úlohu"/>
                         </StackPanel>
-                        <ListBox x:Name="TaskList" DisplayMemberPath="V3Id" SelectionChanged="TaskList_SelectionChanged"/>
+                        <CheckBox x:Name="TaskEnabledCheck" Content="Povoleno (enabled)" DockPanel.Dock="Right" VerticalAlignment="Center" IsChecked="True"/>
                     </DockPanel>
-                </Border>
 
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="10" Background="#E6E9EF"/>
-
-                <!-- Right: Task details -->
-                <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
-                    <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                        <Label Content="Nastavení V3 úlohy" FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
-
-                        <!-- Basic task fields -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                            <Label Content="ID:" Width="80"/>
-                            <TextBox x:Name="TaskIdText" Width="200"/>
-                            <CheckBox x:Name="TaskEnabledCheck" Content="enabled" Margin="15,0,0,0" IsChecked="True"/>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Vertical" Margin="0,0,0,5">
-                            <Label Content="Popis (Description)"/>
-                            <TextBox x:Name="TaskDescriptionText" AcceptsReturn="True" Height="60"/>
-                        </StackPanel>
-
-                        <!-- FIXED: GroupBox has exactly one child (a single StackPanel) -->
-                        <GroupBox Header="Cílení (Target)" Margin="0,5,0,5">
-                            <StackPanel Margin="8">
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                    <Label Content="Machine:" Width="80"/>
-                                    <TextBox x:Name="V3MachineText" Width="220" ToolTip="Nech prázdné nebo napiš 'all' pro všechny" TextChanged="V3MachineText_TextChanged"/>
-                                    <Label Content="User:" Width="60" Margin="12,0,0,0"/>
-                                    <TextBox x:Name="V3UserText" Width="160" ToolTip="Prázdné = jakýkoli uživatel"/>
-                                </StackPanel>
-
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Run as:" Width="80"/>
-                                    <ComboBox x:Name="V3RunAsCombo" Width="140">
-                                        <ComboBoxItem Tag="either" IsSelected="True">Either</ComboBoxItem>
-                                        <ComboBoxItem Tag="user">User (desktop)</ComboBoxItem>
-                                        <ComboBoxItem Tag="system">System</ComboBoxItem>
-                                    </ComboBox>
-                                </StackPanel>
-
-                                <!-- OU row moved INSIDE the same inner StackPanel -->
-                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                    <TextBlock Text="OU:" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                    <ComboBox x:Name="OuCombo"
-                                              Width="420"
-                                              IsEditable="False"
-                                              SelectionChanged="OuCombo_SelectionChanged"/>
-                                    <Button x:Name="ClearOuBtn"
-                                            Content="Clear"
-                                            Margin="8,0,0,0"
-                                            Width="60"
-                                            Click="ClearOuBtn_Click"/>
-                                    <TextBlock x:Name="OuInfo"
-                                               Text=""
-                                               VerticalAlignment="Center"
-                                               Margin="8,0,0,0"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </GroupBox>
-
-                        <!-- Schedule -->
-                        <GroupBox Header="Plán" Margin="0,5,0,5">
-                            <StackPanel Margin="8">
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                                    <Label Content="Typ:" Width="80"/>
-                                    <ComboBox x:Name="V3ScheduleTypeCombo" Width="180" SelectionChanged="V3ScheduleTypeCombo_SelectionChanged">
-                                        <ComboBoxItem Tag="daily"   IsSelected="True">Denně</ComboBoxItem>
-                                        <ComboBoxItem Tag="weekly">Týdně</ComboBoxItem>
-                                        <ComboBoxItem Tag="monthly">Měsíčně</ComboBoxItem>
-                                        <ComboBoxItem Tag="hourly">Každou hodinu</ComboBoxItem>
-                                        <ComboBoxItem Tag="minutely">Každé N minut</ComboBoxItem>
-                                        <ComboBoxItem Tag="once" Content="Jednorázově" />
-                                    </ComboBox>
-                                </StackPanel>
-
-                                <!-- Time (for daily/weekly/monthly) -->
-                                <StackPanel x:Name="TimeBlock" Orientation="Horizontal" Margin="0,0,0,5">
-                                    <Label Content="Čas:" Width="80"/>
-                                    <ComboBox x:Name="HourCombo" Width="60">
-                                        <ComboBoxItem>00</ComboBoxItem>
-                                        <ComboBoxItem>01</ComboBoxItem>
-                                        <ComboBoxItem>02</ComboBoxItem>
-                                        <ComboBoxItem>03</ComboBoxItem>
-                                        <ComboBoxItem>04</ComboBoxItem>
-                                        <ComboBoxItem>05</ComboBoxItem>
-                                        <ComboBoxItem>06</ComboBoxItem>
-                                        <ComboBoxItem>07</ComboBoxItem>
-                                        <ComboBoxItem>08</ComboBoxItem>
-                                        <ComboBoxItem>09</ComboBoxItem>
-                                        <ComboBoxItem>10</ComboBoxItem>
-                                        <ComboBoxItem>11</ComboBoxItem>
-                                        <ComboBoxItem>12</ComboBoxItem>
-                                        <ComboBoxItem>13</ComboBoxItem>
-                                        <ComboBoxItem>14</ComboBoxItem>
-                                        <ComboBoxItem>15</ComboBoxItem>
-                                        <ComboBoxItem>16</ComboBoxItem>
-                                        <ComboBoxItem>17</ComboBoxItem>
-                                        <ComboBoxItem>18</ComboBoxItem>
-                                        <ComboBoxItem>19</ComboBoxItem>
-                                        <ComboBoxItem>20</ComboBoxItem>
-                                        <ComboBoxItem>21</ComboBoxItem>
-                                        <ComboBoxItem>22</ComboBoxItem>
-                                        <ComboBoxItem>23</ComboBoxItem>
-                                    </ComboBox>
-                                    <TextBlock Text=":" VerticalAlignment="Center" Margin="5,0"/>
-                                    <ComboBox x:Name="MinuteCombo" Width="60">
-                                        <ComboBoxItem>00</ComboBoxItem>
-                                        <ComboBoxItem>05</ComboBoxItem>
-                                        <ComboBoxItem>10</ComboBoxItem>
-                                        <ComboBoxItem>15</ComboBoxItem>
-                                        <ComboBoxItem>20</ComboBoxItem>
-                                        <ComboBoxItem>25</ComboBoxItem>
-                                        <ComboBoxItem>30</ComboBoxItem>
-                                        <ComboBoxItem>35</ComboBoxItem>
-                                        <ComboBoxItem>40</ComboBoxItem>
-                                        <ComboBoxItem>45</ComboBoxItem>
-                                        <ComboBoxItem>50</ComboBoxItem>
-                                        <ComboBoxItem>55</ComboBoxItem>
-                                    </ComboBox>
-                                </StackPanel>
-
-                                <!-- Weekly days -->
-                                <StackPanel x:Name="WeeklyBlock" Orientation="Vertical" Margin="0,0,0,5" Visibility="Collapsed">
-                                    <Label Content="Opakovat v dny:"/>
-                                    <WrapPanel>
-                                        <CheckBox x:Name="MonCheck" Content="Po" Tag="Mon" Margin="2"/>
-                                        <CheckBox x:Name="TueCheck" Content="Út" Tag="Tue" Margin="2"/>
-                                        <CheckBox x:Name="WedCheck" Content="St" Tag="Wed" Margin="2"/>
-                                        <CheckBox x:Name="ThuCheck" Content="Čt" Tag="Thu" Margin="2"/>
-                                        <CheckBox x:Name="FriCheck" Content="Pá" Tag="Fri" Margin="2"/>
-                                        <CheckBox x:Name="SatCheck" Content="So" Tag="Sat" Margin="2"/>
-                                        <CheckBox x:Name="SunCheck" Content="Ne" Tag="Sun" Margin="2"/>
-                                    </WrapPanel>
-                                </StackPanel>
-
-                                <!-- Monthly day -->
-                                <StackPanel x:Name="MonthlyBlock" Orientation="Horizontal" Margin="0,0,0,5" Visibility="Collapsed">
-                                    <Label Content="Den v měsíci:" Width="100"/>
-                                    <TextBox x:Name="MonthlyDayText" Width="60"/>
-                                </StackPanel>
-
-                                <!-- Hourly minute -->
-                                <StackPanel x:Name="HourlyBlock" Orientation="Horizontal" Margin="0,0,0,5" Visibility="Collapsed">
-                                    <Label Content="Minuta (0-59):" Width="100"/>
-                                    <ComboBox x:Name="HourlyMinuteCombo" Width="70">
-                                        <!-- 0..59 -->
-                                        <ComboBoxItem>0</ComboBoxItem>
-                                        <ComboBoxItem>1</ComboBoxItem>
-                                        <ComboBoxItem>2</ComboBoxItem>
-                                        <ComboBoxItem>3</ComboBoxItem>
-                                        <ComboBoxItem>4</ComboBoxItem>
-                                        <ComboBoxItem>5</ComboBoxItem>
-                                        <ComboBoxItem>6</ComboBoxItem>
-                                        <ComboBoxItem>7</ComboBoxItem>
-                                        <ComboBoxItem>8</ComboBoxItem>
-                                        <ComboBoxItem>9</ComboBoxItem>
-                                        <ComboBoxItem>10</ComboBoxItem>
-                                        <ComboBoxItem>11</ComboBoxItem>
-                                        <ComboBoxItem>12</ComboBoxItem>
-                                        <ComboBoxItem>13</ComboBoxItem>
-                                        <ComboBoxItem>14</ComboBoxItem>
-                                        <ComboBoxItem>15</ComboBoxItem>
-                                        <ComboBoxItem>16</ComboBoxItem>
-                                        <ComboBoxItem>17</ComboBoxItem>
-                                        <ComboBoxItem>18</ComboBoxItem>
-                                        <ComboBoxItem>19</ComboBoxItem>
-                                        <ComboBoxItem>20</ComboBoxItem>
-                                        <ComboBoxItem>21</ComboBoxItem>
-                                        <ComboBoxItem>22</ComboBoxItem>
-                                        <ComboBoxItem>23</ComboBoxItem>
-                                        <ComboBoxItem>24</ComboBoxItem>
-                                        <ComboBoxItem>25</ComboBoxItem>
-                                        <ComboBoxItem>26</ComboBoxItem>
-                                        <ComboBoxItem>27</ComboBoxItem>
-                                        <ComboBoxItem>28</ComboBoxItem>
-                                        <ComboBoxItem>29</ComboBoxItem>
-                                        <ComboBoxItem>30</ComboBoxItem>
-                                        <ComboBoxItem>31</ComboBoxItem>
-                                        <ComboBoxItem>32</ComboBoxItem>
-                                        <ComboBoxItem>33</ComboBoxItem>
-                                        <ComboBoxItem>34</ComboBoxItem>
-                                        <ComboBoxItem>35</ComboBoxItem>
-                                        <ComboBoxItem>36</ComboBoxItem>
-                                        <ComboBoxItem>37</ComboBoxItem>
-                                        <ComboBoxItem>38</ComboBoxItem>
-                                        <ComboBoxItem>39</ComboBoxItem>
-                                        <ComboBoxItem>40</ComboBoxItem>
-                                        <ComboBoxItem>41</ComboBoxItem>
-                                        <ComboBoxItem>42</ComboBoxItem>
-                                        <ComboBoxItem>43</ComboBoxItem>
-                                        <ComboBoxItem>44</ComboBoxItem>
-                                        <ComboBoxItem>45</ComboBoxItem>
-                                        <ComboBoxItem>46</ComboBoxItem>
-                                        <ComboBoxItem>47</ComboBoxItem>
-                                        <ComboBoxItem>48</ComboBoxItem>
-                                        <ComboBoxItem>49</ComboBoxItem>
-                                        <ComboBoxItem>50</ComboBoxItem>
-                                        <ComboBoxItem>51</ComboBoxItem>
-                                        <ComboBoxItem>52</ComboBoxItem>
-                                        <ComboBoxItem>53</ComboBoxItem>
-                                        <ComboBoxItem>54</ComboBoxItem>
-                                        <ComboBoxItem>55</ComboBoxItem>
-                                        <ComboBoxItem>56</ComboBoxItem>
-                                        <ComboBoxItem>57</ComboBoxItem>
-                                        <ComboBoxItem>58</ComboBoxItem>
-                                        <ComboBoxItem>59</ComboBoxItem>
-                                    </ComboBox>
-                                </StackPanel>
-
-                                <!-- Minutely interval -->
-                                <StackPanel x:Name="MinutelyBlock" Orientation="Horizontal" Margin="0,0,0,5" Visibility="Collapsed">
-                                    <Label Content="Interval (minuty):" Width="120"/>
-                                    <ComboBox x:Name="MinutelyIntervalCombo" Width="80" IsEditable="False">
-                                        <ComboBoxItem>1</ComboBoxItem>
-                                        <ComboBoxItem>2</ComboBoxItem>
-                                        <ComboBoxItem>3</ComboBoxItem>
-                                        <ComboBoxItem>5</ComboBoxItem>
-                                        <ComboBoxItem>10</ComboBoxItem>
-                                        <ComboBoxItem>15</ComboBoxItem>
-                                        <ComboBoxItem>20</ComboBoxItem>
-                                        <ComboBoxItem>30</ComboBoxItem>
-                                        <ComboBoxItem>60</ComboBoxItem>
-                                    </ComboBox>
-                                </StackPanel>
-
-                            </StackPanel>
-                        </GroupBox>
-
-                        <!-- Actions -->
-                        <GroupBox Header="Akce" Margin="0,5,0,5">
-                            <DockPanel Margin="8">
-                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,8">
-                                    <Button x:Name="AddActionBtn" Content="Přidat" Width="70" Margin="0,0,5,0" Click="AddAction_Click"/>
-                                    <Button x:Name="RemoveActionBtn" Content="Odebrat" Width="75" Margin="0,0,5,0" Click="RemoveAction_Click"/>
-                                    <Button x:Name="MoveActionUpBtn" Content="↑" Width="40" Margin="0,0,5,0" Click="MoveActionUp_Click"/>
-                                    <Button x:Name="MoveActionDownBtn" Content="↓" Width="40" Click="MoveActionDown_Click"/>
-                                </StackPanel>
-
-                                <!-- Scrollable actions grid -->
-                                <DataGrid x:Name="V3ActionsGrid"
-                                          AutoGenerateColumns="False"
-                                          CanUserAddRows="False"
-                                          HeadersVisibility="Column"
-                                          IsReadOnly="False"
-                                          GridLinesVisibility="Vertical"
-                                          RowHeaderWidth="0"
-                                          Height="260"
-                                          ScrollViewer.CanContentScroll="True"
-                                          ScrollViewer.VerticalScrollBarVisibility="Auto">
-                                    <DataGrid.Columns>
-                                        <DataGridComboBoxColumn Header="Type" Width="100"
-                                                                SelectedItemBinding="{Binding Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                            <DataGridComboBoxColumn.ItemsSource>
-                                                <x:Array Type="{x:Type sys:String}">
-                                                    <sys:String>RunProgram</sys:String>
-                                                    <sys:String>WriteFile</sys:String>
-                                                </x:Array>
-                                            </DataGridComboBoxColumn.ItemsSource>
-                                        </DataGridComboBoxColumn>
-
-                                        <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="*"/>
-                                        <DataGridTextColumn Header="Args"     Width="150" Binding="{Binding Args,     Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                                        <DataGridTextColumn Header="Contents" Width="220" Binding="{Binding Contents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                        <DataGridCheckBoxColumn Header="Append" Width="70" Binding="{Binding Append, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </DockPanel>
-                        </GroupBox>
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,5">
+                        <Label Content="Popis (Description)"/>
+                        <TextBox x:Name="TaskDescriptionText" AcceptsReturn="True" Height="45"/>
                     </StackPanel>
-                </ScrollViewer>
-            </Grid>
+
+                    <!-- GroupBox for Cílení (Target) -->
+                    <GroupBox Header="Cílení (Target)" Margin="0,5,0,5">
+                        <StackPanel Margin="8">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Label Content="Machine:" Width="80"/>
+                                <TextBox x:Name="V3MachineText" Width="220" ToolTip="Nech prázdné nebo napiš 'all' pro všechny" TextChanged="V3MachineText_TextChanged"/>
+                                <Label Content="User:" Width="60" Margin="12,0,0,0"/>
+                                <TextBox x:Name="V3UserText" Width="160" ToolTip="Prázdné = jakýkoli uživatel"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <Label Content="Run as:" Width="80"/>
+                                <ComboBox x:Name="V3RunAsCombo" Width="140">
+                                    <ComboBoxItem Tag="either" IsSelected="True">Either</ComboBoxItem>
+                                    <ComboBoxItem Tag="user">User (desktop)</ComboBoxItem>
+                                    <ComboBoxItem Tag="system">System</ComboBoxItem>
+                                </ComboBox>
+                                <Label Content="Domain:" Width="60" Margin="12,0,0,0"/>
+                                <TextBox x:Name="TaskDomainText" Width="140" ToolTip="Doména pro runAs='user' (volitelné)"/>
+                                <Label Content="Heslo (DPAPI):" Width="90" Margin="10,0,0,0"/>
+                                <PasswordBox x:Name="TaskPasswordText" Width="140" ToolTip="Heslo uživatele (při uložení se šifruje pomocí DPAPI)"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <CheckBox x:Name="TaskSingleInstanceCheck" Content="singleInstance (prevent multiple)" VerticalAlignment="Center" ToolTip="Povolí kontrolu spuštěných procesů před spuštěním úlohy"/>
+                                <CheckBox x:Name="V3NeedsNetworkCheck" Content="Needs Network" Margin="15,0,0,0" VerticalAlignment="Center" ToolTip="Vyžaduje síťové připojení pro spuštění (needsNetwork='true')"/>
+                                <Label Content="workDir:" Width="65" Margin="15,0,0,0" VerticalAlignment="Center"/>
+                                <TextBox x:Name="TaskWorkDirText" Width="280" ToolTip="Pracovní složka procesů (UNC nebo lokální cesta)"/>
+                            </StackPanel>
+
+                            <!-- OU row -->
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                <TextBlock Text="OU:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <ComboBox x:Name="OuCombo"
+                                          Width="420"
+                                          IsEditable="False"
+                                          SelectionChanged="OuCombo_SelectionChanged"/>
+                                <Button x:Name="ClearOuBtn"
+                                        Content="Clear"
+                                        Margin="8,0,0,0"
+                                        Width="60"
+                                        Click="ClearOuBtn_Click"/>
+                                <TextBlock x:Name="OuInfo"
+                                           Text=""
+                                           VerticalAlignment="Center"
+                                           Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Schedule -->
+                    <GroupBox Header="Plán" Margin="0,5,0,5">
+                        <StackPanel Margin="8">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <Label Content="Typ:" Width="80"/>
+                                <ComboBox x:Name="V3ScheduleTypeCombo" Width="180" SelectionChanged="V3ScheduleTypeCombo_SelectionChanged">
+                                    <ComboBoxItem Tag="daily" IsSelected="True">Denně</ComboBoxItem>
+                                    <ComboBoxItem Tag="weekly">Týdně</ComboBoxItem>
+                                    <ComboBoxItem Tag="monthly">Měsíčně</ComboBoxItem>
+                                    <ComboBoxItem Tag="hourly">Každou hodinu</ComboBoxItem>
+                                    <ComboBoxItem Tag="minutely">Každé N minut</ComboBoxItem>
+                                    <ComboBoxItem Tag="once" Content="Jednorázově" />
+                                </ComboBox>
+                            </StackPanel>
+
+                            <!-- Time (for daily/weekly/monthly) -->
+                            <StackPanel x:Name="TimeBlock" Orientation="Horizontal" Margin="0,0,0,5">
+                                <Label Content="Čas:" Width="80"/>
+                                <ComboBox x:Name="HourCombo" Width="60">
+                                    <ComboBoxItem>00</ComboBoxItem>
+                                    <ComboBoxItem>01</ComboBoxItem>
+                                    <ComboBoxItem>02</ComboBoxItem>
+                                    <ComboBoxItem>03</ComboBoxItem>
+                                    <ComboBoxItem>04</ComboBoxItem>
+                                    <ComboBoxItem>05</ComboBoxItem>
+                                    <ComboBoxItem>06</ComboBoxItem>
+                                    <ComboBoxItem>07</ComboBoxItem>
+                                    <ComboBoxItem>08</ComboBoxItem>
+                                    <ComboBoxItem>09</ComboBoxItem>
+                                    <ComboBoxItem>10</ComboBoxItem>
+                                    <ComboBoxItem>11</ComboBoxItem>
+                                    <ComboBoxItem>12</ComboBoxItem>
+                                    <ComboBoxItem>13</ComboBoxItem>
+                                    <ComboBoxItem>14</ComboBoxItem>
+                                    <ComboBoxItem>15</ComboBoxItem>
+                                    <ComboBoxItem>16</ComboBoxItem>
+                                    <ComboBoxItem>17</ComboBoxItem>
+                                    <ComboBoxItem>18</ComboBoxItem>
+                                    <ComboBoxItem>19</ComboBoxItem>
+                                    <ComboBoxItem>20</ComboBoxItem>
+                                    <ComboBoxItem>21</ComboBoxItem>
+                                    <ComboBoxItem>22</ComboBoxItem>
+                                    <ComboBoxItem>23</ComboBoxItem>
+                                </ComboBox>
+                                <TextBlock Text=":" VerticalAlignment="Center" Margin="5,0"/>
+                                <ComboBox x:Name="MinuteCombo" Width="60">
+                                    <ComboBoxItem>00</ComboBoxItem>
+                                    <ComboBoxItem>05</ComboBoxItem>
+                                    <ComboBoxItem>10</ComboBoxItem>
+                                    <ComboBoxItem>15</ComboBoxItem>
+                                    <ComboBoxItem>20</ComboBoxItem>
+                                    <ComboBoxItem>25</ComboBoxItem>
+                                    <ComboBoxItem>30</ComboBoxItem>
+                                    <ComboBoxItem>35</ComboBoxItem>
+                                    <ComboBoxItem>40</ComboBoxItem>
+                                    <ComboBoxItem>45</ComboBoxItem>
+                                    <ComboBoxItem>50</ComboBoxItem>
+                                    <ComboBoxItem>55</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <!-- Weekly days -->
+                            <StackPanel x:Name="WeeklyBlock" Orientation="Vertical" Margin="0,0,0,5" Visibility="Collapsed">
+                                <Label Content="Opakovat v dny:"/>
+                                <WrapPanel>
+                                    <CheckBox x:Name="MonCheck" Content="Po" Tag="Mon" Margin="2"/>
+                                    <CheckBox x:Name="TueCheck" Content="Út" Tag="Tue" Margin="2"/>
+                                    <CheckBox x:Name="WedCheck" Content="St" Tag="Wed" Margin="2"/>
+                                    <CheckBox x:Name="ThuCheck" Content="Čt" Tag="Thu" Margin="2"/>
+                                    <CheckBox x:Name="FriCheck" Content="Pá" Tag="Fri" Margin="2"/>
+                                    <CheckBox x:Name="SatCheck" Content="So" Tag="Sat" Margin="2"/>
+                                    <CheckBox x:Name="SunCheck" Content="Ne" Tag="Sun" Margin="2"/>
+                                </WrapPanel>
+                            </StackPanel>
+
+                            <!-- Monthly day -->
+                            <StackPanel x:Name="MonthlyBlock" Orientation="Horizontal" Margin="0,0,0,5" Visibility="Collapsed">
+                                <Label Content="Den v měsíci:" Width="100"/>
+                                <TextBox x:Name="MonthlyDayText" Width="60"/>
+                            </StackPanel>
+
+                            <!-- Hourly minute -->
+                            <StackPanel x:Name="HourlyBlock" Orientation="Horizontal" Margin="0,0,0,5" Visibility="Collapsed">
+                                <Label Content="Minuta (0-59):" Width="100"/>
+                                <ComboBox x:Name="HourlyMinuteCombo" Width="70">
+                                    <ComboBoxItem>0</ComboBoxItem>
+                                    <ComboBoxItem>1</ComboBoxItem>
+                                    <ComboBoxItem>2</ComboBoxItem>
+                                    <ComboBoxItem>3</ComboBoxItem>
+                                    <ComboBoxItem>4</ComboBoxItem>
+                                    <ComboBoxItem>5</ComboBoxItem>
+                                    <ComboBoxItem>6</ComboBoxItem>
+                                    <ComboBoxItem>7</ComboBoxItem>
+                                    <ComboBoxItem>8</ComboBoxItem>
+                                    <ComboBoxItem>9</ComboBoxItem>
+                                    <ComboBoxItem>10</ComboBoxItem>
+                                    <ComboBoxItem>11</ComboBoxItem>
+                                    <ComboBoxItem>12</ComboBoxItem>
+                                    <ComboBoxItem>13</ComboBoxItem>
+                                    <ComboBoxItem>14</ComboBoxItem>
+                                    <ComboBoxItem>15</ComboBoxItem>
+                                    <ComboBoxItem>16</ComboBoxItem>
+                                    <ComboBoxItem>17</ComboBoxItem>
+                                    <ComboBoxItem>18</ComboBoxItem>
+                                    <ComboBoxItem>19</ComboBoxItem>
+                                    <ComboBoxItem>20</ComboBoxItem>
+                                    <ComboBoxItem>21</ComboBoxItem>
+                                    <ComboBoxItem>22</ComboBoxItem>
+                                    <ComboBoxItem>23</ComboBoxItem>
+                                    <ComboBoxItem>24</ComboBoxItem>
+                                    <ComboBoxItem>25</ComboBoxItem>
+                                    <ComboBoxItem>26</ComboBoxItem>
+                                    <ComboBoxItem>27</ComboBoxItem>
+                                    <ComboBoxItem>28</ComboBoxItem>
+                                    <ComboBoxItem>29</ComboBoxItem>
+                                    <ComboBoxItem>30</ComboBoxItem>
+                                    <ComboBoxItem>31</ComboBoxItem>
+                                    <ComboBoxItem>32</ComboBoxItem>
+                                    <ComboBoxItem>33</ComboBoxItem>
+                                    <ComboBoxItem>34</ComboBoxItem>
+                                    <ComboBoxItem>35</ComboBoxItem>
+                                    <ComboBoxItem>36</ComboBoxItem>
+                                    <ComboBoxItem>37</ComboBoxItem>
+                                    <ComboBoxItem>38</ComboBoxItem>
+                                    <ComboBoxItem>39</ComboBoxItem>
+                                    <ComboBoxItem>40</ComboBoxItem>
+                                    <ComboBoxItem>41</ComboBoxItem>
+                                    <ComboBoxItem>42</ComboBoxItem>
+                                    <ComboBoxItem>43</ComboBoxItem>
+                                    <ComboBoxItem>44</ComboBoxItem>
+                                    <ComboBoxItem>45</ComboBoxItem>
+                                    <ComboBoxItem>46</ComboBoxItem>
+                                    <ComboBoxItem>47</ComboBoxItem>
+                                    <ComboBoxItem>48</ComboBoxItem>
+                                    <ComboBoxItem>49</ComboBoxItem>
+                                    <ComboBoxItem>50</ComboBoxItem>
+                                    <ComboBoxItem>51</ComboBoxItem>
+                                    <ComboBoxItem>52</ComboBoxItem>
+                                    <ComboBoxItem>53</ComboBoxItem>
+                                    <ComboBoxItem>54</ComboBoxItem>
+                                    <ComboBoxItem>55</ComboBoxItem>
+                                    <ComboBoxItem>56</ComboBoxItem>
+                                    <ComboBoxItem>57</ComboBoxItem>
+                                    <ComboBoxItem>58</ComboBoxItem>
+                                    <ComboBoxItem>59</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <!-- Minutely interval -->
+                            <StackPanel x:Name="MinutelyBlock" Orientation="Horizontal" Margin="0,0,0,5" Visibility="Collapsed">
+                                <Label Content="Interval (minuty):" Width="120"/>
+                                <ComboBox x:Name="MinutelyIntervalCombo" Width="80" IsEditable="False">
+                                    <ComboBoxItem>1</ComboBoxItem>
+                                    <ComboBoxItem>2</ComboBoxItem>
+                                    <ComboBoxItem>3</ComboBoxItem>
+                                    <ComboBoxItem>5</ComboBoxItem>
+                                    <ComboBoxItem>10</ComboBoxItem>
+                                    <ComboBoxItem>15</ComboBoxItem>
+                                    <ComboBoxItem>20</ComboBoxItem>
+                                    <ComboBoxItem>30</ComboBoxItem>
+                                    <ComboBoxItem>60</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Actions -->
+                    <GroupBox Header="Akce" Margin="0,5,0,5">
+                        <DockPanel Margin="8">
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,8">
+                                <Button x:Name="AddActionBtn" Content="Přidat" Width="70" Margin="0,0,5,0" Click="AddAction_Click"/>
+                                <Button x:Name="RemoveActionBtn" Content="Odebrat" Width="75" Margin="0,0,5,0" Click="RemoveAction_Click"/>
+                                <Button x:Name="MoveActionUpBtn" Content="↑" Width="40" Margin="0,0,5,0" Click="MoveActionUp_Click"/>
+                                <Button x:Name="MoveActionDownBtn" Content="↓" Width="40" Click="MoveActionDown_Click"/>
+                            </StackPanel>
+
+                            <!-- Scrollable actions grid -->
+                            <DataGrid x:Name="V3ActionsGrid"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      HeadersVisibility="Column"
+                                      IsReadOnly="False"
+                                      GridLinesVisibility="Vertical"
+                                      RowHeaderWidth="0"
+                                      Height="240"
+                                      ScrollViewer.CanContentScroll="True"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <DataGrid.Columns>
+                                    <DataGridComboBoxColumn Header="Type" Width="110"
+                                                            SelectedItemBinding="{Binding Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                        <DataGridComboBoxColumn.ItemsSource>
+                                            <x:Array Type="{x:Type sys:String}">
+                                                <sys:String>RunProgram</sys:String>
+                                                <sys:String>WriteFile</sys:String>
+                                                <sys:String>PostMessage</sys:String>
+                                            </x:Array>
+                                        </DataGridComboBoxColumn.ItemsSource>
+                                    </DataGridComboBoxColumn>
+
+                                    <DataGridTextColumn Header="Target / Widget" Binding="{Binding Target, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                                    <DataGridTextColumn Header="Args" Width="180" Binding="{Binding Args, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridTextColumn Header="Contents / Message" Width="260" Binding="{Binding Contents, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <DataGridCheckBoxColumn Header="Append" Width="60" Binding="{Binding Append, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
 
         <!-- Bottom buttons -->

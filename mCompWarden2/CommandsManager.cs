@@ -78,42 +78,46 @@ namespace mCompWarden2
 
         public void LoadRemoteCommands()
         {
-
-
-            var directory = new System.IO.DirectoryInfo(Program.mainPath);
-            var files = directory.GetFiles();
-            foreach (var file in files)
+            try
             {
-                string fileExtension = file.Extension;
-                if (fileExtension == ".cwd")
+                var directory = new System.IO.DirectoryInfo(Program.mainPath);
+                var files = directory.GetFiles();
+                foreach (var file in files)
                 {
-                    if (file.Name.StartsWith("all") || file.Name.StartsWith(Environment.MachineName.ToLower()) || file.Name.StartsWith(Environment.UserName.ToLower()))
+                    string fileExtension = file.Extension;
+                    if (fileExtension == ".cwd")
                     {
-                        //Logger.WriteLog($"gonna load file: {file.FullName}", Logger.TypeLog.both);
-                        SingleCommandSetFromFile(file.FullName);
+                        if (file.Name.StartsWith("all") || file.Name.StartsWith(Environment.MachineName.ToLower()) || file.Name.StartsWith(Environment.UserName.ToLower()))
+                        {
+                            SingleCommandSetFromFile(file.FullName);
+                        }
                     }
-
-                }
-                if (fileExtension == ".txt")
-                {
-                    if (file.FullName == Program.mainPath + Environment.MachineName.ToLower() + "-" + System.Environment.UserName.ToLower() + ".txt")
+                    if (fileExtension == ".txt")
                     {
-                        SingleCommandSetFromFile(file.FullName);
-                    }
-                    if (file.FullName == Program.mainPath + System.Environment.UserName.ToLower() + ".txt")
-                    {
-                        SingleCommandSetFromFile(file.FullName);
-                    }
-                    if (file.FullName == Program.mainPath + System.Environment.MachineName.ToLower() + ".txt")
-                    {
-                        SingleCommandSetFromFile(file.FullName);
-                    }
-                    if (file.Name.StartsWith("all"))
-                    {
-                        SingleCommandSetFromFile(file.FullName);
+                        if (file.FullName == Program.mainPath + Environment.MachineName.ToLower() + "-" + System.Environment.UserName.ToLower() + ".txt")
+                        {
+                            SingleCommandSetFromFile(file.FullName);
+                        }
+                        if (file.FullName == Program.mainPath + System.Environment.UserName.ToLower() + ".txt")
+                        {
+                            SingleCommandSetFromFile(file.FullName);
+                        }
+                        if (file.FullName == Program.mainPath + System.Environment.MachineName.ToLower() + ".txt")
+                        {
+                            SingleCommandSetFromFile(file.FullName);
+                        }
+                        if (file.Name.StartsWith("all"))
+                        {
+                            SingleCommandSetFromFile(file.FullName);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Logger.WriteLog($"LoadRemoteCommands: Network path '{Program.mainPath}' unavailable ({ex.Message}). Skipping remote legacy command loading.", Logger.TypeLog.both);
+            }
+
             LoadV3ConfigsRemote();
         }
         public void LoadLocalCommands()
@@ -369,7 +373,7 @@ namespace mCompWarden2
             }
             catch (Exception e)
             {
-                Logger.WriteLog($"V3 remote load failed: {e}", Logger.TypeLog.both);
+                Logger.WriteLog($"V3 remote load failed for network path '{Program.mainPath}': {e.Message}", Logger.TypeLog.both);
             }
         }
     }

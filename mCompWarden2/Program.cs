@@ -47,7 +47,7 @@ namespace mCompWarden2
 
         public static string GetVer()
         {
-            return "v6.1";
+            return "v8.2";
         }
 
         [STAThread]
@@ -122,43 +122,51 @@ namespace mCompWarden2
 
                 for (; ; )
                 {
-                    bool signaled = _wakeUp.WaitOne(5000);
-                    if (signaled)
+                    try
                     {
-                        // Debounce: wait 1s for file operations (like from Notepad or network save) to settle
-                        System.Threading.Thread.Sleep(1000);
-                        // Consume any redundant signals that arrived during the wait
-                        while (_wakeUp.WaitOne(0)) ;
-                    }
-
-                    if (signaled || runMan.IsTime("load", 100, "s"))
-                    {
+                        bool signaled = _wakeUp.WaitOne(5000);
                         if (signaled)
                         {
-                            Logger.WriteLog($"Command file change detected ({_lastChangedFile}) - triggering immediate load.", Logger.TypeLog.both);
-                            runMan.IsTime("load", 0, "s"); // Force reset the polling timer
+                            // Debounce: wait 1s for file operations (like from Notepad or network save) to settle
+                            System.Threading.Thread.Sleep(1000);
+                            // Consume any redundant signals that arrived during the wait
+                            while (_wakeUp.WaitOne(0)) ;
                         }
-                        runMan.LoadCommands();
-                    }
 
-                    runMan.DoRun();
-                    if (runMan.LastPing > -1)
-                    {
-                        if (runMan.IsTime("ping", 5, "m"))
+                        if (signaled || runMan.IsTime("load", 100, "s"))
                         {
-                            if (System.Environment.UserName == "SYSTEM") Logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
+                            if (signaled)
+                            {
+                                Logger.WriteLog($"Command file change detected ({_lastChangedFile}) - triggering immediate load.", Logger.TypeLog.both);
+                                runMan.IsTime("load", 0, "s"); // Force reset the polling timer
+                            }
+                            runMan.LoadCommands();
+                        }
+
+                        runMan.DoRun();
+                        if (runMan.LastPing > -1)
+                        {
+                            if (runMan.IsTime("ping", 5, "m"))
+                            {
+                                if (System.Environment.UserName == "SYSTEM") Logger.WriteRemoteInfo("ping", runMan.LastPing.ToString());
+                            }
+                        }
+
+                        if (System.Environment.UserName == "SYSTEM" && runMan.IsTime("heartbeat", 2, "m"))
+                        {
+                            HeartbeatReporter.Report(runMan.LastPing);
                         }
                     }
-
-                    if (System.Environment.UserName == "SYSTEM" && runMan.IsTime("heartbeat", 2, "m"))
+                    catch (Exception exLoop)
                     {
-                        HeartbeatReporter.Report(runMan.LastPing);
+                        Logger.WriteLog("Error in main loop iteration (recovering): " + exLoop.Message, Logger.TypeLog.both);
+                        System.Threading.Thread.Sleep(2000);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.WriteLog("FATAL: Error in Main loop: " + ex.ToString(), Logger.TypeLog.both);
+                Logger.WriteLog("FATAL: Initialization error in Main: " + ex.ToString(), Logger.TypeLog.both);
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,6 +37,9 @@ namespace mCompWarden2
         public string UserName { get; set; }      // optional
         public string RunAs { get; set; } = "either"; // "user" | "system" | "either"
         public bool? NeedsNetwork { get; set; }   // optional
+
+        public bool SingleInstance { get; set; }  // optional: prevent running if process already active
+        public string WorkDir { get; set; }       // optional: process working directory (UNC or local)
     }
 
     /// <summary>
@@ -51,6 +54,7 @@ namespace mCompWarden2
                 throw new FileNotFoundException("Config file not found", xmlPath);
 
             var doc = XDocument.Load(xmlPath);
+            SystemInfoProvider.LoadTokensFromXDocument(doc);
             var tasks = new List<CommandSet>();
 
             foreach (var t in doc.Descendants("Task"))
@@ -64,6 +68,12 @@ namespace mCompWarden2
                 if (sched == null)
                     throw new InvalidOperationException($"Task {id} missing <Schedule>.");
 
+                bool taskSingleInstance = ParseBoolOrNull((string)t.Attribute("singleInstance")) ?? false;
+                string taskWorkDir = System.Net.WebUtility.HtmlDecode((string)t.Attribute("workDir") ?? (string)t.Attribute("workingDir") ?? "");
+                string taskDomain = System.Net.WebUtility.HtmlDecode((string)t.Attribute("domain") ?? "");
+                string taskPasswordEnc = System.Net.WebUtility.HtmlDecode((string)t.Attribute("passwordEnc") ?? (string)t.Attribute("password") ?? "");
+                string taskProcName = System.Net.WebUtility.HtmlDecode((string)t.Attribute("processName") ?? (string)t.Attribute("procName") ?? "");
+
                 var v3 = new V3ScheduleTask
                 {
                     Id = id,
@@ -73,7 +83,9 @@ namespace mCompWarden2
                     MachineName = (string)t.Attribute("machine") ?? "",
                     UserName = (string)t.Attribute("user") ?? "",
                     RunAs = ((string)t.Attribute("runAs") ?? "either").ToLowerInvariant(),
-                    NeedsNetwork = ParseBoolOrNull((string)t.Attribute("needsNetwork"))
+                    NeedsNetwork = ParseBoolOrNull((string)t.Attribute("needsNetwork")),
+                    SingleInstance = taskSingleInstance,
+                    WorkDir = taskWorkDir
                 };
 
                 // schedule attributes by type
@@ -122,9 +134,18 @@ namespace mCompWarden2
                     {
                         var file = System.Net.WebUtility.HtmlDecode((string)act.Attribute("file") ?? "");
                         var args = System.Net.WebUtility.HtmlDecode((string)act.Attribute("args") ?? "");
+
                         if (string.IsNullOrWhiteSpace(file))
                             throw new InvalidOperationException($"Task {id}: RunProgram requires 'file'.");
-                        string cmd = Quote(file) + (string.IsNullOrWhiteSpace(args) ? "" : " " + args);
+
+                        var fileB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(file));
+                        var argsB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(args ?? ""));
+                        var workDirB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(taskWorkDir ?? ""));
+                        var procNameB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(taskProcName ?? ""));
+                        var domainB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(taskDomain ?? ""));
+                        var passEncB64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(taskPasswordEnc ?? ""));
+                        var singleInstFlag = taskSingleInstance ? "1" : "0";
+                        string cmd = $"&runprogram:file={fileB64}|args={argsB64}|workdir={workDirB64}|singleinstance={singleInstFlag}|procname={procNameB64}|domain={domainB64}|passenc={passEncB64}";
                         v3.CommandLines.Add(cmd);
                     }
                     else if (atype == "writefile")
@@ -143,6 +164,22 @@ namespace mCompWarden2
                         var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(contents));
                         var appendFlag = append ? "1" : "0";
                         var cmd = $"&writefile:path={target}|append={appendFlag}|encoding=utf8|payload={payload}";
+                        v3.CommandLines.Add(cmd);
+                    }
+                    else if (atype == "post" || atype == "postmessage")
+                    {
+                        var widget = System.Net.WebUtility.HtmlDecode(
+                            (string)act.Attribute("widget")
+                            ?? (string)act.Attribute("opt")
+                            ?? "info"
+                        );
+                        var message = System.Net.WebUtility.HtmlDecode(
+                            (string)act.Attribute("message")
+                            ?? (string)act.Attribute("val")
+                            ?? (string)act.Attribute("contents")
+                            ?? ""
+                        );
+                        var cmd = $"&post:{widget}|{message}";
                         v3.CommandLines.Add(cmd);
                     }
                     else
@@ -176,7 +213,8 @@ namespace mCompWarden2
                     UserName = string.IsNullOrWhiteSpace(v3.UserName) ? "" : v3.UserName,
                     NeedsUser = v3.RunAs == "user",
                     NeedsSystem = v3.RunAs == "system",
-                    NeedsNetwork = v3.NeedsNetwork ?? false
+                    NeedsNetwork = v3.NeedsNetwork ?? false,
+                    HasPasswordEnc = !string.IsNullOrWhiteSpace(taskPasswordEnc)
                 };
 
                 // Seed first RunAt

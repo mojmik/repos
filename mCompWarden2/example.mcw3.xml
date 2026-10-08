@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Tasks defaultTimezone="Europe/Prague">
 
 	<!-- 1) DAILY at a fixed clock time -->
@@ -66,5 +66,52 @@
 		<Action type="RunProgram" file="C:\Windows\System32\notepad.exe" args="C:\Temp\readme.txt" />
 		<Action type="WriteFile" path="C:\Temp\alt_actions.txt" contents="works too" append="true" />
 	</Task>
+
+	<!-- 8) Single instance guard & working directory (UNC path) at Task level -->
+	<Task id="single-instance-unc" enabled="true" singleInstance="true" workDir="\\server\share\data">
+		<Description>Poll server script every 1 minute; prevent running multiple instances and set UNC working path</Description>
+		<Schedule type="minutely" interval="1" />
+		<Actions>
+			<Action type="RunProgram" file="\\server\share\scripts\worker.exe" args="--sync" />
+		</Actions>
+	</Task>
+
+	<!-- 9) Task-level defaults for singleInstance and workDir -->
+	<Task id="task-level-defaults" enabled="true" singleInstance="true" workDir="\\server\share\app">
+		<Description>Applies singleInstance=true and workDir to all child RunProgram actions</Description>
+		<Schedule type="hourly" minute="30" />
+		<Actions>
+			<Action type="RunProgram" file="\\server\share\app\sync.exe" />
+		</Actions>
+	</Task>
+
+	<!-- 10) Run in user context even when user is NOT logged in (using DPAPI encrypted credentials) -->
+	<Task id="unloggedin-user-task" enabled="true" runAs="user" user="serviceuser" domain="MYDOMAIN" passwordEnc="AQAAANCMnd8BFdERjBv...">
+		<Description>Executes process in user context with user profile loaded when user is not logged in</Description>
+		<Schedule type="daily" time="03:00" />
+		<Actions>
+			<Action type="RunProgram" file="C:\Scripts\nightly-user-process.exe" workDir="C:\Scripts" />
+		</Actions>
+	</Task>
+
+	<!-- 11) PostMessage tasks for admin monitoring (RAM, Disk C:, Printers, Summary) -->
+	<Task id="admin-health-hourly" enabled="true">
+		<Description>Reports system metrics to central server every hour</Description>
+		<Schedule type="hourly" minute="0" />
+		<Actions>
+			<Action type="PostMessage" widget="health_summary" message="#summary" />
+			<Action type="PostMessage" widget="sys_ram" message="RAM: {ram_total} (Free: {ram_free})" />
+			<Action type="PostMessage" widget="disk_c" message="Free C: {free_c}" />
+			<Action type="PostMessage" widget="printers" message="#printers" />
+		</Actions>
+	</Task>
+
+	<!-- 12) Custom token definition example (extensible via configuration) -->
+	<!--
+	<Tokens>
+		<Token name="my_metric" value="Host: {computer} | RAM: {ram_total} | Free C: {free_c} | Reboot: {reboot_pending}" />
+		<Token name="vpn_check" command="cmd.exe /c ping -n 1 10.0.0.1" />
+	</Tokens>
+	-->
 
 </Tasks>
